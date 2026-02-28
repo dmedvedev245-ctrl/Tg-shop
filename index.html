@@ -233,19 +233,30 @@
         bar.classList.toggle('visible', count > 0);
     }
 
-    function openCart() {
-        const text = cart.map(p => `${p.name} x${p.qty} — ${(p.price * p.qty).toLocaleString()} ₽`).join('\n');
-        const total = cart.reduce((s, p) => s + p.price * p.qty, 0);
-        tg.showConfirm(
-            `Ваш заказ:\n${text}\n\nИтого: ${total.toLocaleString()} ₽\n\nОтправить менеджеру?`,
-            (confirmed) => {
-                if (confirmed) {
-                    tg.sendData(JSON.stringify({ order: cart, total }));
-                }
+   function openCart() {
+    const text = cart.map(p => `${p.name} x${p.qty} — ${(p.price * p.qty).toLocaleString()} ₽`).join('\n');
+    const total = cart.reduce((s, p) => s + p.price * p.qty, 0);
+    tg.showConfirm(
+        `Ваш заказ:\n${text}\n\nИтого: ${total.toLocaleString()} ₽\n\nОтправить менеджеру?`,
+        (confirmed) => {
+            if (confirmed) {
+                const message = `🛒 Новый заказ!\n\n${text}\n\n💰 Итого: ${total.toLocaleString()} ₽`;
+                fetch(`https://api.telegram.org/bot8442060752:AAF8BjsRoKEY4ulcDBV5GM6xDHeQf1vZxd0/sendMessage`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        chat_id: '7745794986',
+                        text: message
+                    })
+                }).then(() => {
+                    tg.showAlert('✅ Заказ отправлен! Менеджер свяжется с вами.');
+                    cart = [];
+                    updateCartBar();
+                });
             }
-        );
-    }
-
+        }
+    );
+}
     renderProducts(products);
 </script>
 
