@@ -55,6 +55,16 @@
 const tg = window.Telegram.WebApp;
 tg.expand();
 
+const imgBase = {
+    iphone12: 'https://store.storeimages.cdn-apple.com/4668/as-images.apple.com/is/iphone-12-blue-select-2020?wid=200&hei=200&fmt=jpeg',
+    iphone13: 'https://store.storeimages.cdn-apple.com/4668/as-images.apple.com/is/iphone-13-blue-select-2021?wid=200&hei=200&fmt=jpeg',
+    iphone14: 'https://store.storeimages.cdn-apple.com/4668/as-images.apple.com/is/iphone-14-blue-select-202209?wid=200&hei=200&fmt=jpeg',
+    iphone15: 'https://store.storeimages.cdn-apple.com/4668/as-images.apple.com/is/iphone-15-blue-select-202309?wid=200&hei=200&fmt=jpeg',
+    iphone16: 'https://store.storeimages.cdn-apple.com/4668/as-images.apple.com/is/iphone-16-finish-select-202409-6-1inch-teal?wid=200&hei=200&fmt=jpeg',
+    iphone17: 'https://www.apple.com/newsroom/images/2025/09/apple-introduces-iphone-17/article/Apple-iPhone-17-lineup-hero-250909_inline.jpg.large.jpg',
+    iphonese: 'https://store.storeimages.cdn-apple.com/4668/as-images.apple.com/is/iphone-se-select-202203?wid=200&hei=200&fmt=jpeg',
+};
+
 const products = [
     {id:1,name:"iPhone 12 128Gb Black EU",category:"iphone12",inStock:true,specs:{display:'6.1" OLED',chip:"A14 Bionic",camera:"12 Мп",battery:"2815 мАч",sim:"Dual SIM"}},
     {id:2,name:"iPhone 12 128Gb Purple EU",category:"iphone12",inStock:true,specs:{display:'6.1" OLED',chip:"A14 Bionic",camera:"12 Мп",battery:"2815 мАч",sim:"Dual SIM"}},
@@ -173,8 +183,10 @@ function renderProducts(list) {
     document.getElementById('resultsCount').textContent = 'Найдено: ' + list.length + ' товаров';
     catalog.innerHTML = list.map(p => {
         const specsHtml = Object.values(p.specs).map(v => '<span>' + v + '</span>').join('');
+        const img = imgBase[p.category] || '';
         return '<div class="card ' + (p.inStock ? '' : 'out-of-stock') + '">' +
-            '<div class="card-header">' +
+            '<img src="' + img + '" style="width:100%;height:140px;object-fit:contain;background:#f9f9f9;border-radius:10px;margin-bottom:10px;" onerror="this.style.display=\'none\'">' +
+'<div class="card-header">' +
             '<div class="card-name">' + p.name + '</div>' +
             '<div class="stock-badge ' + (p.inStock ? 'in-stock' : 'no-stock') + '">' + (p.inStock ? '✓ В наличии' : '✗ Нет') + '</div>' +
             '</div>' +
