@@ -7,172 +7,283 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f2f2f7; color: #1c1c1e; }
-        header { background: #fff; padding: 16px; text-align: center; font-size: 20px; font-weight: 700; border-bottom: 1px solid #e5e5ea; position: sticky; top: 0; z-index: 100; }
-        .search-bar { padding: 12px 16px; background: #fff; border-bottom: 1px solid #e5e5ea; }
-        .search-bar input { width: 100%; padding: 10px 14px; border-radius: 10px; border: none; background: #f2f2f7; font-size: 15px; outline: none; }
-        .filters { display: flex; gap: 8px; padding: 12px 16px; overflow-x: auto; background: #fff; border-bottom: 1px solid #e5e5ea; scrollbar-width: none; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif; background: #f5f5f7; color: #1d1d1f; }
+
+        header {
+            background: rgba(255,255,255,0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            padding: 14px 16px;
+            text-align: center;
+            border-bottom: 1px solid rgba(0,0,0,0.08);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .header-inner {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .apple-logo {
+            width: 22px;
+            height: 22px;
+            fill: #1d1d1f;
+        }
+        .header-title {
+            font-size: 18px;
+            font-weight: 600;
+            letter-spacing: -0.3px;
+        }
+
+        .search-bar { padding: 10px 16px; background: rgba(255,255,255,0.85); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(0,0,0,0.06); }
+        .search-bar input { width: 100%; padding: 9px 14px; border-radius: 10px; border: none; background: #f2f2f7; font-size: 15px; outline: none; color: #1d1d1f; }
+
+        .filters { display: flex; gap: 8px; padding: 10px 16px; overflow-x: auto; background: rgba(255,255,255,0.85); border-bottom: 1px solid rgba(0,0,0,0.06); scrollbar-width: none; }
         .filters::-webkit-scrollbar { display: none; }
-        .filter-btn { padding: 6px 16px; border-radius: 20px; border: 1.5px solid #e5e5ea; background: #fff; font-size: 14px; white-space: nowrap; cursor: pointer; }
-        .filter-btn.active { background: #007aff; color: #fff; border-color: #007aff; }
-        .catalog { display: flex; flex-direction: column; gap: 10px; padding: 16px; padding-bottom: 80px; }
-        .card { background: #fff; border-radius: 16px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); padding: 16px; }
-        .card.out-of-stock { opacity: 0.6; }
-        .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
-        .card-name { font-size: 15px; font-weight: 700; flex: 1; margin-right: 10px; }
-        .stock-badge { font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 20px; white-space: nowrap; }
+        .filter-btn { padding: 6px 14px; border-radius: 20px; border: 1px solid #d2d2d7; background: #fff; font-size: 13px; font-weight: 500; white-space: nowrap; cursor: pointer; color: #1d1d1f; transition: all 0.2s; }
+        .filter-btn.active { background: #1d1d1f; color: #fff; border-color: #1d1d1f; }
+
+        .results-count { padding: 8px 16px; font-size: 12px; color: #86868b; }
+
+        .catalog { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 12px 16px; padding-bottom: 100px; }
+
+        .card {
+            background: #fff;
+            border-radius: 18px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            display: flex;
+            flex-direction: column;
+        }
+        .card.out-of-stock { opacity: 0.55; }
+
+        .card-img {
+            width: 100%;
+            height: 130px;
+            object-fit: contain;
+            background: #f5f5f7;
+            padding: 10px;
+        }
+
+        .card-body { padding: 10px; flex: 1; display: flex; flex-direction: column; }
+
+        .card-name { font-size: 13px; font-weight: 600; color: #1d1d1f; margin-bottom: 6px; line-height: 1.3; }
+
+        .stock-badge { font-size: 10px; font-weight: 600; padding: 2px 7px; border-radius: 20px; display: inline-block; margin-bottom: 6px; }
         .in-stock { background: #e8f5e9; color: #2e7d32; }
         .no-stock { background: #fce4e4; color: #c62828; }
-        .card-specs { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 12px; }
-        .card-specs span { background: #f2f2f7; padding: 3px 8px; border-radius: 6px; font-size: 12px; color: #555; }
-        .add-btn { width: 100%; padding: 10px; background: #007aff; color: #fff; border: none; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; }
+
+        .card-specs { display: flex; flex-wrap: wrap; gap: 3px; margin-bottom: 10px; }
+        .card-specs span { background: #f5f5f7; padding: 2px 6px; border-radius: 5px; font-size: 10px; color: #6e6e73; }
+
+        .add-btn {
+            width: 100%;
+            padding: 9px 6px;
+            background: #0071e3;
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: auto;
+            letter-spacing: -0.2px;
+        }
         .add-btn:disabled { background: #c7c7cc; cursor: not-allowed; }
-        .cart-bar { position: fixed; bottom: 0; left: 0; right: 0; background: #007aff; color: #fff; padding: 14px 20px; display: flex; justify-content: space-between; align-items: center; font-size: 16px; font-weight: 600; cursor: pointer; transform: translateY(100%); transition: transform 0.3s; }
+
+        .cart-bar {
+            position: fixed;
+            bottom: 16px;
+            left: 16px;
+            right: 16px;
+            background: #1d1d1f;
+            color: #fff;
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 16px;
+            transform: translateY(120%);
+            transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.25);
+            z-index: 200;
+        }
         .cart-bar.visible { transform: translateY(0); }
-        .results-count { padding: 8px 16px; font-size: 13px; color: #8e8e93; }
+        .cart-bar-left { display: flex; align-items: center; gap: 10px; }
+        .cart-count-badge { background: #0071e3; color: #fff; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; }
     </style>
 </head>
 <body>
-<header>📱 STORE 457</header>
-<div class="search-bar"><input type="text" id="search" placeholder="Поиск iPhone..." oninput="filterProducts()"></div>
+
+<header>
+    <div class="header-inner">
+        <svg class="apple-logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 814 1000">
+            <path d="M788.1 340.9c-5.8 4.5-108.2 62.2-108.2 190.5 0 148.4 130.3 200.9 134.2 202.2-.6 3.2-20.7 71.9-68.7 141.9-42.8 61.6-87.5 123.1-155.5 123.1s-85.5-39.5-164-39.5c-76 0-103.7 40.8-165.9 40.8s-105-37.5-155.5-127.4C46.7 790.7 0 663 0 541.8c0-207.5 135.4-317.3 270-317.3 70.9 0 130 46.4 174.5 46.4 42.8 0 109.6-49.7 190.5-49.7zm-134.9-99.4c31.7-37.5 53.8-89.8 53.8-142.1 0-7.7-.6-15.4-1.9-21.8-50.9 1.9-110.9 33.9-147.3 75.9-28.2 32.1-54.5 84.4-54.5 137.4 0 8.3 1.3 16.6 1.9 19.2 3.2.6 8.3 1.3 13.4 1.3 45.4 0 102.5-30.4 134.6-69.9z"/>
+        </svg>
+        <span class="header-title">STORE 457</span>
+    </div>
+</header>
+
+<div class="search-bar">
+    <input type="text" id="search" placeholder="Поиск iPhone..." oninput="filterProducts()">
+</div>
+
 <div class="filters">
     <button class="filter-btn active" onclick="setFilter('all',this)">Все</button>
-    <button class="filter-btn" onclick="setFilter('iphone12',this)">iPhone 12</button>
-    <button class="filter-btn" onclick="setFilter('iphone13',this)">iPhone 13</button>
-    <button class="filter-btn" onclick="setFilter('iphone14',this)">iPhone 14</button>
-    <button class="filter-btn" onclick="setFilter('iphone15',this)">iPhone 15</button>
-    <button class="filter-btn" onclick="setFilter('iphone16',this)">iPhone 16</button>
     <button class="filter-btn" onclick="setFilter('iphone17',this)">iPhone 17</button>
+    <button class="filter-btn" onclick="setFilter('iphone16',this)">iPhone 16</button>
+    <button class="filter-btn" onclick="setFilter('iphone15',this)">iPhone 15</button>
+    <button class="filter-btn" onclick="setFilter('iphone14',this)">iPhone 14</button>
+    <button class="filter-btn" onclick="setFilter('iphone13',this)">iPhone 13</button>
+    <button class="filter-btn" onclick="setFilter('iphone12',this)">iPhone 12</button>
     <button class="filter-btn" onclick="setFilter('iphonese',this)">iPhone SE</button>
 </div>
+
 <div class="results-count" id="resultsCount"></div>
 <div class="catalog" id="catalog"></div>
+
 <div class="cart-bar" id="cartBar" onclick="openCart()">
-    <span>🛒 Корзина (<span id="cartCount">0</span>)</span>
+    <div class="cart-bar-left">
+        <div class="cart-count-badge" id="cartCount">0</div>
+        <span>Корзина</span>
+    </div>
     <span>Оформить →</span>
 </div>
+
 <script>
 const tg = window.Telegram.WebApp;
 tg.expand();
 
-const imgBase = {
-    iphone12: 'https://store.storeimages.cdn-apple.com/4668/as-images.apple.com/is/iphone-12-blue-select-2020?wid=200&hei=200&fmt=jpeg',
-    iphone13: 'https://store.storeimages.cdn-apple.com/4668/as-images.apple.com/is/iphone-13-blue-select-2021?wid=200&hei=200&fmt=jpeg',
-    iphone14: 'https://store.storeimages.cdn-apple.com/4668/as-images.apple.com/is/iphone-14-blue-select-202209?wid=200&hei=200&fmt=jpeg',
-    iphone15: 'https://store.storeimages.cdn-apple.com/4668/as-images.apple.com/is/iphone-15-blue-select-202309?wid=200&hei=200&fmt=jpeg',
-    iphone16: 'https://store.storeimages.cdn-apple.com/4668/as-images.apple.com/is/iphone-16-finish-select-202409-6-1inch-teal?wid=200&hei=200&fmt=jpeg',
-    iphone17: 'https://www.apple.com/newsroom/images/2025/09/apple-introduces-iphone-17/article/Apple-iPhone-17-lineup-hero-250909_inline.jpg.large.jpg',
-    iphonese: 'https://store.storeimages.cdn-apple.com/4668/as-images.apple.com/is/iphone-se-select-202203?wid=200&hei=200&fmt=jpeg',
+const imgs = {
+    iphone12: 'https://store.storeimages.cdn-apple.com/4668/as-images.apple.com/is/iphone-12-blue-select-2020?wid=400&hei=400&fmt=jpeg',
+    iphone13: 'https://store.storeimages.cdn-apple.com/4668/as-images.apple.com/is/iphone-13-blue-select-2021?wid=400&hei=400&fmt=jpeg',
+    iphone14: 'https://store.storeimages.cdn-apple.com/4668/as-images.apple.com/is/iphone-14-blue-select-202209?wid=400&hei=400&fmt=jpeg',
+    iphone15: 'https://store.storeimages.cdn-apple.com/4668/as-images.apple.com/is/iphone-15-blue-select-202309?wid=400&hei=400&fmt=jpeg',
+    iphone16: 'https://store.storeimages.cdn-apple.com/4668/as-images.apple.com/is/iphone-16-finish-select-202409-6-1inch-teal?wid=400&hei=400&fmt=jpeg',
+    iphone17: 'https://www.apple.com/v/iphone-17/a/images/overview/hero/iphone_17_hero__e4e0eos9x6s6_large.jpg',
+    iphonese: 'https://store.storeimages.cdn-apple.com/4668/as-images.apple.com/is/iphone-se-select-202203?wid=400&hei=400&fmt=jpeg',
 };
 
 const products = [
-    {id:1,name:"iPhone 12 128Gb Black EU",category:"iphone12",inStock:true,specs:{display:'6.1" OLED',chip:"A14 Bionic",camera:"12 Мп",battery:"2815 мАч",sim:"Dual SIM"}},
-    {id:2,name:"iPhone 12 128Gb Purple EU",category:"iphone12",inStock:true,specs:{display:'6.1" OLED',chip:"A14 Bionic",camera:"12 Мп",battery:"2815 мАч",sim:"Dual SIM"}},
-    {id:3,name:"iPhone 12 64Gb Black EU/JP",category:"iphone12",inStock:true,specs:{display:'6.1" OLED',chip:"A14 Bionic",camera:"12 Мп",battery:"2815 мАч",sim:"Dual SIM"}},
-    {id:4,name:"iPhone 12 64Gb Purple EU",category:"iphone12",inStock:true,specs:{display:'6.1" OLED',chip:"A14 Bionic",camera:"12 Мп",battery:"2815 мАч",sim:"Dual SIM"}},
-    {id:5,name:"iPhone 13 128Gb Black EU",category:"iphone13",inStock:true,specs:{display:'6.1" OLED',chip:"A15 Bionic",camera:"12 Мп",battery:"3227 мАч",sim:"Dual SIM"}},
-    {id:6,name:"iPhone 13 128Gb White EU",category:"iphone13",inStock:true,specs:{display:'6.1" OLED',chip:"A15 Bionic",camera:"12 Мп",battery:"3227 мАч",sim:"Dual SIM"}},
-    {id:7,name:"iPhone 14 128Gb Black EU",category:"iphone14",inStock:true,specs:{display:'6.1" OLED',chip:"A15 Bionic",camera:"12 Мп",battery:"3279 мАч",sim:"Dual SIM"}},
-    {id:8,name:"iPhone 14 128Gb Blue EU",category:"iphone14",inStock:true,specs:{display:'6.1" OLED',chip:"A15 Bionic",camera:"12 Мп",battery:"3279 мАч",sim:"Dual SIM"}},
-    {id:9,name:"iPhone 14 128Gb White EU",category:"iphone14",inStock:true,specs:{display:'6.1" OLED',chip:"A15 Bionic",camera:"12 Мп",battery:"3279 мАч",sim:"Dual SIM"}},
-    {id:10,name:"iPhone 14 256Gb Black EU",category:"iphone14",inStock:true,specs:{display:'6.1" OLED',chip:"A15 Bionic",camera:"12 Мп",battery:"3279 мАч",sim:"Dual SIM"}},
-    {id:11,name:"iPhone 14 256Gb Red EU",category:"iphone14",inStock:true,specs:{display:'6.1" OLED',chip:"A15 Bionic",camera:"12 Мп",battery:"3279 мАч",sim:"Dual SIM"}},
-    {id:12,name:"iPhone 14 256Gb Yellow EU",category:"iphone14",inStock:true,specs:{display:'6.1" OLED',chip:"A15 Bionic",camera:"12 Мп",battery:"3279 мАч",sim:"Dual SIM"}},
-    {id:13,name:"iPhone 14 512Gb Red EU",category:"iphone14",inStock:true,specs:{display:'6.1" OLED',chip:"A15 Bionic",camera:"12 Мп",battery:"3279 мАч",sim:"Dual SIM"}},
-    {id:14,name:"iPhone 14 512Gb Yellow EU",category:"iphone14",inStock:true,specs:{display:'6.1" OLED',chip:"A15 Bionic",camera:"12 Мп",battery:"3279 мАч",sim:"Dual SIM"}},
-    {id:15,name:"iPhone 14 Plus 128Gb Yellow JP",category:"iphone14",inStock:true,specs:{display:'6.7" OLED',chip:"A15 Bionic",camera:"12 Мп",battery:"4323 мАч",sim:"Dual SIM"}},
-    {id:16,name:"iPhone 14 Plus 256Gb Yellow EU",category:"iphone14",inStock:true,specs:{display:'6.7" OLED',chip:"A15 Bionic",camera:"12 Мп",battery:"4323 мАч",sim:"Dual SIM"}},
-    {id:17,name:"iPhone 15 128Gb Black EU",category:"iphone15",inStock:true,specs:{display:'6.1" OLED',chip:"A16 Bionic",camera:"48 Мп",battery:"3349 мАч",sim:"Dual SIM",port:"USB-C"}},
-    {id:18,name:"iPhone 15 128Gb Blue EU",category:"iphone15",inStock:true,specs:{display:'6.1" OLED',chip:"A16 Bionic",camera:"48 Мп",battery:"3349 мАч",sim:"Dual SIM",port:"USB-C"}},
-    {id:19,name:"iPhone 15 128Gb Yellow EU",category:"iphone15",inStock:true,specs:{display:'6.1" OLED',chip:"A16 Bionic",camera:"48 Мп",battery:"3349 мАч",sim:"Dual SIM",port:"USB-C"}},
-    {id:20,name:"iPhone 15 256Gb Blue EU",category:"iphone15",inStock:true,specs:{display:'6.1" OLED',chip:"A16 Bionic",camera:"48 Мп",battery:"3349 мАч",sim:"Dual SIM",port:"USB-C"}},
-    {id:21,name:"iPhone 15 512Gb Yellow JP",category:"iphone15",inStock:true,specs:{display:'6.1" OLED',chip:"A16 Bionic",camera:"48 Мп",battery:"3349 мАч",sim:"Dual SIM",port:"USB-C"}},
-    {id:22,name:"iPhone 15 Plus 128Gb Blue EU",category:"iphone15",inStock:true,specs:{display:'6.7" OLED',chip:"A16 Bionic",camera:"48 Мп",battery:"4383 мАч",sim:"Dual SIM",port:"USB-C"}},
-    {id:23,name:"iPhone 15 Plus 128Gb Green EU",category:"iphone15",inStock:true,specs:{display:'6.7" OLED',chip:"A16 Bionic",camera:"48 Мп",battery:"4383 мАч",sim:"Dual SIM",port:"USB-C"}},
-    {id:24,name:"iPhone 15 Plus 128Gb Yellow EU",category:"iphone15",inStock:true,specs:{display:'6.7" OLED',chip:"A16 Bionic",camera:"48 Мп",battery:"4383 мАч",sim:"Dual SIM",port:"USB-C"}},
-    {id:25,name:"iPhone 15 Plus 256Gb Green EU",category:"iphone15",inStock:true,specs:{display:'6.7" OLED',chip:"A16 Bionic",camera:"48 Мп",battery:"4383 мАч",sim:"Dual SIM",port:"USB-C"}},
-    {id:26,name:"iPhone 15 Plus 256Gb Yellow EU",category:"iphone15",inStock:true,specs:{display:'6.7" OLED',chip:"A16 Bionic",camera:"48 Мп",battery:"4383 мАч",sim:"Dual SIM",port:"USB-C"}},
-    {id:27,name:"iPhone 15 Plus 512Gb Yellow EU",category:"iphone15",inStock:true,specs:{display:'6.7" OLED',chip:"A16 Bionic",camera:"48 Мп",battery:"4383 мАч",sim:"Dual SIM",port:"USB-C"}},
-    {id:28,name:"iPhone 15 Pro 128Gb Natural LLA",category:"iphone15",inStock:true,specs:{display:'6.1" ProMotion',chip:"A17 Pro",camera:"48 Мп",battery:"3274 мАч",sim:"eSIM",port:"USB-C 3.0"}},
-    {id:29,name:"iPhone 15 Pro 256Gb Blue LLA (eSIM)",category:"iphone15",inStock:true,specs:{display:'6.1" ProMotion',chip:"A17 Pro",camera:"48 Мп",battery:"3274 мАч",sim:"eSIM",port:"USB-C 3.0"}},
-    {id:30,name:"iPhone 15 Pro 512Gb Natural LLA (eSIM)",category:"iphone15",inStock:true,specs:{display:'6.1" ProMotion',chip:"A17 Pro",camera:"48 Мп",battery:"3274 мАч",sim:"eSIM",port:"USB-C 3.0"}},
-    {id:31,name:"iPhone 15 Pro Max 256Gb Blue LLA (eSIM)",category:"iphone15",inStock:true,specs:{display:'6.7" ProMotion',chip:"A17 Pro",camera:"48 Мп",battery:"4422 мАч",sim:"eSIM",port:"USB-C 3.0"}},
-    {id:32,name:"iPhone 15 Pro Max 256Gb Black EU",category:"iphone15",inStock:true,specs:{display:'6.7" ProMotion',chip:"A17 Pro",camera:"48 Мп",battery:"4422 мАч",sim:"Dual SIM",port:"USB-C 3.0"}},
-    {id:33,name:"iPhone 15 Pro Max 256Gb Natural EU",category:"iphone15",inStock:true,specs:{display:'6.7" ProMotion',chip:"A17 Pro",camera:"48 Мп",battery:"4422 мАч",sim:"Dual SIM",port:"USB-C 3.0"}},
-    {id:34,name:"iPhone 15 Pro Max 512Gb Black EU",category:"iphone15",inStock:true,specs:{display:'6.7" ProMotion',chip:"A17 Pro",camera:"48 Мп",battery:"4422 мАч",sim:"Dual SIM",port:"USB-C 3.0"}},
-    {id:35,name:"iPhone 15 Pro Max 512Gb Blue EU",category:"iphone15",inStock:true,specs:{display:'6.7" ProMotion',chip:"A17 Pro",camera:"48 Мп",battery:"4422 мАч",sim:"Dual SIM",port:"USB-C 3.0"}},
-    {id:36,name:"iPhone 15 Pro Max 512Gb Natural EU",category:"iphone15",inStock:true,specs:{display:'6.7" ProMotion',chip:"A17 Pro",camera:"48 Мп",battery:"4422 мАч",sim:"Dual SIM",port:"USB-C 3.0"}},
-    {id:37,name:"iPhone 16 128Gb Black EU",category:"iphone16",inStock:true,specs:{display:'6.1" OLED',chip:"A18",camera:"48 Мп",battery:"3561 мАч",sim:"Dual SIM",port:"USB-C"}},
-    {id:38,name:"iPhone 16 128Gb Pink EU",category:"iphone16",inStock:true,specs:{display:'6.1" OLED',chip:"A18",camera:"48 Мп",battery:"3561 мАч",sim:"Dual SIM",port:"USB-C"}},
-    {id:39,name:"iPhone 16 128Gb Teal EU",category:"iphone16",inStock:true,specs:{display:'6.1" OLED',chip:"A18",camera:"48 Мп",battery:"3561 мАч",sim:"Dual SIM",port:"USB-C"}},
-    {id:40,name:"iPhone 16 128Gb Ultramarine EU",category:"iphone16",inStock:true,specs:{display:'6.1" OLED',chip:"A18",camera:"48 Мп",battery:"3561 мАч",sim:"Dual SIM",port:"USB-C"}},
-    {id:41,name:"iPhone 16 128Gb White EU",category:"iphone16",inStock:true,specs:{display:'6.1" OLED',chip:"A18",camera:"48 Мп",battery:"3561 мАч",sim:"Dual SIM",port:"USB-C"}},
-    {id:42,name:"iPhone 16 256Gb Black EU",category:"iphone16",inStock:true,specs:{display:'6.1" OLED',chip:"A18",camera:"48 Мп",battery:"3561 мАч",sim:"Dual SIM",port:"USB-C"}},
-    {id:43,name:"iPhone 16 256Gb Pink EU",category:"iphone16",inStock:true,specs:{display:'6.1" OLED',chip:"A18",camera:"48 Мп",battery:"3561 мАч",sim:"Dual SIM",port:"USB-C"}},
-    {id:44,name:"iPhone 16 256Gb Teal (2-sim)",category:"iphone16",inStock:true,specs:{display:'6.1" OLED',chip:"A18",camera:"48 Мп",battery:"3561 мАч",sim:"Dual SIM",port:"USB-C"}},
-    {id:45,name:"iPhone 16 256Gb Ultramarine EU",category:"iphone16",inStock:true,specs:{display:'6.1" OLED',chip:"A18",camera:"48 Мп",battery:"3561 мАч",sim:"Dual SIM",port:"USB-C"}},
-    {id:46,name:"iPhone 16 256Gb White EU",category:"iphone16",inStock:true,specs:{display:'6.1" OLED',chip:"A18",camera:"48 Мп",battery:"3561 мАч",sim:"Dual SIM",port:"USB-C"}},
-    {id:47,name:"iPhone 16 512Gb Black LLA",category:"iphone16",inStock:true,specs:{display:'6.1" OLED',chip:"A18",camera:"48 Мп",battery:"3561 мАч",sim:"Dual SIM",port:"USB-C"}},
-    {id:48,name:"iPhone 16E 128Gb Black EU",category:"iphone16",inStock:true,specs:{display:'6.1" OLED',chip:"A16 Bionic",camera:"48 Мп",battery:"3279 мАч",sim:"eSIM",port:"USB-C"}},
-    {id:49,name:"iPhone 16E 128Gb White EU",category:"iphone16",inStock:true,specs:{display:'6.1" OLED',chip:"A16 Bionic",camera:"48 Мп",battery:"3279 мАч",sim:"eSIM",port:"USB-C"}},
-    {id:50,name:"iPhone 16E 256Gb Black EU",category:"iphone16",inStock:true,specs:{display:'6.1" OLED',chip:"A16 Bionic",camera:"48 Мп",battery:"3279 мАч",sim:"eSIM",port:"USB-C"}},
-    {id:51,name:"iPhone 16E 256Gb White EU",category:"iphone16",inStock:true,specs:{display:'6.1" OLED',chip:"A16 Bionic",camera:"48 Мп",battery:"3279 мАч",sim:"eSIM",port:"USB-C"}},
-    {id:52,name:"iPhone 16E 256Gb White EU (предактив)",category:"iphone16",inStock:true,specs:{display:'6.1" OLED',chip:"A16 Bionic",camera:"48 Мп",battery:"3279 мАч",sim:"eSIM",port:"USB-C"}},
-    {id:53,name:"iPhone 16E 512Gb White EU",category:"iphone16",inStock:true,specs:{display:'6.1" OLED',chip:"A16 Bionic",camera:"48 Мп",battery:"3279 мАч",sim:"eSIM",port:"USB-C"}},
-    {id:54,name:"iPhone 16 Plus 128Gb Black EU",category:"iphone16",inStock:true,specs:{display:'6.7" OLED',chip:"A18",camera:"48 Мп",battery:"4685 мАч",sim:"Dual SIM",port:"USB-C"}},
-    {id:55,name:"iPhone 16 Plus 128Gb Pink EU",category:"iphone16",inStock:true,specs:{display:'6.7" OLED',chip:"A18",camera:"48 Мп",battery:"4685 мАч",sim:"Dual SIM",port:"USB-C"}},
-    {id:56,name:"iPhone 16 Plus 128Gb Teal EU",category:"iphone16",inStock:true,specs:{display:'6.7" OLED',chip:"A18",camera:"48 Мп",battery:"4685 мАч",sim:"Dual SIM",port:"USB-C"}},
-    {id:57,name:"iPhone 16 Plus 128Gb Ultramarine EU",category:"iphone16",inStock:true,specs:{display:'6.7" OLED',chip:"A18",camera:"48 Мп",battery:"4685 мАч",sim:"Dual SIM",port:"USB-C"}},
-    {id:58,name:"iPhone 16 Plus 128Gb White EU",category:"iphone16",inStock:true,specs:{display:'6.7" OLED',chip:"A18",camera:"48 Мп",battery:"4685 мАч",sim:"Dual SIM",port:"USB-C"}},
-    {id:59,name:"iPhone 16 Plus 256Gb Black EU",category:"iphone16",inStock:true,specs:{display:'6.7" OLED',chip:"A18",camera:"48 Мп",battery:"4685 мАч",sim:"Dual SIM",port:"USB-C"}},
-    {id:60,name:"iPhone 16 Plus 256Gb Pink EU",category:"iphone16",inStock:true,specs:{display:'6.7" OLED',chip:"A18",camera:"48 Мп",battery:"4685 мАч",sim:"Dual SIM",port:"USB-C"}},
-    {id:61,name:"iPhone 16 Plus 256Gb Teal EU",category:"iphone16",inStock:true,specs:{display:'6.7" OLED',chip:"A18",camera:"48 Мп",battery:"4685 мАч",sim:"Dual SIM",port:"USB-C"}},
-    {id:62,name:"iPhone 16 Plus 256Gb Ultramarine EU",category:"iphone16",inStock:true,specs:{display:'6.7" OLED',chip:"A18",camera:"48 Мп",battery:"4685 мАч",sim:"Dual SIM",port:"USB-C"}},
-    {id:63,name:"iPhone 16 Plus 256Gb White EU",category:"iphone16",inStock:true,specs:{display:'6.7" OLED',chip:"A18",camera:"48 Мп",battery:"4685 мАч",sim:"Dual SIM",port:"USB-C"}},
-    {id:64,name:"iPhone 16 Plus 512Gb Black LLA",category:"iphone16",inStock:true,specs:{display:'6.7" OLED',chip:"A18",camera:"48 Мп",battery:"4685 мАч",sim:"Dual SIM",port:"USB-C"}},
-    {id:65,name:"iPhone 16 Pro 128Gb Desert (2-sim)",category:"iphone16",inStock:true,specs:{display:'6.3" ProMotion',chip:"A18 Pro",camera:"48 Мп",battery:"3582 мАч",sim:"Dual SIM",port:"USB-C 3.0"}},
-    {id:66,name:"iPhone 16 Pro 1Tb White EU",category:"iphone16",inStock:true,specs:{display:'6.3" ProMotion',chip:"A18 Pro",camera:"48 Мп",battery:"3582 мАч",sim:"Dual SIM",port:"USB-C 3.0"}},
-    {id:67,name:"iPhone 17 256Gb Black (eSIM)",category:"iphone17",inStock:true,specs:{display:'6.1" OLED',chip:"A19",camera:"48 Мп",battery:"3600 мАч",sim:"eSIM",port:"USB-C"}},
-    {id:68,name:"iPhone 17 256Gb Blue (eSIM)",category:"iphone17",inStock:true,specs:{display:'6.1" OLED',chip:"A19",camera:"48 Мп",battery:"3600 мАч",sim:"eSIM",port:"USB-C"}},
-    {id:69,name:"iPhone 17 256Gb Lavender (eSIM)",category:"iphone17",inStock:true,specs:{display:'6.1" OLED',chip:"A19",camera:"48 Мп",battery:"3600 мАч",sim:"eSIM",port:"USB-C"}},
-    {id:70,name:"iPhone 17 256Gb Sage (eSIM)",category:"iphone17",inStock:true,specs:{display:'6.1" OLED',chip:"A19",camera:"48 Мп",battery:"3600 мАч",sim:"eSIM",port:"USB-C"}},
-    {id:71,name:"iPhone 17 256Gb Blue (eSIM+SIM)",category:"iphone17",inStock:true,specs:{display:'6.1" OLED',chip:"A19",camera:"48 Мп",battery:"3600 мАч",sim:"eSIM+SIM",port:"USB-C"}},
-    {id:72,name:"iPhone 17 256Gb Sage (eSIM+SIM)",category:"iphone17",inStock:true,specs:{display:'6.1" OLED',chip:"A19",camera:"48 Мп",battery:"3600 мАч",sim:"eSIM+SIM",port:"USB-C"}},
-    {id:73,name:"iPhone 17 512Gb Black (eSIM)",category:"iphone17",inStock:true,specs:{display:'6.1" OLED',chip:"A19",camera:"48 Мп",battery:"3600 мАч",sim:"eSIM",port:"USB-C"}},
-    {id:74,name:"iPhone 17 512Gb Blue (eSIM+SIM)",category:"iphone17",inStock:true,specs:{display:'6.1" OLED',chip:"A19",camera:"48 Мп",battery:"3600 мАч",sim:"eSIM+SIM",port:"USB-C"}},
-    {id:75,name:"iPhone 17 Air 256Gb Gold (eSIM)",category:"iphone17",inStock:true,specs:{display:'6.7" OLED',chip:"A19",camera:"48 Мп",battery:"3800 мАч",sim:"eSIM",port:"USB-C"}},
-    {id:76,name:"iPhone 17 Air 256Gb White (eSIM)",category:"iphone17",inStock:true,specs:{display:'6.7" OLED',chip:"A19",camera:"48 Мп",battery:"3800 мАч",sim:"eSIM",port:"USB-C"}},
-    {id:77,name:"iPhone 17 Air 512Gb Blue (eSIM)",category:"iphone17",inStock:true,specs:{display:'6.7" OLED',chip:"A19",camera:"48 Мп",battery:"3800 мАч",sim:"eSIM",port:"USB-C"}},
-    {id:78,name:"iPhone 17 Air 512Gb Gold (eSIM)",category:"iphone17",inStock:true,specs:{display:'6.7" OLED',chip:"A19",camera:"48 Мп",battery:"3800 мАч",sim:"eSIM",port:"USB-C"}},
-    {id:79,name:"iPhone 17 Air 512Gb White (eSIM)",category:"iphone17",inStock:true,specs:{display:'6.7" OLED',chip:"A19",camera:"48 Мп",battery:"3800 мАч",sim:"eSIM",port:"USB-C"}},
-    {id:80,name:"iPhone 17 Air 1Tb Blue (eSIM)",category:"iphone17",inStock:true,specs:{display:'6.7" OLED',chip:"A19",camera:"48 Мп",battery:"3800 мАч",sim:"eSIM",port:"USB-C"}},
-    {id:81,name:"iPhone 17 Air 1Tb Gold (eSIM)",category:"iphone17",inStock:true,specs:{display:'6.7" OLED',chip:"A19",camera:"48 Мп",battery:"3800 мАч",sim:"eSIM",port:"USB-C"}},
-    {id:82,name:"iPhone 17 Pro 256Gb Blue (eSIM)",category:"iphone17",inStock:true,specs:{display:'6.3" ProMotion',chip:"A19 Pro",camera:"48 Мп",battery:"3700 мАч",sim:"eSIM",port:"USB-C 3.0"}},
-    {id:83,name:"iPhone 17 Pro 256Gb Orange (eSIM)",category:"iphone17",inStock:true,specs:{display:'6.3" ProMotion',chip:"A19 Pro",camera:"48 Мп",battery:"3700 мАч",sim:"eSIM",port:"USB-C 3.0"}},
-    {id:84,name:"iPhone 17 Pro 256Gb Silver (eSIM)",category:"iphone17",inStock:true,specs:{display:'6.3" ProMotion',chip:"A19 Pro",camera:"48 Мп",battery:"3700 мАч",sim:"eSIM",port:"USB-C 3.0"}},
-    {id:85,name:"iPhone 17 Pro 256Gb Blue (eSIM+SIM)",category:"iphone17",inStock:true,specs:{display:'6.3" ProMotion',chip:"A19 Pro",camera:"48 Мп",battery:"3700 мАч",sim:"eSIM+SIM",port:"USB-C 3.0"}},
-    {id:86,name:"iPhone 17 Pro 256Gb Orange (eSIM+SIM)",category:"iphone17",inStock:true,specs:{display:'6.3" ProMotion',chip:"A19 Pro",camera:"48 Мп",battery:"3700 мАч",sim:"eSIM+SIM",port:"USB-C 3.0"}},
-    {id:87,name:"iPhone 17 Pro 256Gb Silver (eSIM+SIM)",category:"iphone17",inStock:true,specs:{display:'6.3" ProMotion',chip:"A19 Pro",camera:"48 Мп",battery:"3700 мАч",sim:"eSIM+SIM",port:"USB-C 3.0"}},
-    {id:88,name:"iPhone 17 Pro 512Gb Orange (eSIM)",category:"iphone17",inStock:true,specs:{display:'6.3" ProMotion',chip:"A19 Pro",camera:"48 Мп",battery:"3700 мАч",sim:"eSIM",port:"USB-C 3.0"}},
-    {id:89,name:"iPhone 17 Pro 512Gb Blue (eSIM+SIM)",category:"iphone17",inStock:true,specs:{display:'6.3" ProMotion',chip:"A19 Pro",camera:"48 Мп",battery:"3700 мАч",sim:"eSIM+SIM",port:"USB-C 3.0"}},
-    {id:90,name:"iPhone 17 Pro 512Gb Orange (eSIM+SIM)",category:"iphone17",inStock:true,specs:{display:'6.3" ProMotion',chip:"A19 Pro",camera:"48 Мп",battery:"3700 мАч",sim:"eSIM+SIM",port:"USB-C 3.0"}},
-    {id:91,name:"iPhone 17 Pro 1Tb Blue (eSIM+SIM)",category:"iphone17",inStock:true,specs:{display:'6.3" ProMotion',chip:"A19 Pro",camera:"48 Мп",battery:"3700 мАч",sim:"eSIM+SIM",port:"USB-C 3.0"}},
-    {id:92,name:"iPhone 17 Pro 1Tb Orange (eSIM+SIM)",category:"iphone17",inStock:true,specs:{display:'6.3" ProMotion',chip:"A19 Pro",camera:"48 Мп",battery:"3700 мАч",sim:"eSIM+SIM",port:"USB-C 3.0"}},
-    {id:93,name:"iPhone 17 Pro 1Tb Silver (eSIM+SIM)",category:"iphone17",inStock:true,specs:{display:'6.3" ProMotion',chip:"A19 Pro",camera:"48 Мп",battery:"3700 мАч",sim:"eSIM+SIM",port:"USB-C 3.0"}},
-    {id:94,name:"iPhone 17 Pro Max 256Gb Blue (eSIM)",category:"iphone17",inStock:true,specs:{display:'6.9" ProMotion',chip:"A19 Pro",camera:"48 Мп",battery:"4700 мАч",sim:"eSIM",port:"USB-C 3.0"}},
-    {id:95,name:"iPhone 17 Pro Max 256Gb Orange (eSIM)",category:"iphone17",inStock:true,specs:{display:'6.9" ProMotion',chip:"A19 Pro",camera:"48 Мп",battery:"4700 мАч",sim:"eSIM",port:"USB-C 3.0"}},
-    {id:96,name:"iPhone 17 Pro Max 256Gb Orange (eSIM+SIM)",category:"iphone17",inStock:true,specs:{display:'6.9" ProMotion',chip:"A19 Pro",camera:"48 Мп",battery:"4700 мАч",sim:"eSIM+SIM",port:"USB-C 3.0"}},
-    {id:97,name:"iPhone 17 Pro Max 512Gb Orange (eSIM)",category:"iphone17",inStock:false,specs:{display:'6.9" ProMotion',chip:"A19 Pro",camera:"48 Мп",battery:"4700 мАч",sim:"eSIM",port:"USB-C 3.0"}},
-    {id:98,name:"iPhone 17 Pro Max 512Gb Blue (eSIM+SIM)",category:"iphone17",inStock:true,specs:{display:'6.9" ProMotion',chip:"A19 Pro",camera:"48 Мп",battery:"4700 мАч",sim:"eSIM+SIM",port:"USB-C 3.0"}},
-    {id:99,name:"iPhone 17 Pro Max 512Gb Orange (eSIM+SIM)",category:"iphone17",inStock:true,specs:{display:'6.9" ProMotion',chip:"A19 Pro",camera:"48 Мп",battery:"4700 мАч",sim:"eSIM+SIM",port:"USB-C 3.0"}},
-    {id:100,name:"iPhone 17 Pro Max 1Tb Blue (eSIM)",category:"iphone17",inStock:true,specs:{display:'6.9" ProMotion',chip:"A19 Pro",camera:"48 Мп",battery:"4700 мАч",sim:"eSIM",port:"USB-C 3.0"}},
-    {id:101,name:"iPhone 17 Pro Max 1Tb Blue (eSIM+SIM)",category:"iphone17",inStock:true,specs:{display:'6.9" ProMotion',chip:"A19 Pro",camera:"48 Мп",battery:"4700 мАч",sim:"eSIM+SIM",port:"USB-C 3.0"}},
-    {id:102,name:"iPhone 17 Pro Max 2Tb Blue (eSIM)",category:"iphone17",inStock:true,specs:{display:'6.9" ProMotion',chip:"A19 Pro",camera:"48 Мп",battery:"4700 мАч",sim:"eSIM",port:"USB-C 3.0"}},
-    {id:103,name:"iPhone 17 Pro Max 2Tb Orange (eSIM)",category:"iphone17",inStock:true,specs:{display:'6.9" ProMotion',chip:"A19 Pro",camera:"48 Мп",battery:"4700 мАч",sim:"eSIM",port:"USB-C 3.0"}},
-    {id:104,name:"iPhone 17 Pro Max 2Tb Blue (eSIM+SIM)",category:"iphone17",inStock:true,specs:{display:'6.9" ProMotion',chip:"A19 Pro",camera:"48 Мп",battery:"4700 мАч",sim:"eSIM+SIM",port:"USB-C 3.0"}},
-    {id:105,name:"iPhone 17 Pro Max 2Tb Orange (eSIM+SIM)",category:"iphone17",inStock:true,specs:{display:'6.9" ProMotion',chip:"A19 Pro",camera:"48 Мп",battery:"4700 мАч",sim:"eSIM+SIM",port:"USB-C 3.0"}},
-    {id:106,name:"iPhone SE 3 128Gb Red EU",category:"iphonese",inStock:true,specs:{display:'4.7" Retina',chip:"A15 Bionic",camera:"12 Мп",battery:"2018 мАч",sim:"Dual SIM",port:"Lightning"}},
-    {id:107,name:"iPhone SE 3 128Gb White EU",category:"iphonese",inStock:true,specs:{display:'4.7" Retina',chip:"A15 Bionic",camera:"12 Мп",battery:"2018 мАч",sim:"Dual SIM",port:"Lightning"}},
+    // iPhone 17
+    {id:67,name:"iPhone 17 256Gb Black (eSIM)",category:"iphone17",inStock:true,specs:{chip:"A19",display:'6.1" OLED',camera:"48 Мп",sim:"eSIM"}},
+    {id:68,name:"iPhone 17 256Gb Blue (eSIM)",category:"iphone17",inStock:true,specs:{chip:"A19",display:'6.1" OLED',camera:"48 Мп",sim:"eSIM"}},
+    {id:69,name:"iPhone 17 256Gb Lavender (eSIM)",category:"iphone17",inStock:true,specs:{chip:"A19",display:'6.1" OLED',camera:"48 Мп",sim:"eSIM"}},
+    {id:70,name:"iPhone 17 256Gb Sage (eSIM)",category:"iphone17",inStock:true,specs:{chip:"A19",display:'6.1" OLED',camera:"48 Мп",sim:"eSIM"}},
+    {id:71,name:"iPhone 17 256Gb Blue (eSIM+SIM)",category:"iphone17",inStock:true,specs:{chip:"A19",display:'6.1" OLED',camera:"48 Мп",sim:"eSIM+SIM"}},
+    {id:72,name:"iPhone 17 256Gb Sage (eSIM+SIM)",category:"iphone17",inStock:true,specs:{chip:"A19",display:'6.1" OLED',camera:"48 Мп",sim:"eSIM+SIM"}},
+    {id:73,name:"iPhone 17 512Gb Black (eSIM)",category:"iphone17",inStock:true,specs:{chip:"A19",display:'6.1" OLED',camera:"48 Мп",sim:"eSIM"}},
+    {id:74,name:"iPhone 17 512Gb Blue (eSIM+SIM)",category:"iphone17",inStock:true,specs:{chip:"A19",display:'6.1" OLED',camera:"48 Мп",sim:"eSIM+SIM"}},
+    {id:75,name:"iPhone 17 Air 256Gb Gold (eSIM)",category:"iphone17",inStock:true,specs:{chip:"A19",display:'6.7" OLED',camera:"48 Мп",sim:"eSIM"}},
+    {id:76,name:"iPhone 17 Air 256Gb White (eSIM)",category:"iphone17",inStock:true,specs:{chip:"A19",display:'6.7" OLED',camera:"48 Мп",sim:"eSIM"}},
+    {id:77,name:"iPhone 17 Air 512Gb Blue (eSIM)",category:"iphone17",inStock:true,specs:{chip:"A19",display:'6.7" OLED',camera:"48 Мп",sim:"eSIM"}},
+    {id:78,name:"iPhone 17 Air 512Gb Gold (eSIM)",category:"iphone17",inStock:true,specs:{chip:"A19",display:'6.7" OLED',camera:"48 Мп",sim:"eSIM"}},
+    {id:79,name:"iPhone 17 Air 512Gb White (eSIM)",category:"iphone17",inStock:true,specs:{chip:"A19",display:'6.7" OLED',camera:"48 Мп",sim:"eSIM"}},
+    {id:80,name:"iPhone 17 Air 1Tb Blue (eSIM)",category:"iphone17",inStock:true,specs:{chip:"A19",display:'6.7" OLED',camera:"48 Мп",sim:"eSIM"}},
+    {id:81,name:"iPhone 17 Air 1Tb Gold (eSIM)",category:"iphone17",inStock:true,specs:{chip:"A19",display:'6.7" OLED',camera:"48 Мп",sim:"eSIM"}},
+    {id:82,name:"iPhone 17 Pro 256Gb Blue (eSIM)",category:"iphone17",inStock:true,specs:{chip:"A19 Pro",display:'6.3" ProMotion',camera:"48 Мп",sim:"eSIM"}},
+    {id:83,name:"iPhone 17 Pro 256Gb Orange (eSIM)",category:"iphone17",inStock:true,specs:{chip:"A19 Pro",display:'6.3" ProMotion',camera:"48 Мп",sim:"eSIM"}},
+    {id:84,name:"iPhone 17 Pro 256Gb Silver (eSIM)",category:"iphone17",inStock:true,specs:{chip:"A19 Pro",display:'6.3" ProMotion',camera:"48 Мп",sim:"eSIM"}},
+    {id:85,name:"iPhone 17 Pro 256Gb Blue (eSIM+SIM)",category:"iphone17",inStock:true,specs:{chip:"A19 Pro",display:'6.3" ProMotion',camera:"48 Мп",sim:"eSIM+SIM"}},
+    {id:86,name:"iPhone 17 Pro 256Gb Orange (eSIM+SIM)",category:"iphone17",inStock:true,specs:{chip:"A19 Pro",display:'6.3" ProMotion',camera:"48 Мп",sim:"eSIM+SIM"}},
+    {id:87,name:"iPhone 17 Pro 256Gb Silver (eSIM+SIM)",category:"iphone17",inStock:true,specs:{chip:"A19 Pro",display:'6.3" ProMotion',camera:"48 Мп",sim:"eSIM+SIM"}},
+    {id:88,name:"iPhone 17 Pro 512Gb Orange (eSIM)",category:"iphone17",inStock:true,specs:{chip:"A19 Pro",display:'6.3" ProMotion',camera:"48 Мп",sim:"eSIM"}},
+    {id:89,name:"iPhone 17 Pro 512Gb Blue (eSIM+SIM)",category:"iphone17",inStock:true,specs:{chip:"A19 Pro",display:'6.3" ProMotion',camera:"48 Мп",sim:"eSIM+SIM"}},
+    {id:90,name:"iPhone 17 Pro 512Gb Orange (eSIM+SIM)",category:"iphone17",inStock:true,specs:{chip:"A19 Pro",display:'6.3" ProMotion',camera:"48 Мп",sim:"eSIM+SIM"}},
+    {id:91,name:"iPhone 17 Pro 1Tb Blue (eSIM+SIM)",category:"iphone17",inStock:true,specs:{chip:"A19 Pro",display:'6.3" ProMotion',camera:"48 Мп",sim:"eSIM+SIM"}},
+    {id:92,name:"iPhone 17 Pro 1Tb Orange (eSIM+SIM)",category:"iphone17",inStock:true,specs:{chip:"A19 Pro",display:'6.3" ProMotion',camera:"48 Мп",sim:"eSIM+SIM"}},
+    {id:93,name:"iPhone 17 Pro 1Tb Silver (eSIM+SIM)",category:"iphone17",inStock:true,specs:{chip:"A19 Pro",display:'6.3" ProMotion',camera:"48 Мп",sim:"eSIM+SIM"}},
+    {id:94,name:"iPhone 17 Pro Max 256Gb Blue (eSIM)",category:"iphone17",inStock:true,specs:{chip:"A19 Pro",display:'6.9" ProMotion',camera:"48 Мп",sim:"eSIM"}},
+    {id:95,name:"iPhone 17 Pro Max 256Gb Orange (eSIM)",category:"iphone17",inStock:true,specs:{chip:"A19 Pro",display:'6.9" ProMotion',camera:"48 Мп",sim:"eSIM"}},
+    {id:96,name:"iPhone 17 Pro Max 256Gb Orange (eSIM+SIM)",category:"iphone17",inStock:true,specs:{chip:"A19 Pro",display:'6.9" ProMotion',camera:"48 Мп",sim:"eSIM+SIM"}},
+    {id:97,name:"iPhone 17 Pro Max 512Gb Orange (eSIM)",category:"iphone17",inStock:false,specs:{chip:"A19 Pro",display:'6.9" ProMotion',camera:"48 Мп",sim:"eSIM"}},
+    {id:98,name:"iPhone 17 Pro Max 512Gb Blue (eSIM+SIM)",category:"iphone17",inStock:true,specs:{chip:"A19 Pro",display:'6.9" ProMotion',camera:"48 Мп",sim:"eSIM+SIM"}},
+    {id:99,name:"iPhone 17 Pro Max 512Gb Orange (eSIM+SIM)",category:"iphone17",inStock:true,specs:{chip:"A19 Pro",display:'6.9" ProMotion',camera:"48 Мп",sim:"eSIM+SIM"}},
+    {id:100,name:"iPhone 17 Pro Max 1Tb Blue (eSIM)",category:"iphone17",inStock:true,specs:{chip:"A19 Pro",display:'6.9" ProMotion',camera:"48 Мп",sim:"eSIM"}},
+    {id:101,name:"iPhone 17 Pro Max 1Tb Blue (eSIM+SIM)",category:"iphone17",inStock:true,specs:{chip:"A19 Pro",display:'6.9" ProMotion',camera:"48 Мп",sim:"eSIM+SIM"}},
+    {id:102,name:"iPhone 17 Pro Max 2Tb Blue (eSIM)",category:"iphone17",inStock:true,specs:{chip:"A19 Pro",display:'6.9" ProMotion',camera:"48 Мп",sim:"eSIM"}},
+    {id:103,name:"iPhone 17 Pro Max 2Tb Orange (eSIM)",category:"iphone17",inStock:true,specs:{chip:"A19 Pro",display:'6.9" ProMotion',camera:"48 Мп",sim:"eSIM"}},
+    {id:104,name:"iPhone 17 Pro Max 2Tb Blue (eSIM+SIM)",category:"iphone17",inStock:true,specs:{chip:"A19 Pro",display:'6.9" ProMotion',camera:"48 Мп",sim:"eSIM+SIM"}},
+    {id:105,name:"iPhone 17 Pro Max 2Tb Orange (eSIM+SIM)",category:"iphone17",inStock:true,specs:{chip:"A19 Pro",display:'6.9" ProMotion',camera:"48 Мп",sim:"eSIM+SIM"}},
+    // iPhone 16
+    {id:37,name:"iPhone 16 128Gb Black EU",category:"iphone16",inStock:true,specs:{chip:"A18",display:'6.1" OLED',camera:"48 Мп",sim:"Dual SIM"}},
+    {id:38,name:"iPhone 16 128Gb Pink EU",category:"iphone16",inStock:true,specs:{chip:"A18",display:'6.1" OLED',camera:"48 Мп",sim:"Dual SIM"}},
+    {id:39,name:"iPhone 16 128Gb Teal EU",category:"iphone16",inStock:true,specs:{chip:"A18",display:'6.1" OLED',camera:"48 Мп",sim:"Dual SIM"}},
+    {id:40,name:"iPhone 16 128Gb Ultramarine EU",category:"iphone16",inStock:true,specs:{chip:"A18",display:'6.1" OLED',camera:"48 Мп",sim:"Dual SIM"}},
+    {id:41,name:"iPhone 16 128Gb White EU",category:"iphone16",inStock:true,specs:{chip:"A18",display:'6.1" OLED',camera:"48 Мп",sim:"Dual SIM"}},
+    {id:42,name:"iPhone 16 256Gb Black EU",category:"iphone16",inStock:true,specs:{chip:"A18",display:'6.1" OLED',camera:"48 Мп",sim:"Dual SIM"}},
+    {id:43,name:"iPhone 16 256Gb Pink EU",category:"iphone16",inStock:true,specs:{chip:"A18",display:'6.1" OLED',camera:"48 Мп",sim:"Dual SIM"}},
+    {id:44,name:"iPhone 16 256Gb Teal (2-sim)",category:"iphone16",inStock:true,specs:{chip:"A18",display:'6.1" OLED',camera:"48 Мп",sim:"Dual SIM"}},
+    {id:45,name:"iPhone 16 256Gb Ultramarine EU",category:"iphone16",inStock:true,specs:{chip:"A18",display:'6.1" OLED',camera:"48 Мп",sim:"Dual SIM"}},
+    {id:46,name:"iPhone 16 256Gb White EU",category:"iphone16",inStock:true,specs:{chip:"A18",display:'6.1" OLED',camera:"48 Мп",sim:"Dual SIM"}},
+    {id:47,name:"iPhone 16 512Gb Black LLA",category:"iphone16",inStock:true,specs:{chip:"A18",display:'6.1" OLED',camera:"48 Мп",sim:"Dual SIM"}},
+    {id:48,name:"iPhone 16E 128Gb Black EU",category:"iphone16",inStock:true,specs:{chip:"A16 Bionic",display:'6.1" OLED',camera:"48 Мп",sim:"eSIM"}},
+    {id:49,name:"iPhone 16E 128Gb White EU",category:"iphone16",inStock:true,specs:{chip:"A16 Bionic",display:'6.1" OLED',camera:"48 Мп",sim:"eSIM"}},
+    {id:50,name:"iPhone 16E 256Gb Black EU",category:"iphone16",inStock:true,specs:{chip:"A16 Bionic",display:'6.1" OLED',camera:"48 Мп",sim:"eSIM"}},
+    {id:51,name:"iPhone 16E 256Gb White EU",category:"iphone16",inStock:true,specs:{chip:"A16 Bionic",display:'6.1" OLED',camera:"48 Мп",sim:"eSIM"}},
+    {id:52,name:"iPhone 16E 256Gb White (предактив)",category:"iphone16",inStock:true,specs:{chip:"A16 Bionic",display:'6.1" OLED',camera:"48 Мп",sim:"eSIM"}},
+    {id:53,name:"iPhone 16E 512Gb White EU",category:"iphone16",inStock:true,specs:{chip:"A16 Bionic",display:'6.1" OLED',camera:"48 Мп",sim:"eSIM"}},
+    {id:54,name:"iPhone 16 Plus 128Gb Black EU",category:"iphone16",inStock:true,specs:{chip:"A18",display:'6.7" OLED',camera:"48 Мп",sim:"Dual SIM"}},
+    {id:55,name:"iPhone 16 Plus 128Gb Pink EU",category:"iphone16",inStock:true,specs:{chip:"A18",display:'6.7" OLED',camera:"48 Мп",sim:"Dual SIM"}},
+    {id:56,name:"iPhone 16 Plus 128Gb Teal EU",category:"iphone16",inStock:true,specs:{chip:"A18",display:'6.7" OLED',camera:"48 Мп",sim:"Dual SIM"}},
+    {id:57,name:"iPhone 16 Plus 128Gb Ultramarine EU",category:"iphone16",inStock:true,specs:{chip:"A18",display:'6.7" OLED',camera:"48 Мп",sim:"Dual SIM"}},
+    {id:58,name:"iPhone 16 Plus 128Gb White EU",category:"iphone16",inStock:true,specs:{chip:"A18",display:'6.7" OLED',camera:"48 Мп",sim:"Dual SIM"}},
+    {id:59,name:"iPhone 16 Plus 256Gb Black EU",category:"iphone16",inStock:true,specs:{chip:"A18",display:'6.7" OLED',camera:"48 Мп",sim:"Dual SIM"}},
+    {id:60,name:"iPhone 16 Plus 256Gb Pink EU",category:"iphone16",inStock:true,specs:{chip:"A18",display:'6.7" OLED',camera:"48 Мп",sim:"Dual SIM"}},
+    {id:61,name:"iPhone 16 Plus 256Gb Teal EU",category:"iphone16",inStock:true,specs:{chip:"A18",display:'6.7" OLED',camera:"48 Мп",sim:"Dual SIM"}},
+    {id:62,name:"iPhone 16 Plus 256Gb Ultramarine EU",category:"iphone16",inStock:true,specs:{chip:"A18",display:'6.7" OLED',camera:"48 Мп",sim:"Dual SIM"}},
+    {id:63,name:"iPhone 16 Plus 256Gb White EU",category:"iphone16",inStock:true,specs:{chip:"A18",display:'6.7" OLED',camera:"48 Мп",sim:"Dual SIM"}},
+    {id:64,name:"iPhone 16 Plus 512Gb Black LLA",category:"iphone16",inStock:true,specs:{chip:"A18",display:'6.7" OLED',camera:"48 Мп",sim:"Dual SIM"}},
+    {id:65,name:"iPhone 16 Pro 128Gb Desert (2-sim)",category:"iphone16",inStock:true,specs:{chip:"A18 Pro",display:'6.3" ProMotion',camera:"48 Мп",sim:"Dual SIM"}},
+    {id:66,name:"iPhone 16 Pro 1Tb White EU",category:"iphone16",inStock:true,specs:{chip:"A18 Pro",display:'6.3" ProMotion',camera:"48 Мп",sim:"Dual SIM"}},
+    // iPhone 15
+    {id:17,name:"iPhone 15 128Gb Black EU",category:"iphone15",inStock:true,specs:{chip:"A16 Bionic",display:'6.1" OLED',camera:"48 Мп",sim:"Dual SIM"}},
+    {id:18,name:"iPhone 15 128Gb Blue EU",category:"iphone15",inStock:true,specs:{chip:"A16 Bionic",display:'6.1" OLED',camera:"48 Мп",sim:"Dual SIM"}},
+    {id:19,name:"iPhone 15 128Gb Yellow EU",category:"iphone15",inStock:true,specs:{chip:"A16 Bionic",display:'6.1" OLED',camera:"48 Мп",sim:"Dual SIM"}},
+    {id:20,name:"iPhone 15 256Gb Blue EU",category:"iphone15",inStock:true,specs:{chip:"A16 Bionic",display:'6.1" OLED',camera:"48 Мп",sim:"Dual SIM"}},
+    {id:21,name:"iPhone 15 512Gb Yellow JP",category:"iphone15",inStock:true,specs:{chip:"A16 Bionic",display:'6.1" OLED',camera:"48 Мп",sim:"Dual SIM"}},
+    {id:22,name:"iPhone 15 Plus 128Gb Blue EU",category:"iphone15",inStock:true,specs:{chip:"A16 Bionic",display:'6.7" OLED',camera:"48 Мп",sim:"Dual SIM"}},
+    {id:23,name:"iPhone 15 Plus 128Gb Green EU",category:"iphone15",inStock:true,specs:{chip:"A16 Bionic",display:'6.7" OLED',camera:"48 Мп",sim:"Dual SIM"}},
+    {id:24,name:"iPhone 15 Plus 128Gb Yellow EU",category:"iphone15",inStock:true,specs:{chip:"A16 Bionic",display:'6.7" OLED',camera:"48 Мп",sim:"Dual SIM"}},
+    {id:25,name:"iPhone 15 Plus 256Gb Green EU",category:"iphone15",inStock:true,specs:{chip:"A16 Bionic",display:'6.7" OLED',camera:"48 Мп",sim:"Dual SIM"}},
+    {id:26,name:"iPhone 15 Plus 256Gb Yellow EU",category:"iphone15",inStock:true,specs:{chip:"A16 Bionic",display:'6.7" OLED',camera:"48 Мп",sim:"Dual SIM"}},
+    {id:27,name:"iPhone 15 Plus 512Gb Yellow EU",category:"iphone15",inStock:true,specs:{chip:"A16 Bionic",display:'6.7" OLED',camera:"48 Мп",sim:"Dual SIM"}},
+    {id:28,name:"iPhone 15 Pro 128Gb Natural LLA",category:"iphone15",inStock:true,specs:{chip:"A17 Pro",display:'6.1" ProMotion',camera:"48 Мп",sim:"eSIM"}},
+    {id:29,name:"iPhone 15 Pro 256Gb Blue LLA (eSIM)",category:"iphone15",inStock:true,specs:{chip:"A17 Pro",display:'6.1" ProMotion',camera:"48 Мп",sim:"eSIM"}},
+    {id:30,name:"iPhone 15 Pro 512Gb Natural LLA (eSIM)",category:"iphone15",inStock:true,specs:{chip:"A17 Pro",display:'6.1" ProMotion',camera:"48 Мп",sim:"eSIM"}},
+    {id:31,name:"iPhone 15 Pro Max 256Gb Blue LLA",category:"iphone15",inStock:true,specs:{chip:"A17 Pro",display:'6.7" ProMotion',camera:"48 Мп",sim:"eSIM"}},
+    {id:32,name:"iPhone 15 Pro Max 256Gb Black EU",category:"iphone15",inStock:true,specs:{chip:"A17 Pro",display:'6.7" ProMotion',camera:"48 Мп",sim:"Dual SIM"}},
+    {id:33,name:"iPhone 15 Pro Max 256Gb Natural EU",category:"iphone15",inStock:true,specs:{chip:"A17 Pro",display:'6.7" ProMotion',camera:"48 Мп",sim:"Dual SIM"}},
+    {id:34,name:"iPhone 15 Pro Max 512Gb Black EU",category:"iphone15",inStock:true,specs:{chip:"A17 Pro",display:'6.7" ProMotion',camera:"48 Мп",sim:"Dual SIM"}},
+    {id:35,name:"iPhone 15 Pro Max 512Gb Blue EU",category:"iphone15",inStock:true,specs:{chip:"A17 Pro",display:'6.7" ProMotion',camera:"48 Мп",sim:"Dual SIM"}},
+    {id:36,name:"iPhone 15 Pro Max 512Gb Natural EU",category:"iphone15",inStock:true,specs:{chip:"A17 Pro",display:'6.7" ProMotion',camera:"48 Мп",sim:"Dual SIM"}},
+    // iPhone 14
+    {id:7,name:"iPhone 14 128Gb Black EU",category:"iphone14",inStock:true,specs:{chip:"A15 Bionic",display:'6.1" OLED',camera:"12 Мп",sim:"Dual SIM"}},
+    {id:8,name:"iPhone 14 128Gb Blue EU",category:"iphone14",inStock:true,specs:{chip:"A15 Bionic",display:'6.1" OLED',camera:"12 Мп",sim:"Dual SIM"}},
+    {id:9,name:"iPhone 14 128Gb White EU",category:"iphone14",inStock:true,specs:{chip:"A15 Bionic",display:'6.1" OLED',camera:"12 Мп",sim:"Dual SIM"}},
+    {id:10,name:"iPhone 14 256Gb Black EU",category:"iphone14",inStock:true,specs:{chip:"A15 Bionic",display:'6.1" OLED',camera:"12 Мп",sim:"Dual SIM"}},
+    {id:11,name:"iPhone 14 256Gb Red EU",category:"iphone14",inStock:true,specs:{chip:"A15 Bionic",display:'6.1" OLED',camera:"12 Мп",sim:"Dual SIM"}},
+    {id:12,name:"iPhone 14 256Gb Yellow EU",category:"iphone14",inStock:true,specs:{chip:"A15 Bionic",display:'6.1" OLED',camera:"12 Мп",sim:"Dual SIM"}},
+    {id:13,name:"iPhone 14 512Gb Red EU",category:"iphone14",inStock:true,specs:{chip:"A15 Bionic",display:'6.1" OLED',camera:"12 Мп",sim:"Dual SIM"}},
+    {id:14,name:"iPhone 14 512Gb Yellow EU",category:"iphone14",inStock:true,specs:{chip:"A15 Bionic",display:'6.1" OLED',camera:"12 Мп",sim:"Dual SIM"}},
+    {id:15,name:"iPhone 14 Plus 128Gb Yellow JP",category:"iphone14",inStock:true,specs:{chip:"A15 Bionic",display:'6.7" OLED',camera:"12 Мп",sim:"Dual SIM"}},
+    {id:16,name:"iPhone 14 Plus 256Gb Yellow EU",category:"iphone14",inStock:true,specs:{chip:"A15 Bionic",display:'6.7" OLED',camera:"12 Мп",sim:"Dual SIM"}},
+    // iPhone 13
+    {id:5,name:"iPhone 13 128Gb Black EU",category:"iphone13",inStock:true,specs:{chip:"A15 Bionic",display:'6.1" OLED',camera:"12 Мп",sim:"Dual SIM"}},
+    {id:6,name:"iPhone 13 128Gb White EU",category:"iphone13",inStock:true,specs:{chip:"A15 Bionic",display:'6.1" OLED',camera:"12 Мп",sim:"Dual SIM"}},
+    // iPhone 12
+    {id:1,name:"iPhone 12 128Gb Black EU",category:"iphone12",inStock:true,specs:{chip:"A14 Bionic",display:'6.1" OLED',camera:"12 Мп",sim:"Dual SIM"}},
+    {id:2,name:"iPhone 12 128Gb Purple EU",category:"iphone12",inStock:true,specs:{chip:"A14 Bionic",display:'6.1" OLED',camera:"12 Мп",sim:"Dual SIM"}},
+    {id:3,name:"iPhone 12 64Gb Black EU/JP",category:"iphone12",inStock:true,specs:{chip:"A14 Bionic",display:'6.1" OLED',camera:"12 Мп",sim:"Dual SIM"}},
+    {id:4,name:"iPhone 12 64Gb Purple EU",category:"iphone12",inStock:true,specs:{chip:"A14 Bionic",display:'6.1" OLED',camera:"12 Мп",sim:"Dual SIM"}},
+    // iPhone SE
+    {id:106,name:"iPhone SE 3 128Gb Red EU",category:"iphonese",inStock:true,specs:{chip:"A15 Bionic",display:'4.7" Retina',camera:"12 Мп",sim:"Dual SIM"}},
+    {id:107,name:"iPhone SE 3 128Gb White EU",category:"iphonese",inStock:true,specs:{chip:"A15 Bionic",display:'4.7" Retina',camera:"12 Мп",sim:"Dual SIM"}},
 ];
 
 let cart = [];
@@ -183,17 +294,16 @@ function renderProducts(list) {
     document.getElementById('resultsCount').textContent = 'Найдено: ' + list.length + ' товаров';
     catalog.innerHTML = list.map(p => {
         const specsHtml = Object.values(p.specs).map(v => '<span>' + v + '</span>').join('');
-        const img = imgBase[p.category] || '';
+        const img = imgs[p.category] || '';
         return '<div class="card ' + (p.inStock ? '' : 'out-of-stock') + '">' +
-            '<img src="' + img + '" style="width:100%;height:140px;object-fit:contain;background:#f9f9f9;border-radius:10px;margin-bottom:10px;" onerror="this.style.display=\'none\'">' +
-'<div class="card-header">' +
+            '<img class="card-img" src="' + img + '" alt="' + p.name + '" onerror="this.style.display=\'none\'">' +
+            '<div class="card-body">' +
             '<div class="card-name">' + p.name + '</div>' +
             '<div class="stock-badge ' + (p.inStock ? 'in-stock' : 'no-stock') + '">' + (p.inStock ? '✓ В наличии' : '✗ Нет') + '</div>' +
-            '</div>' +
             '<div class="card-specs">' + specsHtml + '</div>' +
             '<button class="add-btn" onclick="addToCart(' + p.id + ')" ' + (p.inStock ? '' : 'disabled') + '>' +
-            (p.inStock ? 'Узнать цену и заказать' : 'Нет в наличии') +
-            '</button></div>';
+            (p.inStock ? 'Заказать' : 'Нет в наличии') +
+            '</button></div></div>';
     }).join('');
 }
 
