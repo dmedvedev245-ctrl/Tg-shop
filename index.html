@@ -168,11 +168,18 @@ function openUpload(productId) {
   const p = allProducts.find(x => x.id === productId);
   const el = document.createElement('div');
   el.className = 'upload-overlay'; el.id = 'uploadOverlay';
-  el.innerHTML = '<div class="upload-box"><h3>📸 Загрузить фото</h3><p>' + p.name + '</p><input type="file" id="photoFile" accept="image/*" style="display:none" onchange="uploadPhoto()"><button class="up-btn" onclick="document.getElementById(\'photoFile\').removeAttribute(\'capture\');document.getElementById(\'photoFile\').click()">🖼 Галерея</button><button class="up-btn" style="background:#444;margin-top:6px" onclick="document.getElementById(\'photoFile\').setAttribute(\'capture\',\'environment\');document.getElementById(\'photoFile\').click()">📷 Камера</button><button class="up-cancel" style="margin-top:6px" onclick="closeUpload()">Отмена</button><div class="upload-progress" id="uploadProgress"></div></div>';
+el.innerHTML = '<div class="upload-box"><h3>📸 Управление фото</h3><p>' + p.name + '</p><input type="file" id="photoFile" accept="image/*" style="display:none" onchange="uploadPhoto()"><button class="up-btn" onclick="document.getElementById(\'photoFile\').removeAttribute(\'capture\');document.getElementById(\'photoFile\').click()">🖼 Галерея</button><button class="up-btn" style="background:#444;margin-top:6px" onclick="document.getElementById(\'photoFile\').setAttribute(\'capture\',\'environment\');document.getElementById(\'photoFile\').click()">📷 Камера</button>' + (customPhotos[productId] ? '<button class="up-btn" style="background:#c62828;margin-top:6px" onclick="deletePhoto(' + productId + ')">🗑 Удалить фото</button>' : '') + '<button class="up-cancel" style="margin-top:6px" onclick="closeUpload()">Отмена</button><div class="upload-progress" id="uploadProgress"></div></div>';
   document.body.appendChild(el);
 }
 function closeUpload() { const el = document.getElementById('uploadOverlay'); if (el) el.remove(); editingProductId = null; }
-function uploadPhoto() {
+function deletePhoto(productId) {
+  if (confirm('Удалить фото для этого товара?')) {
+    delete customPhotos[productId];
+    localStorage.setItem('store457_photos', JSON.stringify(customPhotos));
+    closeUpload();
+    filterProducts();
+  }
+}function uploadPhoto() {
   const file = document.getElementById('photoFile').files[0];
   if (!file) { alert('Выберите файл!'); return; }
   document.getElementById('uploadProgress').textContent = '⏳ Загружаю...';
