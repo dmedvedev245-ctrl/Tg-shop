@@ -131,7 +131,9 @@ let currentTab = 'phones';
 let currentSub = 'all';
 let tapCount = 0, tapTimer;
 
-const customPhotos = JSON.parse(localStorage.getItem('store457_photos') || '{}');
+const NPOINT_URL = 'https://api.npoint.io/161616576b21c39fda33';
+let customPhotos = {};
+fetch(NPOINT_URL).then(r => r.json()).then(data => { Object.assign(customPhotos, data); filterProducts(); }).catch(() => {});
 
 // ===== ADMIN =====
 document.getElementById('headerTitle').addEventListener('click', () => {
@@ -173,12 +175,9 @@ el.innerHTML = '<div class="upload-box"><h3>📸 Управление фото</
 }
 function closeUpload() { const el = document.getElementById('uploadOverlay'); if (el) el.remove(); editingProductId = null; }
 function deletePhoto(productId) {
-  if (confirm('Удалить фото для этого товара?')) {
-    delete customPhotos[productId];
-    localStorage.setItem('store457_photos', JSON.stringify(customPhotos));
-    closeUpload();
-    filterProducts();
-  }
+  delete customPhotos[productId];
+  delete customPhotos[String(productId)];
+  fetch(NPOINT_URL, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(customPhotos)}).then(()=>{ closeUpload(); filterProducts(); tg.showAlert('✅ Фото удалено!'); });
 }function uploadPhoto() {
   const file = document.getElementById('photoFile').files[0];
   if (!file) { alert('Выберите файл!'); return; }
@@ -189,15 +188,17 @@ function deletePhoto(productId) {
   fd.append('public_id', 'store457/product_' + editingProductId);
   fd.append('tags', 'store457');
   fetch('https://api.cloudinary.com/v1_1/' + CLOUD_NAME + '/image/upload', { method: 'POST', body: fd })
-    .then(r => r.json()).then(data => {
-      if (data.secure_url) {
-        customPhotos[editingProductId] = data.secure_url;
-        localStorage.setItem('store457_photos', JSON.stringify(customPhotos));
-        document.getElementById('uploadProgress').textContent = '✅ Готово!';
-        setTimeout(() => { closeUpload(); filterProducts(); }, 700);
-      } else { document.getElementById('uploadProgress').textContent = '❌ Ошибка'; }
-    }).catch(() => { document.getElementById('uploadProgress').textContent = '❌ Ошибка сети'; });
-}
+      .then(r => r.json()).then(data => {
+        if (data.secure_url) {
+          customPhotos[editingProductId] = data.secure_url;
+          fetch(NPOINT_URL, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(customPhotos)}).then(()=>{
+            document.getElementById('uploadProgress').textContent = '✅ Готово!';
+            setTimeout(()=>{ closeUpload(); filterProducts(); }, 700);
+          });
+        } else {
+          document.getElementById('uploadProgress').textContent = '❌ Ошибка загрузки';
+        }
+      }).catch(() => { document.getElementById('uploadProgress').textContent = '❌ Ошибка сети'; });
 
 // ===== CATEGORY MENU =====
 function openCatMenu() {
