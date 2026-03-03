@@ -45,6 +45,7 @@ header{background:rgba(255,255,255,0.9);backdrop-filter:blur(20px);padding:14px 
 .add-btn:disabled{background:#c7c7cc;cursor:not-allowed}
 .edit-btn{position:absolute;top:6px;right:6px;background:rgba(0,0,0,0.65);color:#fff;border:none;border-radius:8px;padding:4px 8px;font-size:11px;cursor:pointer;display:none;z-index:10}
 .admin-mode .edit-btn{display:block}
+.admin-mode .stock-btn{display:block!important}
 .services-grid{display:flex;flex-direction:column;gap:10px;padding:16px;padding-bottom:100px}
 .service-card{background:#fff;border-radius:16px;padding:16px;box-shadow:0 1px 6px rgba(0,0,0,0.06);display:flex;justify-content:space-between;align-items:center;gap:12px}
 .service-info{flex:1}
@@ -143,6 +144,7 @@ let currentTab = 'phones';
 let currentSub = 'all';
 let tapCount = 0, tapTimer;
 let customPhotos = {};
+let stockOverrides = JSON.parse(localStorage.getItem('store457_stock') || '{}');
 
 // Загружаем фото из облака при старте
 fetch(NPOINT_URL + '?t=' + Date.now())
@@ -238,7 +240,12 @@ function uploadPhoto() {
     });
 }
 
-function deletePhoto(productId) {
+function toggleStock(productId) {
+  const current = stockOverrides.hasOwnProperty(productId) ? stockOverrides[productId] : allProducts.find(x => x.id === productId).inStock;
+  stockOverrides[productId] = !current;
+  localStorage.setItem('store457_stock', JSON.stringify(stockOverrides));
+  filterProducts();
+}
   delete customPhotos[productId];
   delete customPhotos[String(productId)];
   fetch(NPOINT_URL, {
@@ -250,7 +257,6 @@ function deletePhoto(productId) {
     filterProducts();
     tg.showAlert('✅ Фото удалено!');
   });
-}
 
 // ===== CATEGORY MENU =====
 function openCatMenu() {
@@ -858,14 +864,16 @@ function renderProducts(list) {
   document.getElementById('catalog').style.display = 'grid';
   document.getElementById('catalog').innerHTML = list.map(p => {
     const src = getProductImage(p);
-    return '<div class="card ' + (p.inStock ? '' : 'out-of-stock') + '">' +
+    const inStock = stockOverrides.hasOwnProperty(p.id) ? stockOverrides[p.id] : p.inStock;
+    return '<div class="card ' + (inStock ? '' : 'out-of-stock') + '">' +
       '<button class="edit-btn" onclick="openUpload(' + p.id + ')">✏️ Фото</button>' +
+'<button class="stock-btn" onclick="toggleStock(' + p.id + ')" style="position:absolute;top:6px;left:6px;background:' + (inStock ? 'rgba(46,125,50,0.85)' : 'rgba(198,40,40,0.85)') + ';color:#fff;border:none;border-radius:8px;padding:4px 8px;font-size:11px;cursor:pointer;display:none;z-index:10">' + (inStock ? '✓ Есть' : '✗ Нет') + '</button>' +
       '<img class="card-img" src="' + src + '" alt="' + p.name + '" onerror="this.style.display=\'none\'">' +
       '<div class="card-body">' +
       '<div class="card-name">' + p.name + '</div>' +
-      '<div class="stock-badge ' + (p.inStock ? 'in-stock' : 'no-stock') + '">' + (p.inStock ? '✓ В наличии' : '✗ Нет') + '</div>' +
-      '<button class="add-btn" onclick="addToCart(' + p.id + ')" ' + (p.inStock ? '' : 'disabled') + '>' +
-      (p.inStock ? 'Заказать' : 'Нет в наличии') + '</button></div></div>';
+      '<div class="stock-badge ' + (inStock ? 'in-stock' : 'no-stock') + '">' + (inStock ? '✓ В наличии' : '✗ Нет') + '</div>' +
+      '<button class="add-btn" onclick="addToCart(' + p.id + ')" ' + (inStock ? '' : 'disabled') + '>' +
+      (inStock ? 'Заказать' : 'Нет в наличии') + '</button></div></div>';
   }).join('');
 }
 function renderServices() {
