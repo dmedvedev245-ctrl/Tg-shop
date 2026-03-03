@@ -14,11 +14,18 @@
         .search-bar { padding: 10px 16px; background: rgba(255,255,255,0.9); border-bottom: 1px solid rgba(0,0,0,0.06); }
         .search-bar input { width: 100%; padding: 9px 14px; border-radius: 10px; border: none; background: #f2f2f7; font-size: 15px; outline: none; }
 
-        /* MAIN TABS */
-        .main-tabs { display: flex; overflow-x: auto; padding: 10px 16px; gap: 8px; background: #fff; border-bottom: 1px solid rgba(0,0,0,0.06); scrollbar-width: none; }
-        .main-tabs::-webkit-scrollbar { display: none; }
-        .main-tab { padding: 8px 16px; border-radius: 20px; border: 1.5px solid #e0e0e0; background: #fff; font-size: 13px; font-weight: 500; white-space: nowrap; cursor: pointer; display: flex; align-items: center; gap: 5px; }
-        .main-tab.active { background: #1d1d1f; color: #fff; border-color: #1d1d1f; }
+        .cat-bar { display: flex; align-items: center; justify-content: space-between; padding: 10px 16px; background: #fff; border-bottom: 1px solid rgba(0,0,0,0.06); }
+        .cat-btn { display: flex; align-items: center; gap: 8px; padding: 8px 16px; border-radius: 20px; border: 1.5px solid #1d1d1f; background: #1d1d1f; color: #fff; font-size: 14px; font-weight: 600; cursor: pointer; }
+        .cat-label { font-size: 14px; font-weight: 500; color: #86868b; }
+        .cat-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 300; opacity: 0; pointer-events: none; transition: opacity 0.25s; }
+        .cat-overlay.show { opacity: 1; pointer-events: all; }
+        .cat-sheet { position: fixed; bottom: 0; left: 0; right: 0; background: #fff; border-radius: 24px 24px 0 0; padding: 20px 16px 40px; z-index: 400; transform: translateY(100%); transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1); }
+        .cat-sheet.show { transform: translateY(0); }
+        .cat-sheet-title { font-size: 18px; font-weight: 700; text-align: center; margin-bottom: 16px; }
+        .cat-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+        .cat-item { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 14px 8px; border-radius: 16px; background: #f5f5f7; border: none; cursor: pointer; font-size: 12px; font-weight: 500; color: #1d1d1f; }
+        .cat-item.active { background: #1d1d1f; color: #fff; }
+        .cat-item span:first-child { font-size: 24px; }
 
         /* SUB FILTERS */
         .sub-filters { display: flex; overflow-x: auto; padding: 8px 16px; gap: 6px; background: #f5f5f7; scrollbar-width: none; border-bottom: 1px solid rgba(0,0,0,0.06); }
@@ -65,19 +72,27 @@
 
 <div class="search-bar"><input type="text" id="search" placeholder="Поиск товаров..." oninput="filterProducts()"></div>
 
-<div class="main-tabs" id="mainTabs">
-    <button class="main-tab active" onclick="setMainTab('phones',this)">📱 Телефоны</button>
-    <button class="main-tab" onclick="setMainTab('tablets',this)">📟 Планшеты</button>
-    <button class="main-tab" onclick="setMainTab('laptops',this)">💻 Ноутбуки</button>
-    <button class="main-tab" onclick="setMainTab('watches',this)">⌚ Часы</button>
-    <button class="main-tab" onclick="setMainTab('headphones',this)">🎧 Наушники</button>
-    <button class="main-tab" onclick="setMainTab('speakers',this)">🔊 Колонки</button>
-    <button class="main-tab" onclick="setMainTab('accessories',this)">🔌 Аксессуары</button>
-    <button class="main-tab" onclick="setMainTab('vacuum',this)">🧹 Пылесосы</button>
-    <button class="main-tab" onclick="setMainTab('gaming',this)">🎮 Игровые</button>
-    <button class="main-tab" onclick="setMainTab('cameras',this)">📷 Камеры</button>
-    <button class="main-tab" onclick="setMainTab('rugged',this)">🛡 Противоударные</button>
-    <button class="main-tab" onclick="setMainTab('services',this)">🔧 Услуги</button>
+<div class="cat-bar">
+    <button class="cat-btn" onclick="openCatMenu()">☰ Категории</button>
+    <span class="cat-label" id="catLabel">📱 Телефоны</span>
+</div>
+<div class="cat-overlay" id="catOverlay" onclick="closeCatMenu()"></div>
+<div class="cat-sheet" id="catSheet">
+    <div class="cat-sheet-title">Выберите категорию</div>
+    <div class="cat-grid">
+        <button class="cat-item active" id="cat-phones" onclick="selectCat('phones','📱 Телефоны',this)"><span>📱</span><span>Телефоны</span></button>
+        <button class="cat-item" id="cat-tablets" onclick="selectCat('tablets','📟 Планшеты',this)"><span>📟</span><span>Планшеты</span></button>
+        <button class="cat-item" id="cat-laptops" onclick="selectCat('laptops','💻 Ноутбуки',this)"><span>💻</span><span>Ноутбуки</span></button>
+        <button class="cat-item" id="cat-watches" onclick="selectCat('watches','⌚ Часы',this)"><span>⌚</span><span>Часы</span></button>
+        <button class="cat-item" id="cat-headphones" onclick="selectCat('headphones','🎧 Наушники',this)"><span>🎧</span><span>Наушники</span></button>
+        <button class="cat-item" id="cat-speakers" onclick="selectCat('speakers','🔊 Колонки',this)"><span>🔊</span><span>Колонки</span></button>
+        <button class="cat-item" id="cat-accessories" onclick="selectCat('accessories','🔌 Аксессуары',this)"><span>🔌</span><span>Аксессуары</span></button>
+        <button class="cat-item" id="cat-vacuum" onclick="selectCat('vacuum','🧹 Пылесосы',this)"><span>🧹</span><span>Пылесосы</span></button>
+        <button class="cat-item" id="cat-gaming" onclick="selectCat('gaming','🎮 Игровые',this)"><span>🎮</span><span>Игровые</span></button>
+        <button class="cat-item" id="cat-cameras" onclick="selectCat('cameras','📷 Камеры',this)"><span>📷</span><span>Камеры</span></button>
+        <button class="cat-item" id="cat-rugged" onclick="selectCat('rugged','🛡 Противоударные',this)"><span>🛡</span><span>Противоудар</span></button>
+        <button class="cat-item" id="cat-services" onclick="selectCat('services','🔧 Услуги',this)"><span>🔧</span><span>Услуги</span></button>
+    </div>
 </div>
 
 <div class="sub-filters" id="subFilters"></div>
@@ -528,13 +543,22 @@ function getSubsForTab(tab) {
     return subs;
 }
 
-function setMainTab(tab, btn) {
+function openCatMenu() {
+    document.getElementById('catOverlay').classList.add('show');
+    document.getElementById('catSheet').classList.add('show');
+}
+function closeCatMenu() {
+    document.getElementById('catOverlay').classList.remove('show');
+    document.getElementById('catSheet').classList.remove('show');
+}
+function selectCat(tab, label, btn) {
     currentTab = tab;
     currentSub = 'all';
-    document.querySelectorAll('.main-tab').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.cat-item').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
+    document.getElementById('catLabel').textContent = label;
     document.getElementById('search').value = '';
-
+    closeCatMenu();
     if (tab === 'services') {
         renderServices();
         document.getElementById('subFilters').innerHTML = '';
@@ -543,6 +567,126 @@ function setMainTab(tab, btn) {
         renderSubFilters();
         filterProducts();
     }
+}
+function setMainTab(tab, btn) { selectCat(tab, '', btn); }
+
+function getProductImage(p) {
+    const n = p.name.toLowerCase();
+    const cdn = 'https://store.storeimages.cdn-apple.com/4668/as-images.apple.com/is/';
+    const q = '?wid=400&hei=400&fmt=jpeg';
+
+    if (n.includes('iphone 17 pro')) return 'https://dmedvedev245-ctrl.github.io/Tg-shop/iphone-17-pro-17-pro-max-hero.png';
+
+    if (n.includes('iphone 17 air')) {
+        const c = n.includes('blue')?'blue':n.includes('gold')?'gold':n.includes('white')?'white':'black';
+        return cdn+'iphone-17-air-finish-select-202509-6-7inch-'+c+q;
+    }
+    if (n.includes('iphone 17') && !n.includes('pro') && !n.includes('air')) {
+        const c = n.includes('blue')?'blue':n.includes('sage')?'sage':n.includes('lavender')?'lavender':n.includes('white')?'white':'black';
+        return cdn+'iphone-17-finish-select-202509-6-1inch-'+c+q;
+    }
+    if (n.includes('iphone 16e')) {
+        const c = n.includes('white')?'white':'black';
+        return cdn+'iphone-16e-finish-select-202502-6-1inch-'+c+q;
+    }
+    if (n.includes('iphone 16 pro max')) {
+        const c = n.includes('desert')?'deserttitanium':n.includes('white')?'whitetitanium':n.includes('natural')?'naturaltitanium':'blacktitanium';
+        return cdn+'iphone-16-pro-max-finish-select-202409-6-9inch-'+c+q;
+    }
+    if (n.includes('iphone 16 pro')) {
+        const c = n.includes('desert')?'deserttitanium':n.includes('white')?'whitetitanium':n.includes('natural')?'naturaltitanium':'blacktitanium';
+        return cdn+'iphone-16-pro-finish-select-202409-6-3inch-'+c+q;
+    }
+    if (n.includes('iphone 16 plus')) {
+        const c = n.includes('teal')?'teal':n.includes('ultramarine')?'ultramarine':n.includes('pink')?'pink':n.includes('white')?'white':'black';
+        return cdn+'iphone-16-plus-finish-select-202409-6-7inch-'+c+q;
+    }
+    if (n.includes('iphone 16') && !n.includes('pro') && !n.includes('plus') && !n.includes('16e')) {
+        const c = n.includes('teal')?'teal':n.includes('ultramarine')?'ultramarine':n.includes('pink')?'pink':n.includes('white')?'white':'black';
+        return cdn+'iphone-16-finish-select-202409-6-1inch-'+c+q;
+    }
+    if (n.includes('iphone 15 pro max')) {
+        const c = n.includes('blue')?'blue':n.includes('natural')?'natural':n.includes('white')?'white':'black';
+        return cdn+'iphone-15-pro-max-'+c+'-select-202309'+q;
+    }
+    if (n.includes('iphone 15 pro')) {
+        const c = n.includes('blue')?'blue':n.includes('natural')?'natural':n.includes('white')?'white':'black';
+        return cdn+'iphone-15-pro-'+c+'-select-202309'+q;
+    }
+    if (n.includes('iphone 15 plus')) {
+        const c = n.includes('blue')?'blue':n.includes('green')?'green':n.includes('yellow')?'yellow':n.includes('pink')?'pink':'black';
+        return cdn+'iphone-15-plus-'+c+'-select-202309'+q;
+    }
+    if (n.includes('iphone 15') && !n.includes('pro') && !n.includes('plus')) {
+        const c = n.includes('blue')?'blue':n.includes('yellow')?'yellow':n.includes('pink')?'pink':n.includes('green')?'green':'black';
+        return cdn+'iphone-15-'+c+'-select-202309'+q;
+    }
+    if (n.includes('iphone 14 plus')) {
+        const c = n.includes('yellow')?'yellow':n.includes('red')?'red':n.includes('blue')?'blue':n.includes('white')?'starlight':'midnight';
+        return cdn+'iphone-14-plus-'+c+'-select-202209'+q;
+    }
+    if (n.includes('iphone 14') && !n.includes('pro') && !n.includes('plus')) {
+        const c = n.includes('yellow')?'yellow':n.includes('red')?'red':n.includes('blue')?'blue':n.includes('white')?'starlight':'midnight';
+        return cdn+'iphone-14-'+c+'-select-202209'+q;
+    }
+    if (n.includes('iphone 13') && !n.includes('pro') && !n.includes('mini')) {
+        const c = n.includes('white')?'starlight':n.includes('blue')?'blue':n.includes('green')?'green':n.includes('red')?'red':n.includes('pink')?'pink':'midnight';
+        return cdn+'iphone-13-'+c+'-select-2021'+q;
+    }
+    if (n.includes('iphone 12') && !n.includes('pro') && !n.includes('mini')) {
+        const c = n.includes('purple')?'purple':n.includes('blue')?'blue':n.includes('green')?'green':n.includes('red')?'red':n.includes('white')?'white':'black';
+        return cdn+'iphone-12-'+c+'-select-2020'+q;
+    }
+    if (n.includes('iphone se')) {
+        const c = n.includes('red')?'red':n.includes('white')?'starlight':'midnight';
+        return cdn+'iphone-se-'+c+'-select-202203'+q;
+    }
+    return p.img || imgs.default;
+}
+
+function getModelScore(name) {
+    const n = name.toLowerCase();
+    let base = 0, sub = 0;
+    if (n.includes('iphone')) {
+        const m = n.match(/iphone (\d+)/);
+        if (m) base = parseInt(m[1]) * 1000;
+        if (n.includes('pro max')) sub = 400;
+        else if (n.includes('pro')) sub = 300;
+        else if (n.includes('air')) sub = 200;
+        else if (n.includes('plus')) sub = 100;
+        else if (n.includes(' se')) sub = -500;
+    } else if (n.includes('samsung')) {
+        if (n.includes('fold 7')) base = 15000;
+        else if (n.includes('flip7')) base = 14000;
+        else if (n.includes('s25 ultra')) base = 13000;
+        else if (n.includes('s25 edge')) base = 12500;
+        else if (n.includes('s25 fe')) base = 11000;
+        else if (n.includes('s25')) base = 12000;
+        else if (n.includes('s24 plus')) base = 10500;
+        else if (n.includes('s24')) base = 10000;
+        else if (n.includes('a56')) base = 5600;
+        else if (n.includes('a55')) base = 5500;
+        else if (n.includes('a36')) base = 3600;
+        else if (n.includes('a26')) base = 2600;
+        else if (n.includes('a17')) base = 1700;
+    } else if (n.includes('poco f8 ultra')) base = 8800;
+    else if (n.includes('poco f8 pro')) base = 8700;
+    else if (n.includes('poco f7 ultra')) base = 8500;
+    else if (n.includes('poco f7')) base = 8400;
+    else if (n.includes('poco f6 pro')) base = 8300;
+    else if (n.includes('poco f6')) base = 8200;
+    else if (n.includes('mi 15')) base = 9000;
+    else if (n.includes('mi 14')) base = 8800;
+    else if (n.includes('mi 15t')) base = 8600;
+    return base + sub;
+}
+
+function getStorageMB(name) {
+    const n = name.toLowerCase();
+    const tb = n.match(/(\d+)\s*tb/); if (tb) return parseInt(tb[1]) * 1024 * 1024;
+    const gb = n.match(/(\d+)\s*gb/); if (gb) return parseInt(gb[1]);
+    const sl = n.match(/\/(\d+)\s/); if (sl) return parseInt(sl[1]);
+    return 0;
 }
 
 function renderSubFilters() {
@@ -576,7 +720,7 @@ function renderProducts(list) {
     document.getElementById('catalog').innerHTML = list.map(p => {
         
         return '<div class="card ' + (p.inStock ? '' : 'out-of-stock') + '">' +
-            '<img class="card-img" src="' + p.img + '" alt="' + p.name + '" onerror="this.style.display=\'none\'">' +
+            '<img class="card-img" src="' + getProductImage(p) + '" alt="' + p.name + '" onerror="this.style.display=\'none\'">' +
             '<div class="card-body">' +
             '<div class="card-name">' + p.name + '</div>' +
             
@@ -658,7 +802,11 @@ function filterProducts() {
             return matchTab && matchSub;
         });
     }
-    list = list.slice().sort((a, b) => b.price - a.price);
+    list = list.slice().sort((a, b) => {
+        const sa = getModelScore(a.name), sb = getModelScore(b.name);
+        if (sb !== sa) return sb - sa;
+        return getStorageMB(a.name) - getStorageMB(b.name);
+    });
     renderProducts(list);
 }
 
