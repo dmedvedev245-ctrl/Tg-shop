@@ -133,7 +133,7 @@ let tapCount = 0, tapTimer;
 let customPhotos = {};
 
 // Загружаем фото из облака при старте
-fetch(NPOINT_URL)
+fetch(NPOINT_URL + '?t=' + Date.now())
   .then(r => r.json())
   .then(data => { customPhotos = data || {}; filterProducts(); })
   .catch(() => {});
@@ -265,7 +265,8 @@ function selectCat(tab, label, btn) {
 
 // ===== PHOTOS =====
 function getProductImage(p) {
-  if (customPhotos[p.id] || customPhotos[String(p.id)]) return customPhotos[p.id] || customPhotos[String(p.id)];
+  const cp = customPhotos[p.id] || customPhotos[String(p.id)];
+if (cp) return cp + '?t=' + Date.now();
   const n = p.name.toLowerCase();
   const cdn = 'https://store.storeimages.cdn-apple.com/4668/as-images.apple.com/is/';
   const q = '?wid=400&hei=400&fmt=jpeg';
