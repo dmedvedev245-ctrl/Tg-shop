@@ -202,7 +202,7 @@ function uploadPhoto() {
   const fd = new FormData();
   fd.append('file', file);
   fd.append('upload_preset', UPLOAD_PRESET);
-  fd.append('public_id', 'store457/product_' + editingProductId);
+  fd.append('public_id', 'store457/product_' + editingProductId + '_' + Date.now());
   fd.append('tags', 'store457');
   fetch('https://api.cloudinary.com/v1_1/' + CLOUD_NAME + '/image/upload', { method: 'POST', body: fd })
     .then(r => r.json())
