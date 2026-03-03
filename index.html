@@ -44,8 +44,9 @@ header{background:rgba(255,255,255,0.9);backdrop-filter:blur(20px);padding:14px 
 .add-btn{width:100%;padding:8px;background:#1d1d1f;color:#fff;border:none;border-radius:10px;font-size:12px;font-weight:600;cursor:pointer;margin-top:auto}
 .add-btn:disabled{background:#c7c7cc;cursor:not-allowed}
 .edit-btn{position:absolute;top:6px;right:6px;background:rgba(0,0,0,0.65);color:#fff;border:none;border-radius:8px;padding:4px 8px;font-size:11px;cursor:pointer;display:none;z-index:10}
+.stock-btn{position:absolute;top:6px;left:6px;color:#fff;border:none;border-radius:8px;padding:4px 8px;font-size:11px;cursor:pointer;display:none;z-index:10}
 .admin-mode .edit-btn{display:block}
-.admin-mode .stock-btn{display:block!important}
+.admin-mode .stock-btn{display:block}
 .services-grid{display:flex;flex-direction:column;gap:10px;padding:16px;padding-bottom:100px}
 .service-card{background:#fff;border-radius:16px;padding:16px;box-shadow:0 1px 6px rgba(0,0,0,0.06);display:flex;justify-content:space-between;align-items:center;gap:12px}
 .service-info{flex:1}
@@ -102,18 +103,18 @@ header{background:rgba(255,255,255,0.9);backdrop-filter:blur(20px);padding:14px 
 <div class="cat-sheet" id="catSheet">
   <div class="cat-sheet-title">Выберите категорию</div>
   <div class="cat-grid">
-    <button class="cat-item active" id="cat-phones" onclick="selectCat('phones','📱 Телефоны',this)"><span>📱</span><span>Телефоны</span></button>
-    <button class="cat-item" id="cat-tablets" onclick="selectCat('tablets','📟 Планшеты',this)"><span>📟</span><span>Планшеты</span></button>
-    <button class="cat-item" id="cat-laptops" onclick="selectCat('laptops','💻 Ноутбуки',this)"><span>💻</span><span>Ноутбуки</span></button>
-    <button class="cat-item" id="cat-watches" onclick="selectCat('watches','⌚ Часы',this)"><span>⌚</span><span>Часы</span></button>
-    <button class="cat-item" id="cat-headphones" onclick="selectCat('headphones','🎧 Наушники',this)"><span>🎧</span><span>Наушники</span></button>
-    <button class="cat-item" id="cat-speakers" onclick="selectCat('speakers','🔊 Колонки',this)"><span>🔊</span><span>Колонки</span></button>
-    <button class="cat-item" id="cat-accessories" onclick="selectCat('accessories','🔌 Аксессуары',this)"><span>🔌</span><span>Аксессуары</span></button>
-    <button class="cat-item" id="cat-vacuum" onclick="selectCat('vacuum','🧹 Пылесосы',this)"><span>🧹</span><span>Пылесосы</span></button>
-    <button class="cat-item" id="cat-gaming" onclick="selectCat('gaming','🎮 Игровые',this)"><span>🎮</span><span>Игровые</span></button>
-    <button class="cat-item" id="cat-cameras" onclick="selectCat('cameras','📷 Камеры',this)"><span>📷</span><span>Камеры</span></button>
-    <button class="cat-item" id="cat-rugged" onclick="selectCat('rugged','🛡 Противоудар',this)"><span>🛡</span><span>Противоудар</span></button>
-    <button class="cat-item" id="cat-services" onclick="selectCat('services','🔧 Услуги',this)"><span>🔧</span><span>Услуги</span></button>
+    <button class="cat-item active" onclick="selectCat('phones','📱 Телефоны',this)"><span>📱</span><span>Телефоны</span></button>
+    <button class="cat-item" onclick="selectCat('tablets','📟 Планшеты',this)"><span>📟</span><span>Планшеты</span></button>
+    <button class="cat-item" onclick="selectCat('laptops','💻 Ноутбуки',this)"><span>💻</span><span>Ноутбуки</span></button>
+    <button class="cat-item" onclick="selectCat('watches','⌚ Часы',this)"><span>⌚</span><span>Часы</span></button>
+    <button class="cat-item" onclick="selectCat('headphones','🎧 Наушники',this)"><span>🎧</span><span>Наушники</span></button>
+    <button class="cat-item" onclick="selectCat('speakers','🔊 Колонки',this)"><span>🔊</span><span>Колонки</span></button>
+    <button class="cat-item" onclick="selectCat('accessories','🔌 Аксессуары',this)"><span>🔌</span><span>Аксессуары</span></button>
+    <button class="cat-item" onclick="selectCat('vacuum','🧹 Пылесосы',this)"><span>🧹</span><span>Пылесосы</span></button>
+    <button class="cat-item" onclick="selectCat('gaming','🎮 Игровые',this)"><span>🎮</span><span>Игровые</span></button>
+    <button class="cat-item" onclick="selectCat('cameras','📷 Камеры',this)"><span>📷</span><span>Камеры</span></button>
+    <button class="cat-item" onclick="selectCat('rugged','🛡 Противоудар',this)"><span>🛡</span><span>Противоудар</span></button>
+    <button class="cat-item" onclick="selectCat('services','🔧 Услуги',this)"><span>🔧</span><span>Услуги</span></button>
   </div>
 </div>
 <div class="sub-filters" id="subFilters"></div>
@@ -146,13 +147,11 @@ let tapCount = 0, tapTimer;
 let customPhotos = {};
 let stockOverrides = JSON.parse(localStorage.getItem('store457_stock') || '{}');
 
-// Загружаем фото из облака при старте
 fetch(NPOINT_URL + '?t=' + Date.now())
   .then(r => r.json())
   .then(data => { customPhotos = data || {}; filterProducts(); })
   .catch(() => {});
 
-// ===== ADMIN =====
 document.getElementById('headerTitle').addEventListener('click', () => {
   tapCount++;
   clearTimeout(tapTimer);
@@ -184,6 +183,14 @@ function exitAdmin() {
   filterProducts();
 }
 
+function toggleStock(productId) {
+  const p = allProducts.find(x => x.id === productId);
+  const current = stockOverrides.hasOwnProperty(productId) ? stockOverrides[productId] : p.inStock;
+  stockOverrides[productId] = !current;
+  localStorage.setItem('store457_stock', JSON.stringify(stockOverrides));
+  filterProducts();
+}
+
 function openUpload(productId) {
   editingProductId = productId;
   const p = allProducts.find(x => x.id === productId);
@@ -202,13 +209,7 @@ function openUpload(productId) {
     '</div>';
   document.body.appendChild(el);
 }
-
-function closeUpload() {
-  const el = document.getElementById('uploadOverlay');
-  if (el) el.remove();
-  editingProductId = null;
-}
-
+function closeUpload() { const el = document.getElementById('uploadOverlay'); if (el) el.remove(); editingProductId = null; }
 function uploadPhoto() {
   const file = document.getElementById('photoFile').files[0];
   if (!file) return;
@@ -222,43 +223,22 @@ function uploadPhoto() {
     .then(r => r.json())
     .then(data => {
       if (data.secure_url) {
-        customPhotos[editingProductId] = data.secure_url;
-        fetch(NPOINT_URL, {
-          method: 'POST',
-          headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify(customPhotos)
-        }).then(() => {
-          document.getElementById('uploadProgress').textContent = '✅ Готово!';
-          setTimeout(() => { closeUpload(); filterProducts(); }, 700);
-        });
-      } else {
-        document.getElementById('uploadProgress').textContent = '❌ Ошибка загрузки';
-      }
-    })
-    .catch(() => {
-      document.getElementById('uploadProgress').textContent = '❌ Ошибка сети';
-    });
+        customPhotos[editingProductId] = data.secure_url + '?t=' + Date.now();
+        fetch(NPOINT_URL, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(customPhotos) })
+          .then(() => {
+            document.getElementById('uploadProgress').textContent = '✅ Готово!';
+            setTimeout(() => { closeUpload(); filterProducts(); }, 700);
+          });
+      } else { document.getElementById('uploadProgress').textContent = '❌ Ошибка'; }
+    }).catch(() => { document.getElementById('uploadProgress').textContent = '❌ Ошибка сети'; });
 }
-
-function toggleStock(productId) {
-  const current = stockOverrides.hasOwnProperty(productId) ? stockOverrides[productId] : allProducts.find(x => x.id === productId).inStock;
-  stockOverrides[productId] = !current;
-  localStorage.setItem('store457_stock', JSON.stringify(stockOverrides));
-  filterProducts();
-}
+function deletePhoto(productId) {
   delete customPhotos[productId];
   delete customPhotos[String(productId)];
-  fetch(NPOINT_URL, {
-    method: 'POST',
-    headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify(customPhotos)
-  }).then(() => {
-    closeUpload();
-    filterProducts();
-    tg.showAlert('✅ Фото удалено!');
-  });
+  fetch(NPOINT_URL, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(customPhotos) })
+    .then(() => { closeUpload(); filterProducts(); tg.showAlert('✅ Фото удалено!'); });
+}
 
-// ===== CATEGORY MENU =====
 function openCatMenu() {
   document.getElementById('catOverlay').classList.add('show');
   document.getElementById('catSheet').classList.add('show');
@@ -281,135 +261,64 @@ function selectCat(tab, label, btn) {
   } else { renderSubFilters(); filterProducts(); }
 }
 
-// ===== PHOTOS =====
 function getProductImage(p) {
   const cp = customPhotos[p.id] || customPhotos[String(p.id)];
-if (cp) return cp + '?t=' + Date.now();
+  if (cp) return cp;
   const n = p.name.toLowerCase();
   const cdn = 'https://store.storeimages.cdn-apple.com/4668/as-images.apple.com/is/';
   const q = '?wid=400&hei=400&fmt=jpeg';
   if (n.includes('iphone 17 pro')) return 'https://dmedvedev245-ctrl.github.io/Tg-shop/iphone-17-pro-17-pro-max-hero.png';
-  if (n.includes('iphone 17 air')) {
-    const c = n.includes('gold')?'gold':n.includes('white')?'white':n.includes('black')?'black':'blue';
-    return cdn+'iphone-17-air-finish-select-202509-6-7inch-'+c+q;
-  }
-  if (n.includes('iphone 17') && !n.includes('pro') && !n.includes('air')) {
-    const c = n.includes('sage')?'sage':n.includes('lavender')?'lavender':n.includes('white')?'white':n.includes('black')?'black':'blue';
-    return cdn+'iphone-17-finish-select-202509-6-1inch-'+c+q;
-  }
-  if (n.includes('iphone 16e')) {
-    const c = n.includes('white')?'white':'black';
-    return cdn+'iphone-16e-finish-select-202502-6-1inch-'+c+q;
-  }
-  if (n.includes('iphone 16 pro max')) {
-    const c = n.includes('desert')?'deserttitanium':n.includes('white')?'whitetitanium':n.includes('natural')?'naturaltitanium':'blacktitanium';
-    return cdn+'iphone-16-pro-max-finish-select-202409-6-9inch-'+c+q;
-  }
-  if (n.includes('iphone 16 pro')) {
-    const c = n.includes('desert')?'deserttitanium':n.includes('white')?'whitetitanium':n.includes('natural')?'naturaltitanium':'blacktitanium';
-    return cdn+'iphone-16-pro-finish-select-202409-6-3inch-'+c+q;
-  }
-  if (n.includes('iphone 16 plus')) {
-    const c = n.includes('teal')?'teal':n.includes('ultramarine')?'ultramarine':n.includes('pink')?'pink':n.includes('white')?'white':'black';
-    return cdn+'iphone-16-plus-finish-select-202409-6-7inch-'+c+q;
-  }
-  if (n.includes('iphone 16') && !n.includes('pro') && !n.includes('plus') && !n.includes('16e')) {
-    const c = n.includes('teal')?'teal':n.includes('ultramarine')?'ultramarine':n.includes('pink')?'pink':n.includes('white')?'white':'black';
-    return cdn+'iphone-16-finish-select-202409-6-1inch-'+c+q;
-  }
-  if (n.includes('iphone 15 pro max')) {
-    const c = n.includes('blue')?'bluetitanium':n.includes('natural')?'naturaltitanium':n.includes('white')?'whitetitanium':'blacktitanium';
-    return cdn+'iphone-15-pro-max-'+c+'-select-202309'+q;
-  }
-  if (n.includes('iphone 15 pro')) {
-    const c = n.includes('blue')?'bluetitanium':n.includes('natural')?'naturaltitanium':n.includes('white')?'whitetitanium':'blacktitanium';
-    return cdn+'iphone-15-pro-'+c+'-select-202309'+q;
-  }
-  if (n.includes('iphone 15 plus')) {
-    const c = n.includes('blue')?'blue':n.includes('green')?'green':n.includes('yellow')?'yellow':n.includes('pink')?'pink':'black';
-    return cdn+'iphone-15-plus-'+c+'-select-202309'+q;
-  }
-  if (n.includes('iphone 15') && !n.includes('pro') && !n.includes('plus')) {
-    const c = n.includes('blue')?'blue':n.includes('yellow')?'yellow':n.includes('pink')?'pink':n.includes('green')?'green':'black';
-    return cdn+'iphone-15-'+c+'-select-202309'+q;
-  }
-  if (n.includes('iphone 14 plus')) {
-    const c = n.includes('yellow')?'yellow':n.includes('red')?'red':n.includes('blue')?'blue':n.includes('white')?'starlight':'midnight';
-    return cdn+'iphone-14-plus-'+c+'-select-202209'+q;
-  }
-  if (n.includes('iphone 14') && !n.includes('pro') && !n.includes('plus')) {
-    const c = n.includes('yellow')?'yellow':n.includes('red')?'red':n.includes('blue')?'blue':n.includes('white')?'starlight':'midnight';
-    return cdn+'iphone-14-'+c+'-select-202209'+q;
-  }
-  if (n.includes('iphone 13') && !n.includes('pro') && !n.includes('mini')) {
-    const c = n.includes('white')?'starlight':n.includes('blue')?'blue':n.includes('green')?'green':n.includes('red')?'red':n.includes('pink')?'pink':'midnight';
-    return cdn+'iphone-13-'+c+'-select-2021'+q;
-  }
-  if (n.includes('iphone 12') && !n.includes('pro') && !n.includes('mini')) {
-    const c = n.includes('purple')?'purple':n.includes('blue')?'blue':n.includes('green')?'green':n.includes('red')?'red':n.includes('white')?'white':'black';
-    return cdn+'iphone-12-'+c+'-select-2020'+q;
-  }
-  if (n.includes('iphone se')) {
-    const c = n.includes('red')?'red':n.includes('white')?'starlight':'midnight';
-    return cdn+'iphone-se-'+c+'-select-202203'+q;
-  }
+  if (n.includes('iphone 17 air')) { const c=n.includes('gold')?'gold':n.includes('white')?'white':n.includes('black')?'black':'blue'; return cdn+'iphone-17-air-finish-select-202509-6-7inch-'+c+q; }
+  if (n.includes('iphone 17')&&!n.includes('pro')&&!n.includes('air')) { const c=n.includes('sage')?'sage':n.includes('lavender')?'lavender':n.includes('white')?'white':n.includes('black')?'black':'blue'; return cdn+'iphone-17-finish-select-202509-6-1inch-'+c+q; }
+  if (n.includes('iphone 16e')) { const c=n.includes('white')?'white':'black'; return cdn+'iphone-16e-finish-select-202502-6-1inch-'+c+q; }
+  if (n.includes('iphone 16 pro max')) { const c=n.includes('desert')?'deserttitanium':n.includes('white')?'whitetitanium':n.includes('natural')?'naturaltitanium':'blacktitanium'; return cdn+'iphone-16-pro-max-finish-select-202409-6-9inch-'+c+q; }
+  if (n.includes('iphone 16 pro')) { const c=n.includes('desert')?'deserttitanium':n.includes('white')?'whitetitanium':n.includes('natural')?'naturaltitanium':'blacktitanium'; return cdn+'iphone-16-pro-finish-select-202409-6-3inch-'+c+q; }
+  if (n.includes('iphone 16 plus')) { const c=n.includes('teal')?'teal':n.includes('ultramarine')?'ultramarine':n.includes('pink')?'pink':n.includes('white')?'white':'black'; return cdn+'iphone-16-plus-finish-select-202409-6-7inch-'+c+q; }
+  if (n.includes('iphone 16')&&!n.includes('pro')&&!n.includes('plus')&&!n.includes('16e')) { const c=n.includes('teal')?'teal':n.includes('ultramarine')?'ultramarine':n.includes('pink')?'pink':n.includes('white')?'white':'black'; return cdn+'iphone-16-finish-select-202409-6-1inch-'+c+q; }
+  if (n.includes('iphone 15 pro max')) { const c=n.includes('blue')?'bluetitanium':n.includes('natural')?'naturaltitanium':n.includes('white')?'whitetitanium':'blacktitanium'; return cdn+'iphone-15-pro-max-'+c+'-select-202309'+q; }
+  if (n.includes('iphone 15 pro')) { const c=n.includes('blue')?'bluetitanium':n.includes('natural')?'naturaltitanium':n.includes('white')?'whitetitanium':'blacktitanium'; return cdn+'iphone-15-pro-'+c+'-select-202309'+q; }
+  if (n.includes('iphone 15 plus')) { const c=n.includes('blue')?'blue':n.includes('green')?'green':n.includes('yellow')?'yellow':n.includes('pink')?'pink':'black'; return cdn+'iphone-15-plus-'+c+'-select-202309'+q; }
+  if (n.includes('iphone 15')&&!n.includes('pro')&&!n.includes('plus')) { const c=n.includes('blue')?'blue':n.includes('yellow')?'yellow':n.includes('pink')?'pink':n.includes('green')?'green':'black'; return cdn+'iphone-15-'+c+'-select-202309'+q; }
+  if (n.includes('iphone 14 plus')) { const c=n.includes('yellow')?'yellow':n.includes('red')?'red':n.includes('blue')?'blue':n.includes('white')?'starlight':'midnight'; return cdn+'iphone-14-plus-'+c+'-select-202209'+q; }
+  if (n.includes('iphone 14')&&!n.includes('pro')&&!n.includes('plus')) { const c=n.includes('yellow')?'yellow':n.includes('red')?'red':n.includes('blue')?'blue':n.includes('white')?'starlight':'midnight'; return cdn+'iphone-14-'+c+'-select-202209'+q; }
+  if (n.includes('iphone 13')&&!n.includes('pro')&&!n.includes('mini')) { const c=n.includes('white')?'starlight':n.includes('blue')?'blue':n.includes('green')?'green':n.includes('red')?'red':n.includes('pink')?'pink':'midnight'; return cdn+'iphone-13-'+c+'-select-2021'+q; }
+  if (n.includes('iphone 12')&&!n.includes('pro')&&!n.includes('mini')) { const c=n.includes('purple')?'purple':n.includes('blue')?'blue':n.includes('green')?'green':n.includes('red')?'red':n.includes('white')?'white':'black'; return cdn+'iphone-12-'+c+'-select-2020'+q; }
+  if (n.includes('iphone se')) { const c=n.includes('red')?'red':n.includes('white')?'starlight':'midnight'; return cdn+'iphone-se-'+c+'-select-202203'+q; }
   return p.img;
 }
 
-// ===== SORTING =====
 function getModelScore(name) {
   const n = name.toLowerCase();
-  if (n.includes('iphone')) {
-    const m = n.match(/iphone (\d+)/); if (!m) return 0;
-    let base = parseInt(m[1]) * 1000;
-    if (n.includes('pro max')) base += 400;
-    else if (n.includes('pro')) base += 300;
-    else if (n.includes('air')) base += 200;
-    else if (n.includes('plus')) base += 100;
-    else if (n.includes(' se')) base -= 500;
-    return base;
-  }
-  if (n.includes('fold 7')) return 115000;
-  if (n.includes('flip7 fe')) return 111000;
-  if (n.includes('flip7')) return 112000;
-  if (n.includes('s25 ultra')) return 109000;
-  if (n.includes('s25 edge')) return 108000;
-  if (n.includes('s25 fe')) return 106000;
-  if (n.includes('s25')) return 107000;
-  if (n.includes('s24 plus')) return 105000;
-  if (n.includes('s24')) return 104000;
-  if (n.includes('a56')) return 5600; if (n.includes('a55')) return 5500;
-  if (n.includes('a36')) return 3600; if (n.includes('a26')) return 2600; if (n.includes('a17')) return 1700;
-  if (n.includes('poco f8 ultra')) return 8800; if (n.includes('poco f8 pro')) return 8700;
-  if (n.includes('poco f7 ultra')) return 8600; if (n.includes('poco f7')) return 8500;
-  if (n.includes('poco f6 pro')) return 8400; if (n.includes('poco f6')) return 8300;
-  if (n.includes('mi 15t')) return 9100; if (n.includes('mi 15')) return 9200; if (n.includes('mi 14')) return 9000;
-  if (n.includes('redmi note 15 pro plus')) return 7700; if (n.includes('redmi note 15 pro')) return 7600;
-  if (n.includes('redmi note 15')) return 7500; if (n.includes('redmi note 14 pro plus')) return 7400;
-  if (n.includes('redmi note 14 pro')) return 7300; if (n.includes('redmi note 14')) return 7200;
-  if (n.includes('poco x7 pro')) return 7100; if (n.includes('poco x7')) return 7000;
-  if (n.includes('poco m8')) return 6800; if (n.includes('poco m7 pro')) return 6700; if (n.includes('poco m7')) return 6600;
-  if (n.includes('poco c85')) return 5000; if (n.includes('redmi a5')) return 4000;
-  if (n.includes('pixel 10 pro xl')) return 12500; if (n.includes('pixel 10 pro')) return 12400;
-  if (n.includes('pixel 9 pro xl')) return 12300; if (n.includes('pixel 9a')) return 12100;
-  if (n.includes('pixel 8')) return 11800; if (n.includes('pixel 7 pro')) return 11700; if (n.includes('pixel 7')) return 11600;
-  if (n.includes('magic v3')) return 10000; if (n.includes('magic 8')) return 9500;
-  if (n.includes('honor 400 lite')) return 8800; if (n.includes('honor 400')) return 9000; if (n.includes('honor x9d')) return 8700;
-  if (n.includes('oneplus 15r')) return 8500; if (n.includes('oneplus 15')) return 8600;
-  if (n.includes('oneplus 13s')) return 8300; if (n.includes('oneplus 13')) return 8400;
-  if (n.includes('oneplus ace 6t')) return 8100; if (n.includes('oneplus ace 6')) return 8200;
-  if (n.includes('gt 7t')) return 7500; if (n.includes('realme p3')) return 7000; if (n.includes('note 60x')) return 6000;
+  if (n.includes('iphone')) { const m=n.match(/iphone (\d+)/); if(!m) return 0; let base=parseInt(m[1])*1000; if(n.includes('pro max'))base+=400; else if(n.includes('pro'))base+=300; else if(n.includes('air'))base+=200; else if(n.includes('plus'))base+=100; else if(n.includes(' se'))base-=500; return base; }
+  if(n.includes('fold 7'))return 115000; if(n.includes('flip7 fe'))return 111000; if(n.includes('flip7'))return 112000;
+  if(n.includes('s25 ultra'))return 109000; if(n.includes('s25 edge'))return 108000; if(n.includes('s25 fe'))return 106000; if(n.includes('s25'))return 107000;
+  if(n.includes('s24 plus'))return 105000; if(n.includes('s24'))return 104000;
+  if(n.includes('a56'))return 5600; if(n.includes('a55'))return 5500; if(n.includes('a36'))return 3600; if(n.includes('a26'))return 2600; if(n.includes('a17'))return 1700;
+  if(n.includes('poco f8 ultra'))return 8800; if(n.includes('poco f8 pro'))return 8700; if(n.includes('poco f7 ultra'))return 8600; if(n.includes('poco f7'))return 8500;
+  if(n.includes('poco f6 pro'))return 8400; if(n.includes('poco f6'))return 8300;
+  if(n.includes('mi 15t'))return 9100; if(n.includes('mi 15'))return 9200; if(n.includes('mi 14'))return 9000;
+  if(n.includes('redmi note 15 pro plus'))return 7700; if(n.includes('redmi note 15 pro'))return 7600; if(n.includes('redmi note 15'))return 7500;
+  if(n.includes('redmi note 14 pro plus'))return 7400; if(n.includes('redmi note 14 pro'))return 7300; if(n.includes('redmi note 14'))return 7200;
+  if(n.includes('poco x7 pro'))return 7100; if(n.includes('poco x7'))return 7000;
+  if(n.includes('poco m8'))return 6800; if(n.includes('poco m7 pro'))return 6700; if(n.includes('poco m7'))return 6600;
+  if(n.includes('poco c85'))return 5000; if(n.includes('redmi a5'))return 4000;
+  if(n.includes('pixel 10 pro xl'))return 12500; if(n.includes('pixel 10 pro'))return 12400; if(n.includes('pixel 9 pro xl'))return 12300;
+  if(n.includes('pixel 9a'))return 12100; if(n.includes('pixel 8'))return 11800; if(n.includes('pixel 7 pro'))return 11700; if(n.includes('pixel 7'))return 11600;
+  if(n.includes('magic v3'))return 10000; if(n.includes('magic 8'))return 9500;
+  if(n.includes('honor 400 lite'))return 8800; if(n.includes('honor 400'))return 9000; if(n.includes('honor x9d'))return 8700;
+  if(n.includes('oneplus 15r'))return 8500; if(n.includes('oneplus 15'))return 8600; if(n.includes('oneplus 13s'))return 8300; if(n.includes('oneplus 13'))return 8400;
+  if(n.includes('oneplus ace 6t'))return 8100; if(n.includes('oneplus ace 6'))return 8200;
+  if(n.includes('gt 7t'))return 7500; if(n.includes('realme p3'))return 7000; if(n.includes('note 60x'))return 6000;
   return 1000;
 }
 function getStorageMB(name) {
-  const n = name.toLowerCase();
-  const tb = n.match(/(\d+)\s*tb/); if (tb) return parseInt(tb[1]) * 1024 * 1024;
-  const gb = n.match(/(\d+)\s*gb/); if (gb) return parseInt(gb[1]);
-  const sl = n.match(/\/(\d+)\s/); if (sl) return parseInt(sl[1]);
+  const n=name.toLowerCase();
+  const tb=n.match(/(\d+)\s*tb/); if(tb) return parseInt(tb[1])*1024*1024;
+  const gb=n.match(/(\d+)\s*gb/); if(gb) return parseInt(gb[1]);
+  const sl=n.match(/\/(\d+)\s/); if(sl) return parseInt(sl[1]);
   return 0;
 }
 
-// ===== DATA =====
 const imgs = {
   iphone:'https://dmedvedev245-ctrl.github.io/Tg-shop/iphone-17-pro-17-pro-max-hero.png',
   samsung:'https://images.samsung.com/is/image/samsung/p6pim/levant/2501/gallery/levant-galaxy-s25-s931-sm-s931bzadeub-thumb-544547466?$650_519_PNG$',
@@ -441,381 +350,232 @@ const imgs = {
 const allProducts = [
   {id:1,name:"iPhone SE 3 128Gb Red EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
   {id:2,name:"iPhone SE 3 128Gb White EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:3,name:"iPhone 12 64Gb Black EU/JP",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:4,name:"iPhone 12 64Gb Purple EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:5,name:"iPhone 12 128Gb Black EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:6,name:"iPhone 12 128Gb Purple EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:7,name:"iPhone 13 128Gb Black EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:8,name:"iPhone 13 128Gb White EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:9,name:"iPhone 14 128Gb Black EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:10,name:"iPhone 14 128Gb Blue EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:11,name:"iPhone 14 128Gb White EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:12,name:"iPhone 14 256Gb Black EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:13,name:"iPhone 14 256Gb Red EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:14,name:"iPhone 14 256Gb Yellow EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:15,name:"iPhone 14 512Gb Red EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:16,name:"iPhone 14 512Gb Yellow EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:17,name:"iPhone 14 Plus 128Gb Yellow JP",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:18,name:"iPhone 14 Plus 256Gb Red EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:19,name:"iPhone 14 Plus 256Gb Yellow EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:20,name:"iPhone 15 128Gb Black EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:21,name:"iPhone 15 128Gb Blue EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:22,name:"iPhone 15 128Gb Pink EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:false},
-  {id:23,name:"iPhone 15 256Gb Black EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:24,name:"iPhone 15 256Gb Blue EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:25,name:"iPhone 15 512Gb Yellow JP",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:26,name:"iPhone 15 Plus 128Gb Blue EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:27,name:"iPhone 15 Plus 128Gb Green EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:28,name:"iPhone 15 Plus 128Gb Yellow EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:29,name:"iPhone 15 Plus 256Gb Green EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:30,name:"iPhone 15 Plus 256Gb Yellow EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:31,name:"iPhone 15 Plus 512Gb Green EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:32,name:"iPhone 15 Plus 512Gb Yellow EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:33,name:"iPhone 15 Pro 128Gb Blue EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:false},
-  {id:34,name:"iPhone 15 Pro Max 256Gb Blue LLA",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:35,name:"iPhone 15 Pro Max 512Gb Black EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:36,name:"iPhone 15 Pro Max 512Gb Blue EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:37,name:"iPhone 15 Pro Max 512Gb Natural EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:38,name:"iPhone 16 128Gb Black EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:39,name:"iPhone 16 128Gb Pink EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:40,name:"iPhone 16 128Gb Teal EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:41,name:"iPhone 16 128Gb Ultramarine EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:42,name:"iPhone 16 256Gb Black EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:43,name:"iPhone 16 256Gb Pink EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:44,name:"iPhone 16 256Gb Teal EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:45,name:"iPhone 16 256Gb Ultramarine EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:46,name:"iPhone 16 256Gb White EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:47,name:"iPhone 16 512Gb Black LLA",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:48,name:"iPhone 16E 128Gb Black EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:49,name:"iPhone 16E 128Gb White EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:50,name:"iPhone 16E 256Gb Black EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:51,name:"iPhone 16E 256Gb White EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:52,name:"iPhone 16 Plus 128Gb Pink EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:53,name:"iPhone 16 Plus 128Gb Teal EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:54,name:"iPhone 16 Plus 128Gb Ultramarine EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:55,name:"iPhone 16 Plus 128Gb White EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:56,name:"iPhone 16 Plus 256Gb Black EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:57,name:"iPhone 16 Plus 256Gb Pink EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:58,name:"iPhone 16 Plus 256Gb Teal EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:59,name:"iPhone 16 Plus 256Gb Ultramarine EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:60,name:"iPhone 16 Plus 256Gb White EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:61,name:"iPhone 16 Plus 512Gb Black EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:62,name:"iPhone 16 Plus 512Gb Black LLA",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:63,name:"iPhone 16 Pro 128Gb Desert EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:64,name:"iPhone 16 Pro 128Gb White EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:65,name:"iPhone 16 Pro Max 256Gb Desert EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:66,name:"iPhone 17 256Gb Blue (eSIM)",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:67,name:"iPhone 17 256Gb Sage (eSIM)",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:68,name:"iPhone 17 256Gb White (eSIM)",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:69,name:"iPhone 17 256Gb Blue (eSIM+SIM)",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:70,name:"iPhone 17 256Gb White (eSIM+SIM)",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:71,name:"iPhone 17 512Gb Blue (eSIM+SIM)",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:72,name:"iPhone 17 512Gb Lavender (eSIM+SIM)",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:73,name:"iPhone 17 512Gb Sage (eSIM+SIM)",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:74,name:"iPhone 17 Air 256Gb Black (eSIM)",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:75,name:"iPhone 17 Air 256Gb Blue (eSIM)",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:76,name:"iPhone 17 Air 256Gb Gold (eSIM)",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:77,name:"iPhone 17 Air 256Gb White (eSIM)",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:78,name:"iPhone 17 Air 512Gb Blue (eSIM)",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:79,name:"iPhone 17 Air 1Tb Blue (eSIM)",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:80,name:"iPhone 17 Air 1Tb Gold (eSIM)",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:81,name:"iPhone 17 Pro 256Gb Orange (eSIM)",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:82,name:"iPhone 17 Pro 256Gb Blue (eSIM+SIM)",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:83,name:"iPhone 17 Pro 256Gb Orange (eSIM+SIM)",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:84,name:"iPhone 17 Pro 512Gb Orange (eSIM)",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:85,name:"iPhone 17 Pro 512Gb Blue (eSIM+SIM)",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:86,name:"iPhone 17 Pro 512Gb Orange (eSIM+SIM)",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:87,name:"iPhone 17 Pro 512Gb Silver (eSIM+SIM)",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:88,name:"iPhone 17 Pro 1Tb Orange (eSIM+SIM)",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:89,name:"iPhone 17 Pro 1Tb Silver (eSIM+SIM)",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:90,name:"iPhone 17 Pro Max 256Gb Blue (eSIM)",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:91,name:"iPhone 17 Pro Max 256Gb Blue (eSIM+SIM)",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:92,name:"iPhone 17 Pro Max 256Gb Orange (eSIM+SIM)",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:93,name:"iPhone 17 Pro Max 256Gb Silver (eSIM+SIM)",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:94,name:"iPhone 17 Pro Max 512Gb Orange (eSIM)",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:95,name:"iPhone 17 Pro Max 512Gb Blue (eSIM+SIM)",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:96,name:"iPhone 17 Pro Max 512Gb Orange (eSIM+SIM)",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:97,name:"iPhone 17 Pro Max 1Tb Blue (eSIM)",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:98,name:"iPhone 17 Pro Max 1Tb Orange (eSIM)",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:99,name:"iPhone 17 Pro Max 1Tb Silver (eSIM)",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:100,name:"iPhone 17 Pro Max 1Tb Blue (eSIM+SIM)",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:101,name:"iPhone 17 Pro Max 2Tb Blue (eSIM)",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:102,name:"iPhone 17 Pro Max 2Tb Orange (eSIM)",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:103,name:"iPhone 17 Pro Max 2Tb Blue (eSIM+SIM)",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:104,name:"iPhone 17 Pro Max 2Tb Orange (eSIM+SIM)",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  // SAMSUNG
+  {id:3,name:"iPhone 12 64Gb Black EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
+  {id:4,name:"iPhone 12 128Gb Black EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
+  {id:5,name:"iPhone 12 128Gb Purple EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
+  {id:6,name:"iPhone 13 128Gb Black EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
+  {id:7,name:"iPhone 13 128Gb White EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
+  {id:8,name:"iPhone 14 128Gb Black EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
+  {id:9,name:"iPhone 14 128Gb Blue EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
+  {id:10,name:"iPhone 14 128Gb White EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
+  {id:11,name:"iPhone 14 256Gb Black EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
+  {id:12,name:"iPhone 14 256Gb Yellow EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
+  {id:13,name:"iPhone 14 512Gb Red EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
+  {id:14,name:"iPhone 14 Plus 128Gb Yellow JP",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
+  {id:15,name:"iPhone 14 Plus 256Gb Red EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
+  {id:16,name:"iPhone 15 128Gb Black EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
+  {id:17,name:"iPhone 15 128Gb Blue EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
+  {id:18,name:"iPhone 15 128Gb Pink EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:false},
+  {id:19,name:"iPhone 15 256Gb Black EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
+  {id:20,name:"iPhone 15 256Gb Blue EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
+  {id:21,name:"iPhone 15 Plus 128Gb Blue EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
+  {id:22,name:"iPhone 15 Plus 128Gb Green EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
+  {id:23,name:"iPhone 15 Plus 256Gb Green EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
+  {id:24,name:"iPhone 15 Plus 512Gb Green EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
+  {id:25,name:"iPhone 15 Pro 128Gb Blue EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:false},
+  {id:26,name:"iPhone 15 Pro Max 256Gb Blue LLA",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
+  {id:27,name:"iPhone 15 Pro Max 512Gb Black EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
+  {id:28,name:"iPhone 15 Pro Max 512Gb Blue EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
+  {id:29,name:"iPhone 15 Pro Max 512Gb Natural EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
+  {id:30,name:"iPhone 16 128Gb Black EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
+  {id:31,name:"iPhone 16 128Gb Pink EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
+  {id:32,name:"iPhone 16 128Gb Teal EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
+  {id:33,name:"iPhone 16 128Gb Ultramarine EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
+  {id:34,name:"iPhone 16 256Gb Black EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
+  {id:35,name:"iPhone 16 256Gb Pink EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
+  {id:36,name:"iPhone 16 256Gb Teal EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
+  {id:37,name:"iPhone 16 256Gb Ultramarine EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
+  {id:38,name:"iPhone 16 256Gb White EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
+  {id:39,name:"iPhone 16 512Gb Black LLA",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
+  {id:40,name:"iPhone 16E 128Gb Black EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
+  {id:41,name:"iPhone 16E 128Gb White EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
+  {id:42,name:"iPhone 16E 256Gb Black EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
+  {id:43,name:"iPhone 16E 256Gb White EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
+  {id:44,name:"iPhone 16 Plus 128Gb Pink EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
+  {id:45,name:"iPhone 16 Plus 256Gb Black EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
+  {id:46,name:"iPhone 16 Plus 256Gb White EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
+  {id:47,name:"iPhone 16 Plus 512Gb Black EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
+  {id:48,name:"iPhone 16 Pro 128Gb Desert EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
+  {id:49,name:"iPhone 16 Pro 128Gb White EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
+  {id:50,name:"iPhone 16 Pro Max 256Gb Desert EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
+  {id:51,name:"iPhone 17 256Gb Blue (eSIM)",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
+  {id:52,name:"iPhone 17 256Gb Sage (eSIM)",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
+  {id:53,name:"iPhone 17 256Gb White (eSIM)",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
+  {id:54,name:"iPhone 17 256Gb Blue (eSIM+SIM)",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
+  {id:55,name:"iPhone 17 256Gb White (eSIM+SIM)",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
+  {id:56,name:"iPhone 17 512Gb Blue (eSIM+SIM)",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
+  {id:57,name:"iPhone 17 512Gb Lavender (eSIM+SIM)",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
+  {id:58,name:"iPhone 17 512Gb Sage (eSIM+SIM)",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
+  {id:59,name:"iPhone 17 Air 256Gb Black (eSIM)",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
+  {id:60,name:"iPhone 17 Air 256Gb Blue (eSIM)",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
+  {id:61,name:"iPhone 17 Air 256Gb Gold (eSIM)",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
+  {id:62,name:"iPhone 17 Air 256Gb White (eSIM)",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
+  {id:63,name:"iPhone 17 Air 512Gb Blue (eSIM)",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
+  {id:64,name:"iPhone 17 Air 1Tb Blue (eSIM)",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
+  {id:65,name:"iPhone 17 Air 1Tb Gold (eSIM)",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
+  {id:66,name:"iPhone 17 Pro 256Gb Orange (eSIM)",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
+  {id:67,name:"iPhone 17 Pro 256Gb Blue (eSIM+SIM)",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
+  {id:68,name:"iPhone 17 Pro 512Gb Orange (eSIM+SIM)",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
+  {id:69,name:"iPhone 17 Pro 512Gb Silver (eSIM+SIM)",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
+  {id:70,name:"iPhone 17 Pro 1Tb Orange (eSIM+SIM)",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
+  {id:71,name:"iPhone 17 Pro 1Tb Silver (eSIM+SIM)",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
+  {id:72,name:"iPhone 17 Pro Max 256Gb Blue (eSIM)",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
+  {id:73,name:"iPhone 17 Pro Max 256Gb Orange (eSIM+SIM)",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
+  {id:74,name:"iPhone 17 Pro Max 256Gb Silver (eSIM+SIM)",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
+  {id:75,name:"iPhone 17 Pro Max 512Gb Orange (eSIM)",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
+  {id:76,name:"iPhone 17 Pro Max 512Gb Blue (eSIM+SIM)",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
+  {id:77,name:"iPhone 17 Pro Max 512Gb Orange (eSIM+SIM)",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
+  {id:78,name:"iPhone 17 Pro Max 1Tb Blue (eSIM)",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
+  {id:79,name:"iPhone 17 Pro Max 1Tb Orange (eSIM)",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
+  {id:80,name:"iPhone 17 Pro Max 1Tb Silver (eSIM)",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
+  {id:81,name:"iPhone 17 Pro Max 2Tb Blue (eSIM+SIM)",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
+  {id:82,name:"iPhone 17 Pro Max 2Tb Orange (eSIM+SIM)",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
   {id:200,name:"Samsung A17 4/128 Black EU",tab:"phones",sub:"Samsung",img:imgs.samsung,inStock:true},
-  {id:201,name:"Samsung A17 4/128 Gray EU",tab:"phones",sub:"Samsung",img:imgs.samsung,inStock:true},
-  {id:202,name:"Samsung A17 4/128 Light Blue EU",tab:"phones",sub:"Samsung",img:imgs.samsung,inStock:true},
-  {id:203,name:"Samsung A17 8/256 Black EU",tab:"phones",sub:"Samsung",img:imgs.samsung,inStock:false},
-  {id:204,name:"Samsung A17 8/256 Grey EU",tab:"phones",sub:"Samsung",img:imgs.samsung,inStock:true},
-  {id:205,name:"Samsung A17 8/256 Light Blue EU",tab:"phones",sub:"Samsung",img:imgs.samsung,inStock:true},
-  {id:206,name:"Samsung A26 6/128 Black 5G EU",tab:"phones",sub:"Samsung",img:imgs.samsung,inStock:true},
-  {id:207,name:"Samsung A26 6/128 Peach Pink 5G EU",tab:"phones",sub:"Samsung",img:imgs.samsung,inStock:true},
-  {id:208,name:"Samsung A36 8/256 Lime EU",tab:"phones",sub:"Samsung",img:imgs.samsung,inStock:true},
-  {id:209,name:"Samsung A36 8/256 White EU",tab:"phones",sub:"Samsung",img:imgs.samsung,inStock:true},
-  {id:210,name:"Samsung A36 12/256 Lime EU",tab:"phones",sub:"Samsung",img:imgs.samsung,inStock:true},
-  {id:211,name:"Samsung A55 8/128 Navy EU",tab:"phones",sub:"Samsung",img:imgs.samsung,inStock:true},
-  {id:212,name:"Samsung A55 8/256 Lilac EU",tab:"phones",sub:"Samsung",img:imgs.samsung,inStock:true},
-  {id:213,name:"Samsung A55 8/256 Navy EU",tab:"phones",sub:"Samsung",img:imgs.samsung,inStock:true},
-  {id:214,name:"Samsung A56 8/256 Graphite EU",tab:"phones",sub:"Samsung",img:imgs.samsung,inStock:true},
-  {id:215,name:"Samsung A56 8/256 Lightgrey EU",tab:"phones",sub:"Samsung",img:imgs.samsung,inStock:true},
-  {id:216,name:"Samsung A56 8/256 Olive EU",tab:"phones",sub:"Samsung",img:imgs.samsung,inStock:true},
-  {id:217,name:"Samsung A56 8/256 Pink EU",tab:"phones",sub:"Samsung",img:imgs.samsung,inStock:true},
-  {id:218,name:"Samsung S24 8/128 Black EU",tab:"phones",sub:"Samsung",img:imgs.samsung,inStock:true},
-  {id:219,name:"Samsung S24 8/256 Black EU",tab:"phones",sub:"Samsung",img:imgs.samsung,inStock:true},
-  {id:220,name:"Samsung S24 8/256 Violet EU",tab:"phones",sub:"Samsung",img:imgs.samsung,inStock:true},
-  {id:221,name:"Samsung S24 8/256 Yellow EU",tab:"phones",sub:"Samsung",img:imgs.samsung,inStock:true},
-  {id:222,name:"Samsung S24 Plus 12/512 Yellow EU",tab:"phones",sub:"Samsung",img:imgs.samsung,inStock:true},
-  {id:223,name:"Samsung S25 12/128 Icyblue EU",tab:"phones",sub:"Samsung",img:imgs.samsung,inStock:true},
-  {id:224,name:"Samsung S25 12/128 Mint RU",tab:"phones",sub:"Samsung",img:imgs.samsung,inStock:true},
-  {id:225,name:"Samsung S25 12/128 Navy EU",tab:"phones",sub:"Samsung",img:imgs.samsung,inStock:true},
-  {id:226,name:"Samsung S25 12/128 Silver Shadow EU",tab:"phones",sub:"Samsung",img:imgs.samsung,inStock:true},
-  {id:227,name:"Samsung S25 12/256 Icyblue EU",tab:"phones",sub:"Samsung",img:imgs.samsung,inStock:true},
-  {id:228,name:"Samsung S25 12/256 Mint EU",tab:"phones",sub:"Samsung",img:imgs.samsung,inStock:true},
-  {id:229,name:"Samsung S25 12/256 Navy EU",tab:"phones",sub:"Samsung",img:imgs.samsung,inStock:true},
-  {id:230,name:"Samsung S25 12/256 Silver Shadow EU",tab:"phones",sub:"Samsung",img:imgs.samsung,inStock:true},
-  {id:231,name:"Samsung S25 12/512 IceBlue EU",tab:"phones",sub:"Samsung",img:imgs.samsung,inStock:true},
-  {id:232,name:"Samsung S25 Edge 12/256 Jetblack EU",tab:"phones",sub:"Samsung",img:imgs.samsung,inStock:true},
-  {id:233,name:"Samsung S25 FE 8/128 Jetblack EU",tab:"phones",sub:"Samsung",img:imgs.samsung,inStock:true},
-  {id:234,name:"Samsung S25 FE 8/256 Black EU",tab:"phones",sub:"Samsung",img:imgs.samsung,inStock:true},
-  {id:235,name:"Samsung S25 FE 8/256 Ice Blue EU",tab:"phones",sub:"Samsung",img:imgs.samsung,inStock:true},
-  {id:236,name:"Samsung S25 FE 8/256 White EU",tab:"phones",sub:"Samsung",img:imgs.samsung,inStock:true},
-  {id:237,name:"Samsung S25 FE 8/512 Icyblue EU",tab:"phones",sub:"Samsung",img:imgs.samsung,inStock:true},
-  {id:238,name:"Samsung S25 FE 8/512 Navy EU",tab:"phones",sub:"Samsung",img:imgs.samsung,inStock:true},
-  {id:239,name:"Samsung S25 FE 8/512 White EU",tab:"phones",sub:"Samsung",img:imgs.samsung,inStock:true},
-  {id:240,name:"Samsung S25 Ultra 12/256 Black EU",tab:"phones",sub:"Samsung",img:imgs.samsung,inStock:true},
-  {id:241,name:"Samsung S25 Ultra 12/256 Gray EU",tab:"phones",sub:"Samsung",img:imgs.samsung,inStock:true},
-  {id:242,name:"Samsung S25 Ultra 12/256 Jetblack EU",tab:"phones",sub:"Samsung",img:imgs.samsung,inStock:true},
-  {id:243,name:"Samsung S25 Ultra 12/256 Whitesilver EU",tab:"phones",sub:"Samsung",img:imgs.samsung,inStock:true},
-  {id:244,name:"Samsung S25 Ultra 12/512 Black EU",tab:"phones",sub:"Samsung",img:imgs.samsung,inStock:true},
-  {id:245,name:"Samsung S25 Ultra 12/512 Gray EU",tab:"phones",sub:"Samsung",img:imgs.samsung,inStock:true},
-  {id:246,name:"Samsung S25 Ultra 12/512 Silverblue EU",tab:"phones",sub:"Samsung",img:imgs.samsung,inStock:true},
-  {id:247,name:"Samsung S25 Ultra 12/512 Whitesilver EU",tab:"phones",sub:"Samsung",img:imgs.samsung,inStock:true},
-  {id:248,name:"Samsung S25 Ultra 12/1Tb Black EU",tab:"phones",sub:"Samsung",img:imgs.samsung,inStock:true},
-  {id:249,name:"Samsung S25 Ultra 12/1Tb Whitesilver EU",tab:"phones",sub:"Samsung",img:imgs.samsung,inStock:true},
-  {id:250,name:"Samsung Flip7 FE 8/128 White RU",tab:"phones",sub:"Samsung",img:imgs.samsung,inStock:true},
-  {id:251,name:"Samsung Flip7 12/512 Blue Shadow EU",tab:"phones",sub:"Samsung",img:imgs.samsung,inStock:true},
-  {id:252,name:"Samsung Flip7 12/512 Jetblack EU",tab:"phones",sub:"Samsung",img:imgs.samsung,inStock:true},
-  {id:253,name:"Samsung Fold 7 12/256 Jetblack EU",tab:"phones",sub:"Samsung",img:imgs.samsung,inStock:true},
-  {id:254,name:"Samsung Fold 7 12/256 Silver Shadow EU",tab:"phones",sub:"Samsung",img:imgs.samsung,inStock:true},
-  {id:255,name:"Samsung Fold 7 12/512 Blue Shadow EU",tab:"phones",sub:"Samsung",img:imgs.samsung,inStock:true},
-  {id:256,name:"Samsung Fold 7 12/512 Jetblack EU",tab:"phones",sub:"Samsung",img:imgs.samsung,inStock:true},
-  {id:257,name:"Samsung Fold 7 12/512 Mint EU",tab:"phones",sub:"Samsung",img:imgs.samsung,inStock:true},
-  {id:258,name:"Samsung Fold 7 12/512 Silver Shadow EU",tab:"phones",sub:"Samsung",img:imgs.samsung,inStock:true},
-  // XIAOMI
+  {id:201,name:"Samsung A17 8/256 Grey EU",tab:"phones",sub:"Samsung",img:imgs.samsung,inStock:true},
+  {id:202,name:"Samsung A26 6/128 Black 5G EU",tab:"phones",sub:"Samsung",img:imgs.samsung,inStock:true},
+  {id:203,name:"Samsung A26 6/128 Peach Pink 5G EU",tab:"phones",sub:"Samsung",img:imgs.samsung,inStock:true},
+  {id:204,name:"Samsung A36 8/256 Lime EU",tab:"phones",sub:"Samsung",img:imgs.samsung,inStock:true},
+  {id:205,name:"Samsung A36 8/256 White EU",tab:"phones",sub:"Samsung",img:imgs.samsung,inStock:true},
+  {id:206,name:"Samsung A55 8/256 Navy EU",tab:"phones",sub:"Samsung",img:imgs.samsung,inStock:true},
+  {id:207,name:"Samsung A56 8/256 Graphite EU",tab:"phones",sub:"Samsung",img:imgs.samsung,inStock:true},
+  {id:208,name:"Samsung A56 8/256 Pink EU",tab:"phones",sub:"Samsung",img:imgs.samsung,inStock:true},
+  {id:209,name:"Samsung S24 8/256 Black EU",tab:"phones",sub:"Samsung",img:imgs.samsung,inStock:true},
+  {id:210,name:"Samsung S24 8/256 Violet EU",tab:"phones",sub:"Samsung",img:imgs.samsung,inStock:true},
+  {id:211,name:"Samsung S25 12/128 Icyblue EU",tab:"phones",sub:"Samsung",img:imgs.samsung,inStock:true},
+  {id:212,name:"Samsung S25 12/256 Navy EU",tab:"phones",sub:"Samsung",img:imgs.samsung,inStock:true},
+  {id:213,name:"Samsung S25 12/512 IceBlue EU",tab:"phones",sub:"Samsung",img:imgs.samsung,inStock:true},
+  {id:214,name:"Samsung S25 Edge 12/256 Jetblack EU",tab:"phones",sub:"Samsung",img:imgs.samsung,inStock:true},
+  {id:215,name:"Samsung S25 FE 8/256 Black EU",tab:"phones",sub:"Samsung",img:imgs.samsung,inStock:true},
+  {id:216,name:"Samsung S25 FE 8/512 Icyblue EU",tab:"phones",sub:"Samsung",img:imgs.samsung,inStock:true},
+  {id:217,name:"Samsung S25 Ultra 12/256 Black EU",tab:"phones",sub:"Samsung",img:imgs.samsung,inStock:true},
+  {id:218,name:"Samsung S25 Ultra 12/512 Black EU",tab:"phones",sub:"Samsung",img:imgs.samsung,inStock:true},
+  {id:219,name:"Samsung S25 Ultra 12/1Tb Black EU",tab:"phones",sub:"Samsung",img:imgs.samsung,inStock:true},
+  {id:220,name:"Samsung Flip7 12/512 Jetblack EU",tab:"phones",sub:"Samsung",img:imgs.samsung,inStock:true},
+  {id:221,name:"Samsung Fold 7 12/256 Jetblack EU",tab:"phones",sub:"Samsung",img:imgs.samsung,inStock:true},
+  {id:222,name:"Samsung Fold 7 12/512 Jetblack EU",tab:"phones",sub:"Samsung",img:imgs.samsung,inStock:true},
+  {id:223,name:"Samsung Fold 7 12/512 Silver Shadow EU",tab:"phones",sub:"Samsung",img:imgs.samsung,inStock:true},
   {id:300,name:"X.Redmi A5 3/64 Black RU",tab:"phones",sub:"Xiaomi",img:imgs.xiaomi,inStock:true},
-  {id:301,name:"X.Redmi A5 3/64 Blue RU",tab:"phones",sub:"Xiaomi",img:imgs.xiaomi,inStock:true},
-  {id:302,name:"X.Poco C85 6/128 Black EU",tab:"phones",sub:"Xiaomi",img:imgs.xiaomi,inStock:true},
-  {id:303,name:"X.Poco C85 6/128 Purple RU",tab:"phones",sub:"Xiaomi",img:imgs.xiaomi,inStock:true},
-  {id:304,name:"X.Redmi 15 6/128 Gray RU",tab:"phones",sub:"Xiaomi",img:imgs.xiaomi,inStock:true},
-  {id:305,name:"X.Redmi 15 8/256 Black EU",tab:"phones",sub:"Xiaomi",img:imgs.xiaomi,inStock:true},
-  {id:306,name:"X.Poco M7 6/128 Black EU",tab:"phones",sub:"Xiaomi",img:imgs.xiaomi,inStock:true},
-  {id:307,name:"X.Poco M7 6/128 Silver EU",tab:"phones",sub:"Xiaomi",img:imgs.xiaomi,inStock:true},
-  {id:308,name:"X.Poco M7 Pro 8/256 Black EU",tab:"phones",sub:"Xiaomi",img:imgs.xiaomi,inStock:true},
-  {id:309,name:"X.Redmi Note 14 8/256 Black EU",tab:"phones",sub:"Xiaomi",img:imgs.xiaomi,inStock:true},
-  {id:310,name:"X.Redmi Note 14 8/256 Blue EU",tab:"phones",sub:"Xiaomi",img:imgs.xiaomi,inStock:true},
-  {id:311,name:"X.Poco X7 8/256 Black EU",tab:"phones",sub:"Xiaomi",img:imgs.xiaomi,inStock:true},
-  {id:312,name:"X.Redmi Note 14 Pro 8/256 Black EU",tab:"phones",sub:"Xiaomi",img:imgs.xiaomi,inStock:true},
-  {id:313,name:"X.Redmi Note 14 Pro 8/256 Purple EU",tab:"phones",sub:"Xiaomi",img:imgs.xiaomi,inStock:true},
-  {id:314,name:"X.Redmi Note 15 8/128 Black NFC RU",tab:"phones",sub:"Xiaomi",img:imgs.xiaomi,inStock:true},
-  {id:315,name:"X.Redmi Note 15 8/256 Blue EU",tab:"phones",sub:"Xiaomi",img:imgs.xiaomi,inStock:true},
-  {id:316,name:"Redmi Note 15 Pro 8/256 Blue EU",tab:"phones",sub:"Xiaomi",img:imgs.xiaomi,inStock:true},
-  {id:317,name:"Redmi Note 15 Pro 12/512 Black EU",tab:"phones",sub:"Xiaomi",img:imgs.xiaomi,inStock:true},
-  {id:318,name:"Redmi Note 15 Pro Plus 12/512 Black EU",tab:"phones",sub:"Xiaomi",img:imgs.xiaomi,inStock:true},
-  {id:319,name:"X.Poco X7 Pro 12/256 Green RU",tab:"phones",sub:"Xiaomi",img:imgs.xiaomi,inStock:true},
-  {id:320,name:"X.Poco X7 Pro 12/512 Green EU",tab:"phones",sub:"Xiaomi",img:imgs.xiaomi,inStock:true},
-  {id:321,name:"X.Poco M8 Pro 5G 12/512 Black RU",tab:"phones",sub:"Xiaomi",img:imgs.xiaomi,inStock:true},
-  {id:322,name:"X.Poco M8 Pro 5G 12/512 Green RU",tab:"phones",sub:"Xiaomi",img:imgs.xiaomi,inStock:true},
-  {id:323,name:"X.Mi 15T 12/256 Gray RU",tab:"phones",sub:"Xiaomi",img:imgs.xiaomi,inStock:true},
-  {id:324,name:"X.Poco F6 12/512 Green EU",tab:"phones",sub:"Xiaomi",img:imgs.xiaomi,inStock:true},
-  {id:325,name:"X.Poco F7 12/512 Black EU",tab:"phones",sub:"Xiaomi",img:imgs.xiaomi,inStock:true},
-  {id:326,name:"X.Poco F7 12/512 Silver EU",tab:"phones",sub:"Xiaomi",img:imgs.xiaomi,inStock:true},
-  {id:327,name:"X.Poco F7 Ultra 12/256 Black EU",tab:"phones",sub:"Xiaomi",img:imgs.xiaomi,inStock:true},
-  {id:328,name:"X.Mi 14 12/512 White EU",tab:"phones",sub:"Xiaomi",img:imgs.xiaomi,inStock:true},
-  {id:329,name:"X.Poco F8 Pro 12/256 Blue EU",tab:"phones",sub:"Xiaomi",img:imgs.xiaomi,inStock:true},
-  {id:330,name:"X.Mi 15 12/256 Green EU",tab:"phones",sub:"Xiaomi",img:imgs.xiaomi,inStock:true},
-  {id:331,name:"X.Mi 15 12/512 Green EU",tab:"phones",sub:"Xiaomi",img:imgs.xiaomi,inStock:true},
-  {id:332,name:"X.Poco F8 Ultra 16/512 Black EU",tab:"phones",sub:"Xiaomi",img:imgs.xiaomi,inStock:true},
-  // GOOGLE
+  {id:301,name:"X.Poco C85 6/128 Black EU",tab:"phones",sub:"Xiaomi",img:imgs.xiaomi,inStock:true},
+  {id:302,name:"X.Poco M7 6/128 Black EU",tab:"phones",sub:"Xiaomi",img:imgs.xiaomi,inStock:true},
+  {id:303,name:"X.Poco M7 Pro 8/256 Black EU",tab:"phones",sub:"Xiaomi",img:imgs.xiaomi,inStock:true},
+  {id:304,name:"X.Redmi Note 14 8/256 Black EU",tab:"phones",sub:"Xiaomi",img:imgs.xiaomi,inStock:true},
+  {id:305,name:"X.Redmi Note 15 8/256 Blue EU",tab:"phones",sub:"Xiaomi",img:imgs.xiaomi,inStock:true},
+  {id:306,name:"Redmi Note 15 Pro 8/256 Blue EU",tab:"phones",sub:"Xiaomi",img:imgs.xiaomi,inStock:true},
+  {id:307,name:"Redmi Note 15 Pro 12/512 Black EU",tab:"phones",sub:"Xiaomi",img:imgs.xiaomi,inStock:true},
+  {id:308,name:"Redmi Note 15 Pro Plus 12/512 Black EU",tab:"phones",sub:"Xiaomi",img:imgs.xiaomi,inStock:true},
+  {id:309,name:"X.Poco X7 8/256 Black EU",tab:"phones",sub:"Xiaomi",img:imgs.xiaomi,inStock:true},
+  {id:310,name:"X.Poco X7 Pro 12/256 Green RU",tab:"phones",sub:"Xiaomi",img:imgs.xiaomi,inStock:true},
+  {id:311,name:"X.Poco X7 Pro 12/512 Green EU",tab:"phones",sub:"Xiaomi",img:imgs.xiaomi,inStock:true},
+  {id:312,name:"X.Poco M8 Pro 5G 12/512 Black RU",tab:"phones",sub:"Xiaomi",img:imgs.xiaomi,inStock:true},
+  {id:313,name:"X.Mi 15T 12/256 Gray RU",tab:"phones",sub:"Xiaomi",img:imgs.xiaomi,inStock:true},
+  {id:314,name:"X.Poco F7 12/512 Black EU",tab:"phones",sub:"Xiaomi",img:imgs.xiaomi,inStock:true},
+  {id:315,name:"X.Poco F7 Ultra 12/256 Black EU",tab:"phones",sub:"Xiaomi",img:imgs.xiaomi,inStock:true},
+  {id:316,name:"X.Mi 14 12/512 White EU",tab:"phones",sub:"Xiaomi",img:imgs.xiaomi,inStock:true},
+  {id:317,name:"X.Mi 15 12/512 Green EU",tab:"phones",sub:"Xiaomi",img:imgs.xiaomi,inStock:true},
+  {id:318,name:"X.Poco F8 Ultra 16/512 Black EU",tab:"phones",sub:"Xiaomi",img:imgs.xiaomi,inStock:true},
   {id:400,name:"G. Pixel 7 128Gb Black",tab:"phones",sub:"Google",img:imgs.google,inStock:true},
-  {id:401,name:"G. Pixel 8 256Gb Obsidian",tab:"phones",sub:"Google",img:imgs.google,inStock:true},
-  {id:402,name:"G. Pixel 9a 256 Obsidian",tab:"phones",sub:"Google",img:imgs.google,inStock:true},
-  {id:403,name:"G. Pixel 9a 256 Porcelain EU",tab:"phones",sub:"Google",img:imgs.google,inStock:true},
-  {id:404,name:"G. Pixel 9 Pro XL 16/512 Hazel",tab:"phones",sub:"Google",img:imgs.google,inStock:true},
-  {id:405,name:"G. Pixel 10 Pro 256 Porcelain",tab:"phones",sub:"Google",img:imgs.google,inStock:true},
-  {id:406,name:"G. Pixel 10 Pro XL 512 Obsidian",tab:"phones",sub:"Google",img:imgs.google,inStock:true},
-  // HONOR
-  {id:410,name:"Honor X9D 12/256 Gold 5G EU",tab:"phones",sub:"Honor",img:imgs.honor,inStock:true},
-  {id:411,name:"Honor 400 8/256 Black EU",tab:"phones",sub:"Honor",img:imgs.honor,inStock:true},
-  {id:412,name:"Honor 400 12/512 Black RU",tab:"phones",sub:"Honor",img:imgs.honor,inStock:true},
-  {id:413,name:"Honor Magic 8 Lite 8/512 Black 5G EU",tab:"phones",sub:"Honor",img:imgs.honor,inStock:true},
-  {id:414,name:"HONOR Magic V3 12/512 Brown",tab:"phones",sub:"Honor",img:imgs.honor,inStock:true},
-  // ONEPLUS
+  {id:401,name:"G. Pixel 9a 256 Obsidian",tab:"phones",sub:"Google",img:imgs.google,inStock:true},
+  {id:402,name:"G. Pixel 10 Pro 256 Porcelain",tab:"phones",sub:"Google",img:imgs.google,inStock:true},
+  {id:403,name:"G. Pixel 10 Pro XL 512 Obsidian",tab:"phones",sub:"Google",img:imgs.google,inStock:true},
+  {id:410,name:"Honor 400 8/256 Black EU",tab:"phones",sub:"Honor",img:imgs.honor,inStock:true},
+  {id:411,name:"Honor 400 12/512 Black RU",tab:"phones",sub:"Honor",img:imgs.honor,inStock:true},
+  {id:412,name:"Honor Magic 8 Lite 8/512 Black 5G EU",tab:"phones",sub:"Honor",img:imgs.honor,inStock:true},
+  {id:413,name:"HONOR Magic V3 12/512 Brown",tab:"phones",sub:"Honor",img:imgs.honor,inStock:true},
   {id:420,name:"OnePlus ACE 6T 12/512 Black",tab:"phones",sub:"OnePlus",img:imgs.oneplus,inStock:true},
-  {id:421,name:"OnePlus ACE 6 12/512 White",tab:"phones",sub:"OnePlus",img:imgs.oneplus,inStock:true},
-  {id:422,name:"OnePlus 15R 12/512 Mint Breeze",tab:"phones",sub:"OnePlus",img:imgs.oneplus,inStock:true},
-  {id:423,name:"OnePlus 13S 12/512 Black Velvet",tab:"phones",sub:"OnePlus",img:imgs.oneplus,inStock:true},
-  {id:424,name:"OnePlus 13 16/512 Midnight Ocean",tab:"phones",sub:"OnePlus",img:imgs.oneplus,inStock:true},
-  {id:425,name:"OnePlus 15 16/512 Infinite Black",tab:"phones",sub:"OnePlus",img:imgs.oneplus,inStock:true},
-  // ДРУГИЕ
-  {id:430,name:"Realme GT 7T 12/256 Obsidian RU",tab:"phones",sub:"Другие",img:imgs.realme,inStock:true},
-  {id:431,name:"Realme GT 7T 12/512 Blue RU",tab:"phones",sub:"Другие",img:imgs.realme,inStock:true},
-  {id:432,name:"Realme P3 12/256 Black NFC RU",tab:"phones",sub:"Другие",img:imgs.realme,inStock:true},
-  {id:433,name:"Realme Note 60x 3/64 Green RU",tab:"phones",sub:"Другие",img:imgs.realme,inStock:true},
-  {id:434,name:"TECNO CAMON 40 8/256 Titanium",tab:"phones",sub:"Другие",img:imgs.tecno,inStock:true},
-  {id:435,name:"TECNO Spark 40 Pro 8/256 Black RU",tab:"phones",sub:"Другие",img:imgs.tecno,inStock:true},
-  {id:436,name:"ZTE Nubia Z80 Ultra 16/1Tb Black EU",tab:"phones",sub:"Другие",img:imgs.zte,inStock:true},
-  {id:437,name:"Asus Rog Phone 9 12/256 Black",tab:"phones",sub:"Другие",img:imgs.zte,inStock:true},
-  // TABLETS
+  {id:421,name:"OnePlus 13S 12/512 Black Velvet",tab:"phones",sub:"OnePlus",img:imgs.oneplus,inStock:true},
+  {id:422,name:"OnePlus 13 16/512 Midnight Ocean",tab:"phones",sub:"OnePlus",img:imgs.oneplus,inStock:true},
+  {id:423,name:"OnePlus 15 16/512 Infinite Black",tab:"phones",sub:"OnePlus",img:imgs.oneplus,inStock:true},
+  {id:430,name:"Realme GT 7T 12/512 Blue RU",tab:"phones",sub:"Другие",img:imgs.realme,inStock:true},
+  {id:431,name:"Realme P3 12/256 Black NFC RU",tab:"phones",sub:"Другие",img:imgs.realme,inStock:true},
+  {id:432,name:"TECNO CAMON 40 8/256 Titanium",tab:"phones",sub:"Другие",img:imgs.tecno,inStock:true},
+  {id:433,name:"ZTE Nubia Z80 Ultra 16/1Tb Black EU",tab:"phones",sub:"Другие",img:imgs.zte,inStock:true},
   {id:500,name:"Apple iPad (A16) 128Gb WiFi Blue",tab:"tablets",sub:"Apple",img:imgs.ipad,inStock:true},
-  {id:501,name:"Apple iPad (A16) 128Gb WiFi Pink",tab:"tablets",sub:"Apple",img:imgs.ipad,inStock:true},
-  {id:502,name:"Apple iPad (A16) 256Gb WiFi Blue",tab:"tablets",sub:"Apple",img:imgs.ipad,inStock:true},
-  {id:503,name:"Apple iPad (A16) 256Gb LTE Blue",tab:"tablets",sub:"Apple",img:imgs.ipad,inStock:true},
-  {id:504,name:"Apple iPad MINI 7 128Gb WiFi Space Grey",tab:"tablets",sub:"Apple",img:imgs.ipad,inStock:true},
-  {id:505,name:"Apple iPad MINI 7 256Gb WiFi Blue",tab:"tablets",sub:"Apple",img:imgs.ipad,inStock:true},
-  {id:506,name:"Apple iPad Air 7 11\" M3 128Gb WiFi Black",tab:"tablets",sub:"Apple",img:imgs.ipad,inStock:true},
-  {id:507,name:"Apple iPad Air 7 11\" M3 256Gb WiFi Black",tab:"tablets",sub:"Apple",img:imgs.ipad,inStock:true},
-  {id:508,name:"Apple iPad Air 7 13\" M3 128Gb WiFi Sp.Gray",tab:"tablets",sub:"Apple",img:imgs.ipad,inStock:true},
-  {id:509,name:"Apple iPad Air 7 13\" M3 256Gb WiFi Blue",tab:"tablets",sub:"Apple",img:imgs.ipad,inStock:true},
-  {id:510,name:"Apple iPad Pro 11\" M4 256Gb WiFi Black",tab:"tablets",sub:"Apple",img:imgs.ipad,inStock:true},
-  {id:511,name:"Apple iPad Pro 11\" M4 512Gb WiFi Black",tab:"tablets",sub:"Apple",img:imgs.ipad,inStock:true},
-  {id:512,name:"Apple iPad Pro 11\" M5 256Gb WiFi Silver",tab:"tablets",sub:"Apple",img:imgs.ipad,inStock:true},
-  {id:513,name:"Apple iPad Pro 11\" M5 512Gb WiFi Black",tab:"tablets",sub:"Apple",img:imgs.ipad,inStock:true},
-  {id:514,name:"Apple iPad Pro 13\" M4 512Gb WiFi Black",tab:"tablets",sub:"Apple",img:imgs.ipad,inStock:true},
-  {id:515,name:"Apple iPad Pro 13\" M5 512Gb WiFi Black",tab:"tablets",sub:"Apple",img:imgs.ipad,inStock:true},
-  {id:516,name:"Apple Pencil Pro 2024",tab:"tablets",sub:"Apple",img:imgs.ipad,inStock:true},
-  {id:517,name:"Apple Keyboard Air 13 Black RU",tab:"tablets",sub:"Apple",img:imgs.ipad,inStock:true},
+  {id:501,name:"Apple iPad (A16) 256Gb WiFi Blue",tab:"tablets",sub:"Apple",img:imgs.ipad,inStock:true},
+  {id:502,name:"Apple iPad (A16) 256Gb LTE Blue",tab:"tablets",sub:"Apple",img:imgs.ipad,inStock:true},
+  {id:503,name:"Apple iPad MINI 7 128Gb WiFi Space Grey",tab:"tablets",sub:"Apple",img:imgs.ipad,inStock:true},
+  {id:504,name:"Apple iPad MINI 7 256Gb WiFi Blue",tab:"tablets",sub:"Apple",img:imgs.ipad,inStock:true},
+  {id:505,name:"Apple iPad Air 7 11\" M3 128Gb WiFi Black",tab:"tablets",sub:"Apple",img:imgs.ipad,inStock:true},
+  {id:506,name:"Apple iPad Air 7 11\" M3 256Gb WiFi Black",tab:"tablets",sub:"Apple",img:imgs.ipad,inStock:true},
+  {id:507,name:"Apple iPad Air 7 13\" M3 256Gb WiFi Blue",tab:"tablets",sub:"Apple",img:imgs.ipad,inStock:true},
+  {id:508,name:"Apple iPad Pro 11\" M4 256Gb WiFi Black",tab:"tablets",sub:"Apple",img:imgs.ipad,inStock:true},
+  {id:509,name:"Apple iPad Pro 11\" M5 512Gb WiFi Black",tab:"tablets",sub:"Apple",img:imgs.ipad,inStock:true},
+  {id:510,name:"Apple iPad Pro 13\" M4 512Gb WiFi Black",tab:"tablets",sub:"Apple",img:imgs.ipad,inStock:true},
+  {id:511,name:"Apple iPad Pro 13\" M5 512Gb WiFi Black",tab:"tablets",sub:"Apple",img:imgs.ipad,inStock:true},
+  {id:512,name:"Apple Pencil Pro 2024",tab:"tablets",sub:"Apple",img:imgs.ipad,inStock:true},
   {id:520,name:"Samsung TAB S10 FE 8/128 WiFi Blue EU",tab:"tablets",sub:"Samsung",img:imgs.samsung,inStock:true},
-  {id:521,name:"Samsung TAB S10 FE 12/256 WiFi Gray EU",tab:"tablets",sub:"Samsung",img:imgs.samsung,inStock:true},
-  {id:522,name:"Samsung TAB S10 Plus 12/256 WiFi Silver EU",tab:"tablets",sub:"Samsung",img:imgs.samsung,inStock:true},
-  {id:523,name:"Samsung TAB S10 Ultra 12/512 Graphite",tab:"tablets",sub:"Samsung",img:imgs.samsung,inStock:true},
-  {id:524,name:"Samsung TAB S11 Ultra 12/256 Gray WiFi",tab:"tablets",sub:"Samsung",img:imgs.samsung,inStock:true},
-  {id:525,name:"Samsung TAB S11 Ultra 12/512 Gray LTE",tab:"tablets",sub:"Samsung",img:imgs.samsung,inStock:true},
+  {id:521,name:"Samsung TAB S10 Plus 12/256 WiFi Silver EU",tab:"tablets",sub:"Samsung",img:imgs.samsung,inStock:true},
+  {id:522,name:"Samsung TAB S11 Ultra 12/512 Gray LTE",tab:"tablets",sub:"Samsung",img:imgs.samsung,inStock:true},
   {id:530,name:"X.H. Pad7 8/256 WiFi Blue EU",tab:"tablets",sub:"Xiaomi",img:imgs.xiaomi,inStock:true},
   {id:531,name:"X.H. Poco Pad X1 8/512 Blue EU",tab:"tablets",sub:"Xiaomi",img:imgs.xiaomi,inStock:true},
   {id:532,name:"X.H. REDMI Pad 2 Pro 8/256 WiFi Grey RU",tab:"tablets",sub:"Xiaomi",img:imgs.xiaomi,inStock:true},
-  {id:533,name:"Blackview TAB Active 10 Pro 12/256 Black",tab:"tablets",sub:"Другие",img:imgs.blackview,inStock:true},
-  {id:534,name:"Ulefone ARMOR Pad 5 Ultra 12/512 Black",tab:"tablets",sub:"Другие",img:imgs.ulefone,inStock:true},
-  // LAPTOPS
+  {id:533,name:"Ulefone ARMOR Pad 5 Ultra 12/512 Black",tab:"tablets",sub:"Другие",img:imgs.ulefone,inStock:true},
   {id:600,name:"Apple Mac MINI M4 16/256 Silver",tab:"laptops",sub:"Apple",img:imgs.macbook,inStock:true},
   {id:601,name:"MacBook Air 13\" M4 16/512 Sky Blue",tab:"laptops",sub:"Apple",img:imgs.macbook,inStock:true},
-  {id:602,name:"MacBook Pro 14\" M3 8/512 Grey",tab:"laptops",sub:"Apple",img:imgs.macbook,inStock:true},
-  {id:603,name:"MacBook Pro 14\" M4 16/1Tb Black RU",tab:"laptops",sub:"Apple",img:imgs.macbook,inStock:true},
-  {id:604,name:"MacBook Pro 14\" M4 16/1Tb Silver RU",tab:"laptops",sub:"Apple",img:imgs.macbook,inStock:true},
-  {id:605,name:"MacBook Pro 14\" M4 Pro 24/512 Black",tab:"laptops",sub:"Apple",img:imgs.macbook,inStock:true},
-  {id:606,name:"MacBook Pro 14\" M5 16/1Tb Black RU",tab:"laptops",sub:"Apple",img:imgs.macbook,inStock:true},
-  {id:607,name:"MacBook Pro 14\" M5 24/1Tb Silver RU",tab:"laptops",sub:"Apple",img:imgs.macbook,inStock:true},
+  {id:602,name:"MacBook Pro 14\" M4 16/1Tb Black RU",tab:"laptops",sub:"Apple",img:imgs.macbook,inStock:true},
+  {id:603,name:"MacBook Pro 14\" M4 16/1Tb Silver RU",tab:"laptops",sub:"Apple",img:imgs.macbook,inStock:true},
+  {id:604,name:"MacBook Pro 14\" M5 16/1Tb Black RU",tab:"laptops",sub:"Apple",img:imgs.macbook,inStock:true},
+  {id:605,name:"MacBook Pro 14\" M5 24/1Tb Silver RU",tab:"laptops",sub:"Apple",img:imgs.macbook,inStock:true},
   {id:610,name:"HONOR Magicbook X14 i5 16/512 RU",tab:"laptops",sub:"Другие",img:imgs.honor,inStock:true},
-  {id:611,name:"HONOR Magicbook X16 i3 8/512",tab:"laptops",sub:"Другие",img:imgs.honor,inStock:true},
-  {id:612,name:"Huawei Matebook D16 i5 16/1Tb RU",tab:"laptops",sub:"Другие",img:imgs.honor,inStock:true},
-  {id:613,name:"Asus Rog XBox Ally 16/512 White",tab:"laptops",sub:"Другие",img:imgs.zte,inStock:true},
-  {id:614,name:"Lenovo IdeaPad 1 R5 16/512 Grey RU",tab:"laptops",sub:"Другие",img:imgs.zte,inStock:true},
-  {id:615,name:"Acer Aspire Lite R5 16/512 Silver",tab:"laptops",sub:"Другие",img:imgs.zte,inStock:true},
-  // WATCHES
+  {id:611,name:"Huawei Matebook D16 i5 16/1Tb RU",tab:"laptops",sub:"Другие",img:imgs.honor,inStock:true},
+  {id:612,name:"Lenovo IdeaPad 1 R5 16/512 Grey RU",tab:"laptops",sub:"Другие",img:imgs.zte,inStock:true},
   {id:700,name:"Apple Watch SE3 40mm Midnight 2025",tab:"watches",sub:"Apple",img:imgs.applewatch,inStock:true},
   {id:701,name:"Apple Watch SE3 44mm Midnight 2025",tab:"watches",sub:"Apple",img:imgs.applewatch,inStock:true},
   {id:702,name:"Apple Watch S11 42mm Jet Black",tab:"watches",sub:"Apple",img:imgs.applewatch,inStock:true},
-  {id:703,name:"Apple Watch S11 42mm Silver",tab:"watches",sub:"Apple",img:imgs.applewatch,inStock:true},
-  {id:704,name:"Apple Watch S11 46mm Jet Black",tab:"watches",sub:"Apple",img:imgs.applewatch,inStock:true},
-  {id:705,name:"Apple Watch S11 46mm Silver",tab:"watches",sub:"Apple",img:imgs.applewatch,inStock:true},
-  {id:706,name:"Apple Watch Ultra 3 49mm Black Ti",tab:"watches",sub:"Apple",img:imgs.applewatch,inStock:true},
-  {id:710,name:"Samsung Galaxy Fit3 Silver EU",tab:"watches",sub:"Samsung",img:imgs.samsungwatch,inStock:true},
+  {id:703,name:"Apple Watch S11 46mm Jet Black",tab:"watches",sub:"Apple",img:imgs.applewatch,inStock:true},
+  {id:704,name:"Apple Watch Ultra 3 49mm Black Ti",tab:"watches",sub:"Apple",img:imgs.applewatch,inStock:true},
+  {id:710,name:"Samsung Watch Ultra 8 47mm LTE White EU",tab:"watches",sub:"Samsung",img:imgs.samsungwatch,inStock:true},
   {id:711,name:"Samsung Watch 8 46\" Classic Black",tab:"watches",sub:"Samsung",img:imgs.samsungwatch,inStock:true},
-  {id:712,name:"Samsung Watch Ultra 8 47mm LTE White EU",tab:"watches",sub:"Samsung",img:imgs.samsungwatch,inStock:true},
-  {id:720,name:"Huawei Band 10 Black EU",tab:"watches",sub:"Huawei",img:imgs.honor,inStock:true},
-  {id:721,name:"Huawei Watch GT5 46 Blue RU",tab:"watches",sub:"Huawei",img:imgs.honor,inStock:true},
-  {id:722,name:"Huawei Watch GT5 Pro 46 Black RU",tab:"watches",sub:"Huawei",img:imgs.honor,inStock:true},
-  {id:730,name:"OnePlus Watch 3 43mm Silver",tab:"watches",sub:"Другие",img:imgs.oneplus,inStock:true},
+  {id:720,name:"Huawei Watch GT5 Pro 46 Black RU",tab:"watches",sub:"Huawei",img:imgs.honor,inStock:true},
+  {id:730,name:"OnePlus Watch 3 Obsidian Titanium",tab:"watches",sub:"Другие",img:imgs.oneplus,inStock:true},
   {id:731,name:"Garmin Forerunner 570 47mm Black",tab:"watches",sub:"Другие",img:imgs.garmin,inStock:true},
-  // HEADPHONES
   {id:800,name:"Apple AirPods 4",tab:"headphones",sub:"Apple",img:imgs.airpods,inStock:true},
   {id:801,name:"Apple AirPods 4 с шумоподавлением",tab:"headphones",sub:"Apple",img:imgs.airpods,inStock:true},
   {id:802,name:"Apple AirPods PRO 2 USB-C",tab:"headphones",sub:"Apple",img:imgs.airpods,inStock:true},
   {id:803,name:"Apple AirPods PRO 3",tab:"headphones",sub:"Apple",img:imgs.airpods,inStock:true},
   {id:804,name:"Apple AirPods MAX USB-C Midnight",tab:"headphones",sub:"Apple",img:imgs.airpods,inStock:true},
-  {id:805,name:"Apple AirPods MAX USB-C Orange",tab:"headphones",sub:"Apple",img:imgs.airpods,inStock:true},
-  {id:806,name:"Apple AirPods MAX USB-C Purple",tab:"headphones",sub:"Apple",img:imgs.airpods,inStock:true},
-  {id:810,name:"Samsung Buds Core Black EU",tab:"headphones",sub:"Samsung",img:imgs.samsung,inStock:true},
-  {id:811,name:"Samsung Buds3 Pro Silver EU",tab:"headphones",sub:"Samsung",img:imgs.samsung,inStock:true},
+  {id:810,name:"Samsung Buds3 Pro Silver EU",tab:"headphones",sub:"Samsung",img:imgs.samsung,inStock:true},
   {id:820,name:"Marshall MAJOR 5 Black",tab:"headphones",sub:"Другие",img:imgs.jbl,inStock:true},
-  {id:821,name:"Marshall MAJOR 5 Cream",tab:"headphones",sub:"Другие",img:imgs.jbl,inStock:true},
-  {id:822,name:"Marshall MINOR 4 Black",tab:"headphones",sub:"Другие",img:imgs.jbl,inStock:true},
-  {id:823,name:"SONY WH-1000XM5 Black",tab:"headphones",sub:"Другие",img:imgs.jbl,inStock:true},
-  {id:824,name:"SONY WH-1000XM6 Black",tab:"headphones",sub:"Другие",img:imgs.jbl,inStock:true},
-  {id:825,name:"SONY WH-1000XM6 Midnight Blue",tab:"headphones",sub:"Другие",img:imgs.jbl,inStock:true},
-  {id:826,name:"Dyson On Track WP02 Ceramic Cinnabar",tab:"headphones",sub:"Другие",img:imgs.dyson,inStock:true},
-  // SPEAKERS
+  {id:821,name:"SONY WH-1000XM6 Black",tab:"headphones",sub:"Другие",img:imgs.jbl,inStock:true},
+  {id:822,name:"SONY WH-1000XM6 Midnight Blue",tab:"headphones",sub:"Другие",img:imgs.jbl,inStock:true},
+  {id:823,name:"Dyson On Track WP02 Ceramic Cinnabar",tab:"headphones",sub:"Другие",img:imgs.dyson,inStock:true},
   {id:900,name:"JBL CHARGE 6 Pink",tab:"speakers",sub:"JBL",img:imgs.jbl,inStock:true},
-  {id:901,name:"JBL PARTYBOX CLUB 120",tab:"speakers",sub:"JBL",img:imgs.jbl,inStock:true},
-  {id:902,name:"JBL Flip 7 Pink",tab:"speakers",sub:"JBL",img:imgs.jbl,inStock:true},
+  {id:901,name:"JBL Flip 7 Pink",tab:"speakers",sub:"JBL",img:imgs.jbl,inStock:true},
   {id:910,name:"Яндекс Мини 3 черная",tab:"speakers",sub:"Яндекс",img:imgs.yandex,inStock:true},
-  {id:911,name:"Яндекс Стрит черная",tab:"speakers",sub:"Яндекс",img:imgs.yandex,inStock:true},
-  {id:912,name:"Яндекс Миди черная",tab:"speakers",sub:"Яндекс",img:imgs.yandex,inStock:true},
-  {id:913,name:"Яндекс Станция 3 серая",tab:"speakers",sub:"Яндекс",img:imgs.yandex,inStock:true},
-  {id:914,name:"Яндекс Станция 3 чёрная",tab:"speakers",sub:"Яндекс",img:imgs.yandex,inStock:true},
-  {id:915,name:"Яндекс Макс Zigbee зелёная",tab:"speakers",sub:"Яндекс",img:imgs.yandex,inStock:true},
-  {id:916,name:"Яндекс Макс Дуо Zigbee зеленая",tab:"speakers",sub:"Яндекс",img:imgs.yandex,inStock:true},
-  // ACCESSORIES
+  {id:911,name:"Яндекс Станция 3 серая",tab:"speakers",sub:"Яндекс",img:imgs.yandex,inStock:true},
+  {id:912,name:"Яндекс Макс Дуо Zigbee зеленая",tab:"speakers",sub:"Яндекс",img:imgs.yandex,inStock:true},
   {id:1000,name:"Apple USB 20W Power Adapter",tab:"accessories",sub:"Apple",img:imgs.airpods,inStock:true},
   {id:1001,name:"Apple USB-C 67W Power Adapter",tab:"accessories",sub:"Apple",img:imgs.airpods,inStock:true},
-  {id:1002,name:"Apple USB-C 140W Power Adapter",tab:"accessories",sub:"Apple",img:imgs.airpods,inStock:true},
-  {id:1003,name:"Apple MagSafe Беспроводная зарядка",tab:"accessories",sub:"Apple",img:imgs.airpods,inStock:true},
-  {id:1004,name:"Apple Watch USB-C зарядка",tab:"accessories",sub:"Apple",img:imgs.airpods,inStock:true},
-  {id:1005,name:"Apple Кабель USB-C to Lightning 1m",tab:"accessories",sub:"Apple",img:imgs.airpods,inStock:true},
-  {id:1006,name:"Apple Magic Mouse 3 USB-C Black",tab:"accessories",sub:"Apple",img:imgs.airpods,inStock:true},
+  {id:1002,name:"Apple MagSafe Беспроводная зарядка",tab:"accessories",sub:"Apple",img:imgs.airpods,inStock:true},
+  {id:1003,name:"Apple Кабель USB-C to Lightning 1m",tab:"accessories",sub:"Apple",img:imgs.airpods,inStock:true},
+  {id:1004,name:"Apple Magic Mouse 3 USB-C Black",tab:"accessories",sub:"Apple",img:imgs.airpods,inStock:true},
   {id:1010,name:"Samsung СЗУ 25W USB-C Black",tab:"accessories",sub:"Samsung",img:imgs.samsung,inStock:true},
   {id:1011,name:"Samsung СЗУ 45W USB-C Black",tab:"accessories",sub:"Samsung",img:imgs.samsung,inStock:true},
-  {id:1012,name:"Samsung СЗУ 65W Trio",tab:"accessories",sub:"Samsung",img:imgs.samsung,inStock:true},
-  {id:1013,name:"Samsung Кабель USB-C to USB-C Black",tab:"accessories",sub:"Samsung",img:imgs.samsung,inStock:true},
-  {id:1020,name:"Xiaomi СЗУ 33W + USB-C",tab:"accessories",sub:"Xiaomi",img:imgs.xiaomi,inStock:true},
-  {id:1021,name:"Xiaomi СЗУ 120W + USB-C",tab:"accessories",sub:"Xiaomi",img:imgs.xiaomi,inStock:true},
-  // VACUUM
-  {id:1100,name:"Dyson V8 SV25 Silver/Nickel",tab:"vacuum",sub:"Dyson",img:imgs.dyson,inStock:true},
-  {id:1101,name:"Dyson V12s Detect Slim Submarine Yellow",tab:"vacuum",sub:"Dyson",img:imgs.dyson,inStock:true},
-  {id:1102,name:"Dyson V15 Detect Absolute Yellow",tab:"vacuum",sub:"Dyson",img:imgs.dyson,inStock:true},
-  {id:1103,name:"Dyson V15s Detect Submarine Yellow",tab:"vacuum",sub:"Dyson",img:imgs.dyson,inStock:true},
-  {id:1104,name:"Dyson V16 SV53A Piston Animal EU",tab:"vacuum",sub:"Dyson",img:imgs.dyson,inStock:true},
-  {id:1105,name:"Dyson Wash G1 Blue/Black",tab:"vacuum",sub:"Dyson",img:imgs.dyson,inStock:true},
-  {id:1110,name:"Roborock F25 RT White",tab:"vacuum",sub:"Roborock",img:imgs.roborock,inStock:true},
-  {id:1111,name:"Roborock Q8 Max Pro Plus Black",tab:"vacuum",sub:"Roborock",img:imgs.roborock,inStock:true},
-  {id:1112,name:"Roborock Qrevo C Black",tab:"vacuum",sub:"Roborock",img:imgs.roborock,inStock:true},
-  {id:1113,name:"Roborock Qrevo C Pro Black",tab:"vacuum",sub:"Roborock",img:imgs.roborock,inStock:true},
-  {id:1114,name:"Roborock Qrevo Edge T White",tab:"vacuum",sub:"Roborock",img:imgs.roborock,inStock:true},
-  {id:1115,name:"Roborock Saros Z70 Silver",tab:"vacuum",sub:"Roborock",img:imgs.roborock,inStock:true},
-  {id:1120,name:"Xiaomi Dreame H12 Dual RU",tab:"vacuum",sub:"Dreame",img:imgs.xiaomi,inStock:true},
-  {id:1121,name:"Xiaomi Dreame T30 RU",tab:"vacuum",sub:"Dreame",img:imgs.xiaomi,inStock:true},
-  {id:1122,name:"Xiaomi Dreame X50 Ultra Complete Black",tab:"vacuum",sub:"Dreame",img:imgs.xiaomi,inStock:true},
+  {id:1020,name:"Xiaomi СЗУ 120W + USB-C",tab:"accessories",sub:"Xiaomi",img:imgs.xiaomi,inStock:true},
+  {id:1100,name:"Dyson V15 Detect Absolute Yellow",tab:"vacuum",sub:"Dyson",img:imgs.dyson,inStock:true},
+  {id:1101,name:"Dyson V16 SV53A Piston Animal EU",tab:"vacuum",sub:"Dyson",img:imgs.dyson,inStock:true},
+  {id:1102,name:"Dyson Wash G1 Blue/Black",tab:"vacuum",sub:"Dyson",img:imgs.dyson,inStock:true},
+  {id:1110,name:"Roborock Qrevo C Black",tab:"vacuum",sub:"Roborock",img:imgs.roborock,inStock:true},
+  {id:1111,name:"Roborock Qrevo Edge T White",tab:"vacuum",sub:"Roborock",img:imgs.roborock,inStock:true},
+  {id:1112,name:"Roborock Saros Z70 Silver",tab:"vacuum",sub:"Roborock",img:imgs.roborock,inStock:true},
+  {id:1120,name:"Xiaomi Dreame T30 RU",tab:"vacuum",sub:"Dreame",img:imgs.xiaomi,inStock:true},
+  {id:1121,name:"Xiaomi Dreame X50 Ultra Complete Black",tab:"vacuum",sub:"Dreame",img:imgs.xiaomi,inStock:true},
   {id:1130,name:"Dyson HD17 Jasper Plum фен",tab:"vacuum",sub:"Dyson Стайлер",img:imgs.dyson,inStock:true},
   {id:1131,name:"Dyson HS 09 Amber Silk стайлер",tab:"vacuum",sub:"Dyson Стайлер",img:imgs.dyson,inStock:true},
-  {id:1132,name:"Dyson Очиститель PH05 White/Gold",tab:"vacuum",sub:"Dyson Стайлер",img:imgs.dyson,inStock:true},
-  // GAMING
   {id:1200,name:"SONY PlayStation 5 Slim EU без диска",tab:"gaming",sub:"Sony",img:imgs.sony,inStock:true},
   {id:1201,name:"SONY PlayStation 5 Slim EU с диском",tab:"gaming",sub:"Sony",img:imgs.sony,inStock:true},
   {id:1202,name:"SONY PS5 джойстик белый",tab:"gaming",sub:"Sony",img:imgs.sony,inStock:true},
   {id:1203,name:"SONY PS5 джойстик чёрный",tab:"gaming",sub:"Sony",img:imgs.sony,inStock:true},
   {id:1204,name:"SONY PS5 джойстик Astro Bot",tab:"gaming",sub:"Sony",img:imgs.sony,inStock:true},
-  {id:1205,name:"SONY PS5 джойстик Fortnite",tab:"gaming",sub:"Sony",img:imgs.sony,inStock:true},
   {id:1210,name:"Oculus QUEST 3S 256GB White VR",tab:"gaming",sub:"VR",img:imgs.sony,inStock:true},
   {id:1211,name:"Oculus QUEST 3 512GB White VR",tab:"gaming",sub:"VR",img:imgs.sony,inStock:true},
-  {id:1220,name:"Amazon Kindle Scribe 32Gb Black",tab:"gaming",sub:"Другие",img:imgs.dyson,inStock:true},
-  // CAMERAS
-  {id:1300,name:"DJI Osmo Mobile 7",tab:"cameras",sub:"Другие",img:imgs.gopro,inStock:true},
-  {id:1301,name:"GoPro HERO 12 Black",tab:"cameras",sub:"GoPro",img:imgs.gopro,inStock:true},
-  {id:1302,name:"GoPro HERO 13",tab:"cameras",sub:"GoPro",img:imgs.gopro,inStock:true},
-  {id:1303,name:"GoPro HERO 13 SSD 64",tab:"cameras",sub:"GoPro",img:imgs.gopro,inStock:true},
-  {id:1304,name:"Insta 360 Go 3s Black SSD 128",tab:"cameras",sub:"Другие",img:imgs.gopro,inStock:true},
-  {id:1305,name:"Insta 360 Go 3s White SSD 128",tab:"cameras",sub:"Другие",img:imgs.gopro,inStock:true},
-  // RUGGED
-  {id:1400,name:"Blackview BV7000 8/256 Black",tab:"rugged",sub:"Blackview",img:imgs.blackview,inStock:true},
-  {id:1401,name:"Blackview BV9300 Pro 12/256 Orange",tab:"rugged",sub:"Blackview",img:imgs.blackview,inStock:true},
-  {id:1402,name:"Blackview BL9000 Pro 12/512 Black",tab:"rugged",sub:"Blackview",img:imgs.blackview,inStock:true},
-  {id:1403,name:"Unihertz Tank 4 12/512 Black EU",tab:"rugged",sub:"Blackview",img:imgs.blackview,inStock:true},
+  {id:1300,name:"GoPro HERO 13",tab:"cameras",sub:"GoPro",img:imgs.gopro,inStock:true},
+  {id:1301,name:"DJI Osmo Mobile 7",tab:"cameras",sub:"Другие",img:imgs.gopro,inStock:true},
+  {id:1302,name:"Insta 360 Go 3s Black SSD 128",tab:"cameras",sub:"Другие",img:imgs.gopro,inStock:true},
+  {id:1400,name:"Blackview BL9000 Pro 12/512 Black",tab:"rugged",sub:"Blackview",img:imgs.blackview,inStock:true},
+  {id:1401,name:"Unihertz Tank 4 12/512 Black EU",tab:"rugged",sub:"Blackview",img:imgs.blackview,inStock:true},
   {id:1410,name:"DOOGEE V Max Plus 36/512 Black",tab:"rugged",sub:"Doogee",img:imgs.doogee,inStock:true},
-  {id:1411,name:"DOOGEE V Max LR Battle Rust",tab:"rugged",sub:"Doogee",img:imgs.doogee,inStock:true},
-  {id:1412,name:"DOOGEE V Max Play 36/512 Black",tab:"rugged",sub:"Doogee",img:imgs.doogee,inStock:true},
-  {id:1420,name:"Oukitel WP39 Pro 12/512 Green",tab:"rugged",sub:"Oukitel",img:imgs.oukitel,inStock:true},
-  {id:1421,name:"Oukitel WP62 12/512 Black",tab:"rugged",sub:"Oukitel",img:imgs.oukitel,inStock:true},
+  {id:1411,name:"DOOGEE V Max Play 36/512 Black",tab:"rugged",sub:"Doogee",img:imgs.doogee,inStock:true},
+  {id:1420,name:"Oukitel WP62 12/512 Black",tab:"rugged",sub:"Oukitel",img:imgs.oukitel,inStock:true},
   {id:1430,name:"Ulefone ARMOR 27 PRO 24/256 Black",tab:"rugged",sub:"Ulefone",img:imgs.ulefone,inStock:true},
   {id:1431,name:"Ulefone ARMOR 30 Pro 16/512 Black",tab:"rugged",sub:"Ulefone",img:imgs.ulefone,inStock:true},
 ];
@@ -828,154 +588,101 @@ const services = [
   {id:'s5',name:"Диагностика",desc:"Полная проверка устройства перед покупкой",icon:"🔍"},
 ];
 
-// ===== RENDER =====
-function getSubsForTab(tab) {
-  return [...new Set(allProducts.filter(p => p.tab === tab).map(p => p.sub))];
-}
+function getSubsForTab(tab) { return [...new Set(allProducts.filter(p=>p.tab===tab).map(p=>p.sub))]; }
 function renderSubFilters() {
   const subs = getSubsForTab(currentTab);
   document.getElementById('subFilters').innerHTML =
     '<button class="sub-btn active" onclick="setSub(\'all\',this)">Все</button>' +
-    subs.map(s => '<button class="sub-btn" onclick="setSub(\'' + s + '\',this)">' + s + '</button>').join('');
+    subs.map(s=>'<button class="sub-btn" onclick="setSub(\''+s+'\',this)">'+s+'</button>').join('');
 }
-function setSub(sub, btn) {
-  currentSub = sub;
-  document.querySelectorAll('.sub-btn').forEach(b => b.classList.remove('active'));
+function setSub(sub,btn) {
+  currentSub=sub;
+  document.querySelectorAll('.sub-btn').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
   filterProducts();
 }
 function filterProducts() {
   const q = document.getElementById('search').value.toLowerCase();
-  let list;
-  if (q) {
-    list = allProducts.filter(p => p.name.toLowerCase().includes(q));
-  } else {
-    list = allProducts.filter(p => p.tab === currentTab && (currentSub === 'all' || p.sub === currentSub));
-  }
-  list = list.slice().sort((a, b) => {
-    const sa = getModelScore(a.name), sb = getModelScore(b.name);
-    if (sb !== sa) return sb - sa;
-    return getStorageMB(a.name) - getStorageMB(b.name);
-  });
+  let list = q ? allProducts.filter(p=>p.name.toLowerCase().includes(q)) : allProducts.filter(p=>p.tab===currentTab&&(currentSub==='all'||p.sub===currentSub));
+  list = list.slice().sort((a,b)=>{ const sa=getModelScore(a.name),sb=getModelScore(b.name); if(sb!==sa)return sb-sa; return getStorageMB(a.name)-getStorageMB(b.name); });
   renderProducts(list);
 }
 function renderProducts(list) {
-  document.getElementById('resultsCount').textContent = 'Найдено: ' + list.length + ' товаров';
-  document.getElementById('catalog').style.display = 'grid';
-  document.getElementById('catalog').innerHTML = list.map(p => {
-    const src = getProductImage(p);
-    const inStock = stockOverrides.hasOwnProperty(p.id) ? stockOverrides[p.id] : p.inStock;
-    return '<div class="card ' + (inStock ? '' : 'out-of-stock') + '">' +
-      '<button class="edit-btn" onclick="openUpload(' + p.id + ')">✏️ Фото</button>' +
-'<button class="stock-btn" onclick="toggleStock(' + p.id + ')" style="position:absolute;top:6px;left:6px;background:' + (inStock ? 'rgba(46,125,50,0.85)' : 'rgba(198,40,40,0.85)') + ';color:#fff;border:none;border-radius:8px;padding:4px 8px;font-size:11px;cursor:pointer;display:none;z-index:10">' + (inStock ? '✓ Есть' : '✗ Нет') + '</button>' +
-      '<img class="card-img" src="' + src + '" alt="' + p.name + '" onerror="this.style.display=\'none\'">' +
+  document.getElementById('resultsCount').textContent='Найдено: '+list.length+' товаров';
+  document.getElementById('catalog').style.display='grid';
+  document.getElementById('catalog').innerHTML=list.map(p=>{
+    const src=getProductImage(p);
+    const inStock=stockOverrides.hasOwnProperty(p.id)?stockOverrides[p.id]:p.inStock;
+    const stockColor=inStock?'rgba(46,125,50,0.85)':'rgba(198,40,40,0.85)';
+    const stockLabel=inStock?'✓ Есть':'✗ Нет';
+    return '<div class="card '+(inStock?'':'out-of-stock')+'">' +
+      '<button class="stock-btn" style="background:'+stockColor+'" onclick="toggleStock('+p.id+')">'+stockLabel+'</button>' +
+      '<button class="edit-btn" onclick="openUpload('+p.id+')">✏️ Фото</button>' +
+      '<img class="card-img" src="'+src+'" alt="'+p.name+'" onerror="this.style.display=\'none\'">' +
       '<div class="card-body">' +
-      '<div class="card-name">' + p.name + '</div>' +
-      '<div class="stock-badge ' + (inStock ? 'in-stock' : 'no-stock') + '">' + (inStock ? '✓ В наличии' : '✗ Нет') + '</div>' +
-      '<button class="add-btn" onclick="addToCart(' + p.id + ')" ' + (inStock ? '' : 'disabled') + '>' +
-      (inStock ? 'Заказать' : 'Нет в наличии') + '</button></div></div>';
+      '<div class="card-name">'+p.name+'</div>' +
+      '<div class="stock-badge '+(inStock?'in-stock':'no-stock')+'">'+(inStock?'✓ В наличии':'✗ Нет')+'</div>' +
+      '<button class="add-btn" onclick="addToCart('+p.id+')" '+(inStock?'':'disabled')+'>'+(inStock?'Заказать':'Нет в наличии')+'</button>' +
+      '</div></div>';
   }).join('');
 }
 function renderServices() {
-  document.getElementById('catalog').style.display = 'block';
-  document.getElementById('catalog').innerHTML = '<div class="services-grid">' +
-    services.map(s =>
-      '<div class="service-card"><div class="service-info"><div class="service-name">' + s.icon + ' ' + s.name + '</div>' +
-      '<div class="service-desc">' + s.desc + '</div></div>' +
-      '<button class="service-btn" onclick="orderService(\'' + s.id + '\')">Записаться</button></div>'
-    ).join('') + '</div>';
+  document.getElementById('catalog').style.display='block';
+  document.getElementById('catalog').innerHTML='<div class="services-grid">'+
+    services.map(s=>'<div class="service-card"><div class="service-info"><div class="service-name">'+s.icon+' '+s.name+'</div><div class="service-desc">'+s.desc+'</div></div><button class="service-btn" onclick="orderService(\''+s.id+'\')">Записаться</button></div>').join('')+'</div>';
 }
 
-// ===== CART =====
 function addToCart(id) {
-  const p = allProducts.find(x => x.id === id);
-  const ex = cart.find(x => x.id === id);
-  if (ex) ex.qty++; else cart.push({...p, qty: 1});
+  const p=allProducts.find(x=>x.id===id);
+  const ex=cart.find(x=>x.id===id);
+  if(ex)ex.qty++; else cart.push({...p,qty:1});
   updateCartBar();
 }
 function updateCartBar() {
-  const count = cart.reduce((s, p) => s + p.qty, 0);
-  document.getElementById('cartCount').textContent = count;
-  document.getElementById('cartBar').classList.toggle('visible', count > 0);
+  const count=cart.reduce((s,p)=>s+p.qty,0);
+  document.getElementById('cartCount').textContent=count;
+  document.getElementById('cartBar').classList.toggle('visible',count>0);
 }
 function openCart() {
-  const el = document.createElement('div');
-  el.className = 'cart-overlay'; el.id = 'cartOverlay';
-  el.innerHTML = '<div class="cart-sheet">' +
-    '<h2>🛒 Корзина</h2>' +
-    '<div id="cartItems"></div>' +
-    '<div class="cart-total" id="cartTotal"></div>' +
-    '<button class="cart-send" onclick="sendCart()">Отправить заказ менеджеру</button>' +
-    '<button class="cart-close" onclick="closeCart()">Закрыть</button>' +
-    '</div>';
+  const el=document.createElement('div');
+  el.className='cart-overlay'; el.id='cartOverlay';
+  el.innerHTML='<div class="cart-sheet"><h2>🛒 Корзина</h2><div id="cartItems"></div><div class="cart-total" id="cartTotal"></div><button class="cart-send" onclick="sendCart()">Отправить заказ менеджеру</button><button class="cart-close" onclick="closeCart()">Закрыть</button></div>';
   document.body.appendChild(el);
   renderCart();
 }
-function closeCart() { const el = document.getElementById('cartOverlay'); if (el) el.remove(); }
+function closeCart() { const el=document.getElementById('cartOverlay'); if(el)el.remove(); }
 function renderCart() {
-  const el = document.getElementById('cartItems');
-  if (!el) return;
-  if (cart.length === 0) {
-    el.innerHTML = '<div style="text-align:center;padding:30px;color:#86868b">Корзина пуста</div>';
-    document.getElementById('cartTotal').textContent = '';
-    return;
-  }
-  el.innerHTML = cart.map(p =>
-    '<div class="cart-item">' +
-    '<div class="cart-item-name">' + p.name + '</div>' +
-    '<div class="cart-qty">' +
-    '<button onclick="changeQty(' + p.id + ',-1)">−</button>' +
-    '<span>' + p.qty + '</span>' +
-    '<button onclick="changeQty(' + p.id + ',1)">+</button>' +
-    '</div>' +
-    '<button class="cart-del" onclick="removeFromCart(' + p.id + ')">🗑</button>' +
-    '</div>'
-  ).join('');
-  document.getElementById('cartTotal').textContent = 'Товаров: ' + cart.reduce((s,p) => s+p.qty, 0) + ' шт.';
+  const el=document.getElementById('cartItems'); if(!el)return;
+  if(cart.length===0){el.innerHTML='<div style="text-align:center;padding:30px;color:#86868b">Корзина пуста</div>';document.getElementById('cartTotal').textContent='';return;}
+  el.innerHTML=cart.map(p=>'<div class="cart-item"><div class="cart-item-name">'+p.name+'</div><div class="cart-qty"><button onclick="changeQty('+p.id+',-1)">−</button><span>'+p.qty+'</span><button onclick="changeQty('+p.id+',1)">+</button></div><button class="cart-del" onclick="removeFromCart('+p.id+')">🗑</button></div>').join('');
+  document.getElementById('cartTotal').textContent='Товаров: '+cart.reduce((s,p)=>s+p.qty,0)+' шт.';
 }
-function changeQty(id, delta) {
-  const item = cart.find(x => x.id === id);
-  if (!item) return;
-  item.qty += delta;
-  if (item.qty <= 0) cart = cart.filter(x => x.id !== id);
-  updateCartBar();
-  renderCart();
+function changeQty(id,delta) {
+  const item=cart.find(x=>x.id===id); if(!item)return;
+  item.qty+=delta;
+  if(item.qty<=0)cart=cart.filter(x=>x.id!==id);
+  updateCartBar(); renderCart();
 }
-function removeFromCart(id) {
-  cart = cart.filter(x => x.id !== id);
-  updateCartBar();
-  renderCart();
-}
+function removeFromCart(id) { cart=cart.filter(x=>x.id!==id); updateCartBar(); renderCart(); }
 function sendCart() {
-  if (cart.length === 0) return;
-  const user = tg.initDataUnsafe && tg.initDataUnsafe.user;
-  const username = user ? (user.username ? '@' + user.username : user.first_name) : 'Неизвестный';
-  const userId = user ? user.id : 'N/A';
-  const text = cart.map(p => '• ' + p.name + ' x' + p.qty).join('\n');
-  fetch('https://api.telegram.org/bot' + BOT_TOKEN + '/sendMessage', {
-    method: 'POST', headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({chat_id: MANAGER_ID, text: '🛒 Новый заказ!\n\n👤 ' + username + ' (ID: ' + userId + ')\n\n' + text})
-  }).then(() => {
-    tg.showAlert('✅ Заказ отправлен! Менеджер свяжется с вами.');
-    cart = []; updateCartBar(); closeCart();
-  });
+  if(cart.length===0)return;
+  const user=tg.initDataUnsafe&&tg.initDataUnsafe.user;
+  const username=user?(user.username?'@'+user.username:user.first_name):'Неизвестный';
+  const userId=user?user.id:'N/A';
+  const text=cart.map(p=>'• '+p.name+' x'+p.qty).join('\n');
+  fetch('https://api.telegram.org/bot'+BOT_TOKEN+'/sendMessage',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({chat_id:MANAGER_ID,text:'🛒 Новый заказ!\n\n👤 '+username+' (ID: '+userId+')\n\n'+text})})
+    .then(()=>{tg.showAlert('✅ Заказ отправлен!');cart=[];updateCartBar();closeCart();});
 }
 function orderService(id) {
-  const s = services.find(x => x.id === id);
-  const user = tg.initDataUnsafe && tg.initDataUnsafe.user;
-  const username = user ? (user.username ? '@' + user.username : user.first_name) : 'Неизвестный';
-  const userId = user ? user.id : 'N/A';
-  tg.showConfirm('Записаться на:\n' + s.name + '\nМенеджер свяжется. Подтвердить?', function(ok) {
-    if (ok) {
-      fetch('https://api.telegram.org/bot' + BOT_TOKEN + '/sendMessage', {
-        method: 'POST', headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({chat_id: MANAGER_ID, text: '🔧 Запрос на услугу!\n\n👤 ' + username + ' (ID: ' + userId + ')\n📋 ' + s.name})
-      }).then(() => { tg.showAlert('✅ Запрос отправлен!'); });
-    }
+  const s=services.find(x=>x.id===id);
+  const user=tg.initDataUnsafe&&tg.initDataUnsafe.user;
+  const username=user?(user.username?'@'+user.username:user.first_name):'Неизвестный';
+  const userId=user?user.id:'N/A';
+  tg.showConfirm('Записаться на:\n'+s.name+'\nМенеджер свяжется. Подтвердить?',function(ok){
+    if(ok)fetch('https://api.telegram.org/bot'+BOT_TOKEN+'/sendMessage',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({chat_id:MANAGER_ID,text:'🔧 Запрос!\n\n👤 '+username+' (ID: '+userId+')\n📋 '+s.name})}).then(()=>{tg.showAlert('✅ Запрос отправлен!');});
   });
 }
 
-// INIT
 renderSubFilters();
 filterProducts();
 </script>
