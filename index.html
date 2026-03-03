@@ -176,11 +176,11 @@ function uploadPhoto() {
   const file = document.getElementById('photoFile').files[0];
   if (!file) { alert('Выберите файл!'); return; }
   document.getElementById('uploadProgress').textContent = '⏳ Загружаю...';
-  const fd = new FormData();
+ const fd = new FormData();
   fd.append('file', file);
   fd.append('upload_preset', UPLOAD_PRESET);
-  fd.append('public_id', 'product_' + editingProductId);
-  fd.append('overwrite', 'true');
+  fd.append('public_id', 'store457/product_' + editingProductId);
+  fd.append('tags', 'store457');
   fetch('https://api.cloudinary.com/v1_1/' + CLOUD_NAME + '/image/upload', { method: 'POST', body: fd })
     .then(r => r.json()).then(data => {
       if (data.secure_url) {
