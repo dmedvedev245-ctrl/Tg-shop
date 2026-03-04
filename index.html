@@ -606,6 +606,9 @@ function openProductCard(baseModel) {
   const memSet = new Set();
   variants.forEach(p => { const m = p.name.match(/(\d+\/\d+|\d+(?:Gb|Tb))/i); if(m) memSet.add(m[1]); });
   const mems = [...memSet];
+  const simSet = new Set();
+  variants.forEach(p => { const m = p.name.match(/\((eSIM\+SIM|eSIM)\)/i); if(m) simSet.add(m[1]); });
+  const sims = [...simSet];
   const varSet = new Set();
   variants.forEach(p => { const after = p.name.replace(baseModel,'').replace(/\s+\d+\/\d+\s*/,'').replace(/\s+\d+(?:Gb|Tb)\s*/i,'').trim(); if(after) varSet.add(after); });
   const varOpts = [...varSet];
@@ -618,7 +621,8 @@ function openProductCard(baseModel) {
     '<img id="pcImg" src="'+getProductImage(first)+'" style="max-width:100%;max-height:100%;object-fit:contain;touch-action:pinch-zoom"></div>' +
     '<div style="font-size:18px;font-weight:700;margin-bottom:16px;text-align:center">'+baseModel+'</div>' +
     (mems.length>1?'<div style="margin-bottom:12px"><div style="font-size:13px;font-weight:600;color:#86868b;margin-bottom:8px">Память</div><div style="display:flex;flex-wrap:wrap;gap:8px" id="memOptions">'+mems.map((m,i)=>'<button onclick="selectMem(\''+baseModel+'\',\''+m+'\')" class="var-chip'+(i===0?' active':'')+'" data-mem="'+m+'">'+m+'</button>').join('')+'</div></div>':'') +
-    (varOpts.length>1?'<div style="margin-bottom:16px"><div style="font-size:13px;font-weight:600;color:#86868b;margin-bottom:8px">Вариант</div><div style="display:flex;flex-wrap:wrap;gap:8px" id="varOptions">'+varOpts.map((v,i)=>'<button onclick="selectVar(\''+baseModel+'\',\''+v+'\')" class="var-chip'+(i===0?' active':'')+'" data-var="'+v+'">'+v+'</button>').join('')+'</div></div>':'') +
+    (sims.length>1?'<div style="margin-bottom:12px"><div style="font-size:13px;font-weight:600;color:#86868b;margin-bottom:8px">SIM</div><div style="display:flex;flex-wrap:wrap;gap:8px" id="simOptions">'+sims.map((s,i)=>'<button onclick="selectSim(\''+baseModel+'\',\''+s+'\')" class="var-chip'+(i===0?' active':'')+'" data-sim="'+s+'">'+s+'</button>').join('')+'</div></div>':'') +
+(varOpts.length>1?'<div style="margin-bottom:16px"><div style="font-size:13px;font-weight:600;color:#86868b;margin-bottom:8px">Вариант</div><div style="display:flex;flex-wrap:wrap;gap:8px" id="varOptions">'+varOpts.map((v,i)=>'<button onclick="selectVar(\''+baseModel+'\',\''+v+'\')" class="var-chip'+(i===0?' active':'')+'" data-var="'+v+'">'+v+'</button>').join('')+'</div></div>':'') +
     '<div id="pcStatus" style="margin-bottom:8px"></div>' +
     '<div style="font-size:11px;color:#86868b;margin-bottom:12px;text-align:center">💬 Цена по запросу у менеджера</div>' +
     '<button id="pcOrderBtn" class="cart-send" onclick="addToCartFromCard(\''+baseModel+'\')">Заказать</button>' +
@@ -626,6 +630,7 @@ function openProductCard(baseModel) {
     '</div>';
   document.body.appendChild(el);
   window._selMem = mems[0]||null;
+  window._selSim = sims[0]||null;
   window._selVar = varOpts[0]||null;
   updateCardStatus(baseModel);
 }
@@ -633,6 +638,11 @@ function closeProductCard() { const el=document.getElementById('productCardOverl
 function selectMem(baseModel,mem) {
   window._selMem=mem;
   document.querySelectorAll('#memOptions .var-chip').forEach(b=>b.classList.toggle('active',b.dataset.mem===mem));
+  updateCardStatus(baseModel);
+}
+function selectSim(baseModel,sim) {
+  window._selSim=sim;
+  document.querySelectorAll('#simOptions .var-chip').forEach(b=>b.classList.toggle('active',b.dataset.sim===sim));
   updateCardStatus(baseModel);
 }
 function selectVar(baseModel,v) {
@@ -643,6 +653,7 @@ function selectVar(baseModel,v) {
 function getSelectedProduct(baseModel) {
   let filtered=allProducts.filter(p=>getBaseModel(p.name)===baseModel);
   if(window._selMem) filtered=filtered.filter(p=>p.name.includes(window._selMem));
+  if(window._selSim) filtered=filtered.filter(p=>p.name.includes(window._selSim));
   if(window._selVar) filtered=filtered.filter(p=>p.name.includes(window._selVar));
   return filtered[0]||allProducts.find(p=>getBaseModel(p.name)===baseModel);
 }
