@@ -610,7 +610,7 @@ function openProductCard(baseModel) {
   variants.forEach(p => { const m = p.name.match(/\((eSIM\+SIM|eSIM)\)/i); if(m) simSet.add(m[1]); });
   const sims = [...simSet];
   const varSet = new Set();
-  variants.forEach(p => { const after = p.name.replace(baseModel,'').replace(/\s+\d+\/\d+\s*/,'').replace(/\s+\d+(?:Gb|Tb)\s*/i,'').trim(); if(after) varSet.add(after); });
+  variants.forEach(p => { const after = p.name.replace(baseModel,'').replace(/\s+\d+\/\d+\s*/,'').replace(/\s+\d+(?:Gb|Tb)\s*/i,'').replace(/\s*\(eSIM\+SIM\)|\s*\(eSIM\)/gi,'').trim(); if(after) varSet.add(after); });
   const varOpts = [...varSet];
   const first = variants.find(p => stockOverrides.hasOwnProperty(p.id)?stockOverrides[p.id]:p.inStock) || variants[0];
   const el = document.createElement('div');
@@ -659,6 +659,25 @@ function getSelectedProduct(baseModel) {
 }
 function updateCardStatus(baseModel) {
   const p=getSelectedProduct(baseModel); if(!p) return;
+  const remaining=allProducts.filter(x=>getBaseModel(x.name)===baseModel);
+  // Обновляем доступные чипы памяти
+  document.querySelectorAll('#memOptions .var-chip').forEach(b=>{
+    const m=b.dataset.mem;
+    const exists=remaining.filter(x=>x.name.includes(m)&&(!window._selSim||x.name.includes(window._selSim))&&(!window._selVar||x.name.includes(window._selVar))).length>0;
+    b.style.display=exists?'':'none';
+  });
+  // Обновляем доступные чипы SIM
+  document.querySelectorAll('#simOptions .var-chip').forEach(b=>{
+    const s=b.dataset.sim;
+    const exists=remaining.filter(x=>x.name.includes(s)&&(!window._selMem||x.name.includes(window._selMem))&&(!window._selVar||x.name.includes(window._selVar))).length>0;
+    b.style.display=exists?'':'none';
+  });
+  // Обновляем доступные чипы цвета
+  document.querySelectorAll('#varOptions .var-chip').forEach(b=>{
+    const v=b.dataset.var;
+    const exists=remaining.filter(x=>x.name.includes(v)&&(!window._selMem||x.name.includes(window._selMem))&&(!window._selSim||x.name.includes(window._selSim))).length>0;
+    b.style.display=exists?'':'none';
+  });
   const inStock=stockOverrides.hasOwnProperty(p.id)?stockOverrides[p.id]:p.inStock;
   const s=document.getElementById('pcStatus'); const b=document.getElementById('pcOrderBtn');
   if(s) s.innerHTML='<span class="stock-badge '+(inStock?'in-stock':'no-stock')+'">'+(inStock?'✓ В наличии':'✗ Нет в наличии')+'</span>';
