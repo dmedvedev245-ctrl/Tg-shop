@@ -94,7 +94,7 @@ header{background:rgba(255,255,255,0.9);backdrop-filter:blur(20px);padding:14px 
   ⚡ Режим администратора — нажмите ✏️ для изменения фото
   <button onclick="exitAdmin()" style="margin-left:12px;background:rgba(0,0,0,0.2);border:none;color:#fff;padding:3px 10px;border-radius:8px;cursor:pointer">Выйти</button>
 </div>
-<div class="search-bar"><input type="text" id="search" placeholder="Поиск товаров..." oninput="filterProducts()"></div>
+<div class="search-bar" style="display:flex;gap:8px;align-items:center"><input type="text" id="search" placeholder="🔍 Поиск по всем категориям..." oninput="filterProducts()" style="flex:1;padding:9px 14px;border-radius:10px;border:none;background:#f2f2f7;font-size:15px;outline:none"><button id="clearBtn" onclick="clearSearch()" style="display:none;background:none;border:none;font-size:20px;cursor:pointer;color:#86868b">✕</button></div>
 <div class="cat-bar">
   <button class="cat-btn" onclick="openCatMenu()">☰ Категории</button>
   <span class="cat-label" id="catLabel">📱 Телефоны</span>
@@ -588,7 +588,12 @@ const services = [
   {id:'s4',name:"Настройка устройства",desc:"Первоначальная настройка нового телефона или планшета",icon:"⚙️"},
   {id:'s5',name:"Диагностика",desc:"Полная проверка устройства перед покупкой",icon:"🔍"},
 ];
-
+const catNames = {phones:'📱',tablets:'📟',laptops:'💻',watches:'⌚',headphones:'🎧',speakers:'🔊',accessories:'🔌',vacuum:'🧹',gaming:'🎮',cameras:'📷',rugged:'🛡'};
+function clearSearch() {
+  document.getElementById('search').value='';
+  document.getElementById('clearBtn').style.display='none';
+  renderSubFilters(); filterProducts();
+}
 function getSubsForTab(tab) { return [...new Set(allProducts.filter(p=>p.tab===tab).map(p=>p.sub))]; }
 function renderSubFilters() {
   const subs = getSubsForTab(currentTab);
@@ -604,6 +609,8 @@ function setSub(sub,btn) {
 }
 function filterProducts() {
   const q = document.getElementById('search').value.toLowerCase();
+  const clearBtn = document.getElementById('clearBtn');
+  if(clearBtn) clearBtn.style.display = q ? 'block' : 'none';
   let list = q ? allProducts.filter(p=>p.name.toLowerCase().includes(q)) : allProducts.filter(p=>p.tab===currentTab&&(currentSub==='all'||p.sub===currentSub));
   list = list.slice().sort((a,b)=>{ const sa=getModelScore(a.name),sb=getModelScore(b.name); if(sb!==sa)return sb-sa; return getStorageMB(a.name)-getStorageMB(b.name); });
   renderProducts(list);
@@ -622,6 +629,7 @@ function renderProducts(list) {
       '<img class="card-img" src="'+src+'" alt="'+p.name+'" onerror="this.style.display=\'none\'">' +
       '<div class="card-body">' +
       '<div class="card-name">'+p.name+'</div>' +
+(document.getElementById('search').value ? '<div style="font-size:10px;color:#86868b;margin-bottom:2px">'+(catNames[p.tab]||'')+'</div>' : '') +
       '<div class="stock-badge '+(inStock?'in-stock':'no-stock')+'">'+(inStock?'✓ В наличии':'✗ Нет')+'</div>' +
       '<button class="add-btn" onclick="addToCart('+p.id+')" '+(inStock?'':'disabled')+'>'+(inStock?'Заказать':'Нет в наличии')+'</button>' +
       '</div></div>';
