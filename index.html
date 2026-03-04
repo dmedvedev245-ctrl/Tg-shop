@@ -81,6 +81,16 @@ header{background:rgba(255,255,255,0.9);backdrop-filter:blur(20px);padding:14px 
 .cart-total{font-size:15px;font-weight:600;text-align:center;padding:14px 0;color:#86868b}
 .cart-send{width:100%;padding:14px;background:#1d1d1f;color:#fff;border:none;border-radius:14px;font-size:16px;font-weight:700;cursor:pointer;margin-top:4px}
 .cart-close{width:100%;padding:10px;background:#f5f5f7;color:#1d1d1f;border:none;border-radius:14px;font-size:14px;cursor:pointer;margin-top:8px}
+.banner-wrap{overflow:hidden;margin:10px 16px;border-radius:16px}
+.banner-track{display:flex;transition:transform 0.5s cubic-bezier(0.4,0,0.2,1)}
+.banner-slide{min-width:100%;border-radius:16px;overflow:hidden;position:relative;height:160px}
+.banner-slide img{width:100%;height:100%;object-fit:cover}
+.banner-label{position:absolute;bottom:0;left:0;right:0;padding:12px 16px;background:linear-gradient(transparent,rgba(0,0,0,0.7));color:#fff}
+.banner-tag{font-size:11px;font-weight:700;padding:3px 8px;border-radius:20px;display:inline-block;margin-bottom:4px}
+.banner-title{font-size:15px;font-weight:700;display:block}
+.banner-dots{display:flex;justify-content:center;gap:6px;margin-top:8px}
+.banner-dot{width:6px;height:6px;border-radius:50%;background:#d2d2d7;cursor:pointer;transition:all 0.3s}
+.banner-dot.active{width:18px;background:#1d1d1f}
 .var-chip{padding:8px 14px;border-radius:20px;border:1.5px solid #d2d2d7;background:#fff;font-size:13px;cursor:pointer;font-weight:500}
 .var-chip.active{background:#1d1d1f;color:#fff;border-color:#1d1d1f}
 </style>
@@ -807,7 +817,22 @@ function orderService(id) {
   });
 }
 
-
+let currentSlide = 0;
+const totalSlides = 4;
+function goSlide(n) {
+  currentSlide = n;
+  document.getElementById('bannerTrack').style.transform = 'translateX(-' + (n * 100) + '%)';
+  document.querySelectorAll('.banner-dot').forEach((d,i) => d.classList.toggle('active', i === n));
+}
+setInterval(() => { goSlide((currentSlide + 1) % totalSlides); }, 3500);
+// Свайп на баннере
+const bw = document.getElementById('bannerWrap');
+let bStartX = 0;
+bw.addEventListener('touchstart', e => bStartX = e.touches[0].clientX, {passive:true});
+bw.addEventListener('touchend', e => {
+  const diff = bStartX - e.changedTouches[0].clientX;
+  if (Math.abs(diff) > 40) goSlide(diff > 0 ? (currentSlide+1)%totalSlides : (currentSlide-1+totalSlides)%totalSlides);
+}, {passive:true});
 renderSubFilters();
 filterProducts();
 </script>
