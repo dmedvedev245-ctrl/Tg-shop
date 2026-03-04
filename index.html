@@ -130,43 +130,13 @@ header{background:rgba(255,255,255,0.9);backdrop-filter:blur(20px);padding:14px 
   </div>
 </div>
 <div class="banner-wrap" id="bannerWrap">
-  <div class="banner-track" id="bannerTrack">
-    <div class="banner-slide">
-      <img src="https://dmedvedev245-ctrl.github.io/Tg-shop/iphone-17-pro-17-pro-max-hero.png" style="background:#1d1d1f">
-      <div class="banner-label">
-        <span class="banner-tag" style="background:#ff3b30">🔥 SALE</span>
-        <span class="banner-title">iPhone 17 Pro Max — лучшая цена</span>
-      </div>
-    </div>
-    <div class="banner-slide">
-      <img src="https://images.samsung.com/is/image/samsung/p6pim/levant/2501/gallery/levant-galaxy-s25-s931-sm-s931bzadeub-thumb-544547466?$650_519_PNG$" style="background:#0071e3">
-      <div class="banner-label">
-        <span class="banner-tag" style="background:#ff9500">⭐ ХИТ ПРОДАЖ</span>
-        <span class="banner-title">Samsung S25 Ultra — в наличии</span>
-      </div>
-    </div>
-    <div class="banner-slide">
-      <img src="https://store.storeimages.cdn-apple.com/4668/as-images.apple.com/is/airpods-pro-2-hero-select-202409?wid=400&hei=400&fmt=jpeg" style="background:#f5f5f7">
-      <div class="banner-label">
-        <span class="banner-tag" style="background:#34c759">✨ НОВИНКА</span>
-        <span class="banner-title">AirPods Pro 3 — только что в продаже</span>
-      </div>
-    </div>
-    <div class="banner-slide">
-      <img src="https://store.storeimages.cdn-apple.com/4668/as-images.apple.com/is/mbp14-spaceblack-select-202310?wid=400&hei=400&fmt=jpeg" style="background:#1d1d1f">
-      <div class="banner-label">
-        <span class="banner-tag" style="background:#0071e3">💻 АКТУАЛЬНО</span>
-        <span class="banner-title">MacBook Pro M5 — свежее поступление</span>
-      </div>
-    </div>
-  </div>
-  <div class="banner-dots" id="bannerDots">
-    <div class="banner-dot active" onclick="goSlide(0)"></div>
-    <div class="banner-dot" onclick="goSlide(1)"></div>
-    <div class="banner-dot" onclick="goSlide(2)"></div>
-    <div class="banner-dot" onclick="goSlide(3)"></div>
+  <div class="banner-track" id="bannerTrack"></div>
+  <div style="display:flex;justify-content:space-between;align-items:center;padding:0 4px">
+    <div class="banner-dots" id="bannerDots"></div>
+    <button id="addSlideBtn" onclick="addBannerSlide()" style="display:none;background:none;border:none;font-size:20px;cursor:pointer">➕</button>
   </div>
 </div>
+<div class="sub-filters" id="subFilters"></div>
 
 <div class="sub-filters" id="subFilters"></div>
 <div class="results-count" id="resultsCount"></div>
@@ -201,8 +171,11 @@ let stockOverrides = JSON.parse(localStorage.getItem('store457_stock') || '{}');
 
 fetch(NPOINT_URL + '?t=' + Date.now())
   .then(r => r.json())
-  .then(data => { customPhotos = data || {}; filterProducts(); })
-  .catch(() => {});
+  .then(data => {
+    customPhotos = {...(data||{})};
+    if (customPhotos._banners) { banners = customPhotos._banners; delete customPhotos._banners; }
+    renderBanner(); filterProducts();
+  }).catch(() => { renderBanner(); });
 
 document.getElementById('headerTitle').addEventListener('click', () => {
   tapCount++;
@@ -276,7 +249,7 @@ function uploadPhoto() {
     .then(data => {
       if (data.secure_url) {
         customPhotos[editingProductId] = data.secure_url + '?t=' + Date.now();
-        fetch(NPOINT_URL, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(customPhotos) })
+        fetch(NPOINT_URL, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({...customPhotos, _banners: banners}) })
           .then(() => {
             document.getElementById('uploadProgress').textContent = '✅ Готово!';
             setTimeout(() => { closeUpload(); filterProducts(); }, 700);
@@ -287,7 +260,7 @@ function uploadPhoto() {
 function deletePhoto(productId) {
   delete customPhotos[productId];
   delete customPhotos[String(productId)];
-  fetch(NPOINT_URL, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(customPhotos) })
+  fetch(NPOINT_URL, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({...customPhotos, _banners: banners}) })
     .then(() => { closeUpload(); filterProducts(); tg.showAlert('✅ Фото удалено!'); });
 }
 
@@ -857,21 +830,98 @@ function orderService(id) {
 }
 
 let currentSlide = 0;
-const totalSlides = 4;
+let bannerTimer;
+let banners = [
+  {img:'https://dmedvedev245-ctrl.github.io/Tg-shop/iphone-17-pro-17-pro-max-hero.png',bg:'#1d1d1f',tag:'🔥 SALE',tagColor:'#ff3b30',title:'iPhone 17 Pro Max — лучшая цена'},
+  {img:'https://images.samsung.com/is/image/samsung/p6pim/levant/2501/gallery/levant-galaxy-s25-s931-sm-s931bzadeub-thumb-544547466?$650_519_PNG$',bg:'#0071e3',tag:'⭐ ХИТ ПРОДАЖ',tagColor:'#ff9500',title:'Samsung S25 Ultra — в наличии'},
+  {img:'https://store.storeimages.cdn-apple.com/4668/as-images.apple.com/is/airpods-pro-2-hero-select-202409?wid=400&hei=400&fmt=jpeg',bg:'#f5f5f7',tag:'✨ НОВИНКА',tagColor:'#34c759',title:'AirPods Pro 3 — только что в продаже'},
+  {img:'https://store.storeimages.cdn-apple.com/4668/as-images.apple.com/is/mbp14-spaceblack-select-202310?wid=400&hei=400&fmt=jpeg',bg:'#1d1d1f',tag:'💻 АКТУАЛЬНО',tagColor:'#0071e3',title:'MacBook Pro M5 — свежее поступление'},
+];
+
+function renderBanner() {
+  const track = document.getElementById('bannerTrack');
+  const dots = document.getElementById('bannerDots');
+  const addBtn = document.getElementById('addSlideBtn');
+  if (!track) return;
+  track.innerHTML = banners.map((b,i) =>
+    '<div class="banner-slide" style="background:'+b.bg+'">' +
+    '<img src="'+b.img+'" style="width:100%;height:100%;object-fit:cover">' +
+    '<div class="banner-label">' +
+    '<span class="banner-tag" style="background:'+b.tagColor+'">'+b.tag+'</span>' +
+    '<span class="banner-title">'+b.title+'</span></div>' +
+    (isAdmin ? '<button onclick="editBannerSlide('+i+')" style="position:absolute;top:8px;right:8px;background:rgba(0,0,0,0.6);color:#fff;border:none;border-radius:8px;padding:4px 10px;font-size:12px;cursor:pointer">✏️ Изменить</button>' +
+    '<button onclick="deleteBannerSlide('+i+')" style="position:absolute;top:8px;left:8px;background:rgba(198,40,40,0.8);color:#fff;border:none;border-radius:8px;padding:4px 10px;font-size:12px;cursor:pointer">🗑</button>' : '') +
+    '</div>'
+  ).join('');
+  dots.innerHTML = banners.map((_,i) => '<div class="banner-dot'+(i===0?' active':'')+'" onclick="goSlide('+i+')"></div>').join('');
+  if (addBtn) addBtn.style.display = isAdmin ? 'block' : 'none';
+  goSlide(0);
+  clearInterval(bannerTimer);
+  bannerTimer = setInterval(() => goSlide((currentSlide+1)%banners.length), 3500);
+  const bw = document.getElementById('bannerWrap');
+  let bStartX = 0;
+  bw.ontouchstart = e => bStartX = e.touches[0].clientX;
+  bw.ontouchend = e => { const diff = bStartX - e.changedTouches[0].clientX; if(Math.abs(diff)>40) goSlide(diff>0?(currentSlide+1)%banners.length:(currentSlide-1+banners.length)%banners.length); };
+}
+
 function goSlide(n) {
   currentSlide = n;
-  document.getElementById('bannerTrack').style.transform = 'translateX(-' + (n * 100) + '%)';
-  document.querySelectorAll('.banner-dot').forEach((d,i) => d.classList.toggle('active', i === n));
+  const track = document.getElementById('bannerTrack');
+  if (track) track.style.transform = 'translateX(-'+(n*100)+'%)';
+  document.querySelectorAll('.banner-dot').forEach((d,i) => d.classList.toggle('active', i===n));
 }
-setInterval(() => { goSlide((currentSlide + 1) % totalSlides); }, 3500);
-// Свайп на баннере
-const bw = document.getElementById('bannerWrap');
-let bStartX = 0;
-bw.addEventListener('touchstart', e => bStartX = e.touches[0].clientX, {passive:true});
-bw.addEventListener('touchend', e => {
-  const diff = bStartX - e.changedTouches[0].clientX;
-  if (Math.abs(diff) > 40) goSlide(diff > 0 ? (currentSlide+1)%totalSlides : (currentSlide-1+totalSlides)%totalSlides);
-}, {passive:true});
+
+function saveBanners(cb) {
+  fetch(NPOINT_URL, {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({...customPhotos, _banners: banners})}).then(()=>{ if(cb)cb(); });
+}
+
+function editBannerSlide(i) {
+  const b = banners[i];
+  const el = document.createElement('div');
+  el.className = 'upload-overlay'; el.id = 'bannerEditOverlay';
+  el.innerHTML = '<div class="upload-box" style="width:320px">' +
+    '<h3>✏️ Редактировать слайд</h3>' +
+    '<p style="margin-top:8px;margin-bottom:4px;font-size:12px;font-weight:600">Картинка (URL)</p>' +
+    '<input id="be_img" value="'+b.img+'" style="width:100%;padding:8px;border-radius:8px;border:1px solid #e0e0e0;font-size:12px;margin-bottom:8px">' +
+    '<p style="margin-bottom:4px;font-size:12px;font-weight:600">Цвет фона</p>' +
+    '<input id="be_bg" value="'+b.bg+'" style="width:100%;padding:8px;border-radius:8px;border:1px solid #e0e0e0;font-size:12px;margin-bottom:8px">' +
+    '<p style="margin-bottom:4px;font-size:12px;font-weight:600">Метка (тег)</p>' +
+    '<input id="be_tag" value="'+b.tag+'" style="width:100%;padding:8px;border-radius:8px;border:1px solid #e0e0e0;font-size:12px;margin-bottom:8px">' +
+    '<p style="margin-bottom:4px;font-size:12px;font-weight:600">Цвет метки</p>' +
+    '<input id="be_tagColor" value="'+b.tagColor+'" style="width:100%;padding:8px;border-radius:8px;border:1px solid #e0e0e0;font-size:12px;margin-bottom:8px">' +
+    '<p style="margin-bottom:4px;font-size:12px;font-weight:600">Заголовок</p>' +
+    '<input id="be_title" value="'+b.title+'" style="width:100%;padding:8px;border-radius:8px;border:1px solid #e0e0e0;font-size:12px;margin-bottom:12px">' +
+    '<button class="up-btn" onclick="saveBannerSlide('+i+')">💾 Сохранить</button>' +
+    '<button class="up-cancel" onclick="closeBannerEdit()">Отмена</button>' +
+    '<div id="bannerSaveStatus" class="upload-progress"></div>' +
+    '</div>';
+  document.body.appendChild(el);
+}
+
+function saveBannerSlide(i) {
+  banners[i] = {
+    img: document.getElementById('be_img').value,
+    bg: document.getElementById('be_bg').value,
+    tag: document.getElementById('be_tag').value,
+    tagColor: document.getElementById('be_tagColor').value,
+    title: document.getElementById('be_title').value,
+  };
+  document.getElementById('bannerSaveStatus').textContent = '⏳ Сохраняю...';
+  saveBanners(() => { closeBannerEdit(); renderBanner(); tg.showAlert('✅ Слайд обновлён!'); });
+}
+
+function closeBannerEdit() { const el=document.getElementById('bannerEditOverlay'); if(el)el.remove(); }
+
+function addBannerSlide() {
+  banners.push({img:'https://dmedvedev245-ctrl.github.io/Tg-shop/iphone-17-pro-17-pro-max-hero.png',bg:'#1d1d1f',tag:'🆕 НОВОЕ',tagColor:'#0071e3',title:'Новый слайд'});
+  saveBanners(() => { renderBanner(); editBannerSlide(banners.length-1); });
+}
+
+function deleteBannerSlide(i) {
+  if (banners.length <= 1) { tg.showAlert('Нельзя удалить последний слайд!'); return; }
+  banners.splice(i, 1);
+  saveBanners(() => { renderBanner(); tg.showAlert('✅ Слайд удалён!'); });
+}
 renderSubFilters();
 filterProducts();
 </script>
