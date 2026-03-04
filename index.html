@@ -631,7 +631,10 @@ function renderProducts(list) {
       '<div class="card-name">'+p.name+'</div>' +
 (document.getElementById('search').value ? '<div style="font-size:10px;color:#86868b;margin-bottom:2px">'+(catNames[p.tab]||'')+'</div>' : '') +
       '<div class="stock-badge '+(inStock?'in-stock':'no-stock')+'">'+(inStock?'✓ В наличии':'✗ Нет')+'</div>' +
-      '<button class="add-btn" onclick="addToCart('+p.id+')" '+(inStock?'':'disabled')+'>'+(inStock?'Заказать':'Нет в наличии')+'</button>' +
+      '<div style="display:flex;gap:6px;margin-top:auto">' +
+'<button class="add-btn" style="flex:1" onclick="addToCart('+p.id+')" '+(inStock?'':'disabled')+'>'+(inStock?'Заказать':'Нет в наличии')+'</button>' +
+'<button onclick="shareProduct('+p.id+')" style="padding:8px 10px;background:#f5f5f7;border:none;border-radius:10px;font-size:16px;cursor:pointer">📤</button>' +
+'</div>' +
       '</div></div>';
   }).join('');
 }
@@ -681,6 +684,16 @@ function sendCart() {
   const text=cart.map(p=>'• '+p.name+' x'+p.qty).join('\n');
   fetch('https://api.telegram.org/bot'+BOT_TOKEN+'/sendMessage',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({chat_id:MANAGER_ID,text:'🛒 Новый заказ!\n\n👤 '+username+' (ID: '+userId+')\n\n'+text})})
     .then(()=>{tg.showAlert('✅ Заказ отправлен!');cart=[];updateCartBar();closeCart();});
+}
+function shareProduct(id) {
+  const p = allProducts.find(x => x.id === id);
+  const text = '🛍 ' + p.name + '\n\nСмотри в магазине STORE 457!';
+  if (navigator.share) {
+    navigator.share({ title: p.name, text: text });
+  } else {
+    const url = 'https://t.me/share/url?url=https://t.me/Store_457_bot&text=' + encodeURIComponent(text);
+    window.open(url, '_blank');
+  }
 }
 function orderService(id) {
   const s=services.find(x=>x.id===id);
