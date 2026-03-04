@@ -198,6 +198,7 @@ function checkAdminPass() {
     document.getElementById('adminBar').classList.add('show');
     closeAdminLogin();
     filterProducts();
+    renderBanner();
   } else { alert('Неверный пароль!'); }
 }
 function closeAdminLogin() { const el = document.getElementById('adminLogin'); if (el) el.remove(); }
@@ -206,6 +207,7 @@ function exitAdmin() {
   document.body.classList.remove('admin-mode');
   document.getElementById('adminBar').classList.remove('show');
   filterProducts();
+  renderBanner();
 }
 
 function toggleStock(productId) {
