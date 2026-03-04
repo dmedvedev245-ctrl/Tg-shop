@@ -81,6 +81,8 @@ header{background:rgba(255,255,255,0.9);backdrop-filter:blur(20px);padding:14px 
 .cart-total{font-size:15px;font-weight:600;text-align:center;padding:14px 0;color:#86868b}
 .cart-send{width:100%;padding:14px;background:#1d1d1f;color:#fff;border:none;border-radius:14px;font-size:16px;font-weight:700;cursor:pointer;margin-top:4px}
 .cart-close{width:100%;padding:10px;background:#f5f5f7;color:#1d1d1f;border:none;border-radius:14px;font-size:14px;cursor:pointer;margin-top:8px}
+.var-chip{padding:8px 14px;border-radius:20px;border:1.5px solid #d2d2d7;background:#fff;font-size:13px;cursor:pointer;font-weight:500}
+.var-chip.active{background:#1d1d1f;color:#fff;border-color:#1d1d1f}
 </style>
 </head>
 <body>
@@ -587,12 +589,77 @@ const services = [
   {id:'s3',name:"Установка приложений",desc:"Установка любых приложений, в т.ч. недоступных в регионе",icon:"📲"},
   {id:'s4',name:"Настройка устройства",desc:"Первоначальная настройка нового телефона или планшета",icon:"⚙️"},
   {id:'s5',name:"Диагностика",desc:"Полная проверка устройства перед покупкой",icon:"🔍"},
+{id:'s6',name:"Сборка компьютера",desc:"Подбор комплектующих и сборка ПК под любой бюджет и задачи",icon:"🖥"},
 ];
 const catNames = {phones:'📱',tablets:'📟',laptops:'💻',watches:'⌚',headphones:'🎧',speakers:'🔊',accessories:'🔌',vacuum:'🧹',gaming:'🎮',cameras:'📷',rugged:'🛡'};
 function clearSearch() {
   document.getElementById('search').value='';
   document.getElementById('clearBtn').style.display='none';
   renderSubFilters(); filterProducts();
+}
+function getBaseModel(name) {
+  return name.replace(/\s+\d+\/\d+.*$/, '').replace(/\s+\d+(Gb|Tb).*$/i, '').trim();
+}
+function openProductCard(baseModel) {
+  const variants = allProducts.filter(p => getBaseModel(p.name) === baseModel);
+  if (!variants.length) return;
+  const memSet = new Set();
+  variants.forEach(p => { const m = p.name.match(/(\d+\/\d+|\d+(?:Gb|Tb))/i); if(m) memSet.add(m[1]); });
+  const mems = [...memSet];
+  const varSet = new Set();
+  variants.forEach(p => { const after = p.name.replace(baseModel,'').replace(/\s+\d+\/\d+\s*/,'').replace(/\s+\d+(?:Gb|Tb)\s*/i,'').trim(); if(after) varSet.add(after); });
+  const varOpts = [...varSet];
+  const first = variants.find(p => stockOverrides.hasOwnProperty(p.id)?stockOverrides[p.id]:p.inStock) || variants[0];
+  const el = document.createElement('div');
+  el.className = 'cart-overlay'; el.id = 'productCardOverlay';
+  el.innerHTML = '<div class="cart-sheet" style="max-height:90vh">' +
+    '<div style="width:40px;height:4px;background:#e0e0e0;border-radius:2px;margin:0 auto 16px"></div>' +
+    '<div id="pcImgWrap" style="width:100%;height:240px;overflow:hidden;border-radius:16px;background:#f5f5f7;display:flex;align-items:center;justify-content:center;margin-bottom:16px">' +
+    '<img id="pcImg" src="'+getProductImage(first)+'" style="max-width:100%;max-height:100%;object-fit:contain;touch-action:pinch-zoom"></div>' +
+    '<div style="font-size:18px;font-weight:700;margin-bottom:16px;text-align:center">'+baseModel+'</div>' +
+    (mems.length>1?'<div style="margin-bottom:12px"><div style="font-size:13px;font-weight:600;color:#86868b;margin-bottom:8px">Память</div><div style="display:flex;flex-wrap:wrap;gap:8px" id="memOptions">'+mems.map((m,i)=>'<button onclick="selectMem(\''+baseModel+'\',\''+m+'\')" class="var-chip'+(i===0?' active':'')+'" data-mem="'+m+'">'+m+'</button>').join('')+'</div></div>':'') +
+    (varOpts.length>1?'<div style="margin-bottom:16px"><div style="font-size:13px;font-weight:600;color:#86868b;margin-bottom:8px">Вариант</div><div style="display:flex;flex-wrap:wrap;gap:8px" id="varOptions">'+varOpts.map((v,i)=>'<button onclick="selectVar(\''+baseModel+'\',\''+v+'\')" class="var-chip'+(i===0?' active':'')+'" data-var="'+v+'">'+v+'</button>').join('')+'</div></div>':'') +
+    '<div id="pcStatus" style="margin-bottom:8px"></div>' +
+    '<div style="font-size:11px;color:#86868b;margin-bottom:12px;text-align:center">💬 Цена по запросу у менеджера</div>' +
+    '<button id="pcOrderBtn" class="cart-send" onclick="addToCartFromCard(\''+baseModel+'\')">Заказать</button>' +
+    '<button class="cart-close" onclick="closeProductCard()">Закрыть</button>' +
+    '</div>';
+  document.body.appendChild(el);
+  window._selMem = mems[0]||null;
+  window._selVar = varOpts[0]||null;
+  updateCardStatus(baseModel);
+}
+function closeProductCard() { const el=document.getElementById('productCardOverlay'); if(el)el.remove(); window._selMem=null; window._selVar=null; }
+function selectMem(baseModel,mem) {
+  window._selMem=mem;
+  document.querySelectorAll('#memOptions .var-chip').forEach(b=>b.classList.toggle('active',b.dataset.mem===mem));
+  updateCardStatus(baseModel);
+}
+function selectVar(baseModel,v) {
+  window._selVar=v;
+  document.querySelectorAll('#varOptions .var-chip').forEach(b=>b.classList.toggle('active',b.dataset.var===v));
+  updateCardStatus(baseModel);
+}
+function getSelectedProduct(baseModel) {
+  let filtered=allProducts.filter(p=>getBaseModel(p.name)===baseModel);
+  if(window._selMem) filtered=filtered.filter(p=>p.name.includes(window._selMem));
+  if(window._selVar) filtered=filtered.filter(p=>p.name.includes(window._selVar));
+  return filtered[0]||allProducts.find(p=>getBaseModel(p.name)===baseModel);
+}
+function updateCardStatus(baseModel) {
+  const p=getSelectedProduct(baseModel); if(!p) return;
+  const inStock=stockOverrides.hasOwnProperty(p.id)?stockOverrides[p.id]:p.inStock;
+  const s=document.getElementById('pcStatus'); const b=document.getElementById('pcOrderBtn');
+  if(s) s.innerHTML='<span class="stock-badge '+(inStock?'in-stock':'no-stock')+'">'+(inStock?'✓ В наличии':'✗ Нет в наличии')+'</span>';
+  if(b){b.disabled=!inStock;b.style.background=inStock?'#1d1d1f':'#c7c7cc';}
+  const img=document.getElementById('pcImg'); if(img) img.src=getProductImage(p);
+}
+function addToCartFromCard(baseModel) {
+  const p=getSelectedProduct(baseModel); if(!p) return;
+  const inStock=stockOverrides.hasOwnProperty(p.id)?stockOverrides[p.id]:p.inStock;
+  if(!inStock) return;
+  addToCart(p.id); closeProductCard();
+  tg.showAlert('✅ '+p.name+'\nДобавлен в корзину!');
 }
 function getSubsForTab(tab) { return [...new Set(allProducts.filter(p=>p.tab===tab).map(p=>p.sub))]; }
 function renderSubFilters() {
@@ -616,27 +683,31 @@ function filterProducts() {
   renderProducts(list);
 }
 function renderProducts(list) {
+  const q = document.getElementById('search').value;
   document.getElementById('resultsCount').textContent='Найдено: '+list.length+' товаров';
   document.getElementById('catalog').style.display='grid';
-  document.getElementById('catalog').innerHTML=list.map(p=>{
-    const src=getProductImage(p);
-    const inStock=stockOverrides.hasOwnProperty(p.id)?stockOverrides[p.id]:p.inStock;
+  const groups={};
+  list.forEach(p=>{ const base=getBaseModel(p.name); if(!groups[base])groups[base]=[]; groups[base].push(p); });
+  document.getElementById('catalog').innerHTML=Object.entries(groups).map(([base,variants])=>{
+    const first=variants.find(p=>stockOverrides.hasOwnProperty(p.id)?stockOverrides[p.id]:p.inStock)||variants[0];
+    const inStock=variants.some(p=>stockOverrides.hasOwnProperty(p.id)?stockOverrides[p.id]:p.inStock);
+    const src=getProductImage(first);
     const stockColor=inStock?'rgba(46,125,50,0.85)':'rgba(198,40,40,0.85)';
-    const stockLabel=inStock?'✓ Есть':'✗ Нет';
-    return '<div class="card '+(inStock?'':'out-of-stock')+'">' +
-      '<button class="stock-btn" style="background:'+stockColor+'" onclick="toggleStock('+p.id+')">'+stockLabel+'</button>' +
-      '<button class="edit-btn" onclick="openUpload('+p.id+')">✏️ Фото</button>' +
-      '<img class="card-img" src="'+src+'" alt="'+p.name+'" onerror="this.style.display=\'none\'">' +
+    const safeBase=base.replace(/'/g,"\\'");
+    return '<div class="card '+(inStock?'':'out-of-stock')+'" onclick="openProductCard(\''+safeBase+'\')" style="cursor:pointer">' +
+      '<button class="stock-btn" style="background:'+stockColor+'" onclick="event.stopPropagation();toggleStock('+first.id+')">'+(inStock?'✓ Есть':'✗ Нет')+'</button>' +
+      '<button class="edit-btn" onclick="event.stopPropagation();openUpload('+first.id+')">✏️ Фото</button>' +
+      '<img class="card-img" src="'+src+'" alt="'+base+'" onerror="this.style.display=\'none\'">' +
       '<div class="card-body">' +
-      '<div class="card-name">'+p.name+'</div>' +
-(document.getElementById('search').value ? '<div style="font-size:10px;color:#86868b;margin-bottom:2px">'+(catNames[p.tab]||'')+'</div>' : '') +
+      '<div class="card-name">'+base+'</div>' +
+      (q?'<div style="font-size:10px;color:#86868b;margin-bottom:2px">'+(catNames[first.tab]||'')+'</div>':'') +
+      (variants.length>1?'<div style="font-size:10px;color:#0071e3;margin-bottom:4px">'+variants.length+' вариантов →</div>':'') +
       '<div class="stock-badge '+(inStock?'in-stock':'no-stock')+'">'+(inStock?'✓ В наличии':'✗ Нет')+'</div>' +
-      '<div style="font-size:11px;color:#86868b;margin-bottom:4px;margin-top:auto">💬 Цена по запросу у менеджера</div>' +
-'<div style="display:flex;gap:6px">' +
-'<button class="add-btn" style="flex:1" onclick="addToCart('+p.id+')" '+(inStock?'':'disabled')+'>'+(inStock?'Заказать':'Нет в наличии')+'</button>' +
-'<button onclick="shareProduct('+p.id+')" style="padding:8px 10px;background:#f5f5f7;border:none;border-radius:10px;font-size:16px;cursor:pointer">📤</button>' +
-'</div>' +
-      '</div></div>';
+      '<div style="font-size:11px;color:#86868b;margin-bottom:4px;margin-top:auto">💬 Цена по запросу</div>' +
+      '<div style="display:flex;gap:6px">' +
+      '<button class="add-btn" style="flex:1" onclick="event.stopPropagation();openProductCard(\''+safeBase+'\')" '+(inStock?'':'disabled')+'>Выбрать</button>' +
+      '<button onclick="event.stopPropagation();shareProduct('+first.id+')" style="padding:8px 10px;background:#f5f5f7;border:none;border-radius:10px;font-size:16px;cursor:pointer">📤</button>' +
+      '</div></div></div>';
   }).join('');
 }
 function renderServices() {
