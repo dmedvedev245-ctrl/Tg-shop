@@ -631,7 +631,8 @@ function renderProducts(list) {
       '<div class="card-name">'+p.name+'</div>' +
 (document.getElementById('search').value ? '<div style="font-size:10px;color:#86868b;margin-bottom:2px">'+(catNames[p.tab]||'')+'</div>' : '') +
       '<div class="stock-badge '+(inStock?'in-stock':'no-stock')+'">'+(inStock?'✓ В наличии':'✗ Нет')+'</div>' +
-      '<div style="display:flex;gap:6px;margin-top:auto">' +
+      '<div style="font-size:11px;color:#86868b;margin-bottom:4px;margin-top:auto">💬 Цена по запросу у менеджера</div>' +
+'<div style="display:flex;gap:6px">' +
 '<button class="add-btn" style="flex:1" onclick="addToCart('+p.id+')" '+(inStock?'':'disabled')+'>'+(inStock?'Заказать':'Нет в наличии')+'</button>' +
 '<button onclick="shareProduct('+p.id+')" style="padding:8px 10px;background:#f5f5f7;border:none;border-radius:10px;font-size:16px;cursor:pointer">📤</button>' +
 '</div>' +
@@ -687,7 +688,7 @@ function sendCart() {
 }
 function shareProduct(id) {
   const p = allProducts.find(x => x.id === id);
-  const text = '🛍 ' + p.name + '\n\nСмотри в магазине STORE 457!';
+  const text = '🛍 ' + p.name + '\n\nСмотри в магазине STORE 457!\n👉 https://t.me/Store_457_bot';
   if (navigator.share) {
     navigator.share({ title: p.name, text: text });
   } else {
