@@ -129,6 +129,45 @@ header{background:rgba(255,255,255,0.9);backdrop-filter:blur(20px);padding:14px 
     <button class="cat-item" onclick="selectCat('services','🔧 Услуги',this)"><span>🔧</span><span>Услуги</span></button>
   </div>
 </div>
+<div class="banner-wrap" id="bannerWrap">
+  <div class="banner-track" id="bannerTrack">
+    <div class="banner-slide">
+      <img src="https://dmedvedev245-ctrl.github.io/Tg-shop/iphone-17-pro-17-pro-max-hero.png" style="background:#1d1d1f">
+      <div class="banner-label">
+        <span class="banner-tag" style="background:#ff3b30">🔥 SALE</span>
+        <span class="banner-title">iPhone 17 Pro Max — лучшая цена</span>
+      </div>
+    </div>
+    <div class="banner-slide">
+      <img src="https://images.samsung.com/is/image/samsung/p6pim/levant/2501/gallery/levant-galaxy-s25-s931-sm-s931bzadeub-thumb-544547466?$650_519_PNG$" style="background:#0071e3">
+      <div class="banner-label">
+        <span class="banner-tag" style="background:#ff9500">⭐ ХИТ ПРОДАЖ</span>
+        <span class="banner-title">Samsung S25 Ultra — в наличии</span>
+      </div>
+    </div>
+    <div class="banner-slide">
+      <img src="https://store.storeimages.cdn-apple.com/4668/as-images.apple.com/is/airpods-pro-2-hero-select-202409?wid=400&hei=400&fmt=jpeg" style="background:#f5f5f7">
+      <div class="banner-label">
+        <span class="banner-tag" style="background:#34c759">✨ НОВИНКА</span>
+        <span class="banner-title">AirPods Pro 3 — только что в продаже</span>
+      </div>
+    </div>
+    <div class="banner-slide">
+      <img src="https://store.storeimages.cdn-apple.com/4668/as-images.apple.com/is/mbp14-spaceblack-select-202310?wid=400&hei=400&fmt=jpeg" style="background:#1d1d1f">
+      <div class="banner-label">
+        <span class="banner-tag" style="background:#0071e3">💻 АКТУАЛЬНО</span>
+        <span class="banner-title">MacBook Pro M5 — свежее поступление</span>
+      </div>
+    </div>
+  </div>
+  <div class="banner-dots" id="bannerDots">
+    <div class="banner-dot active" onclick="goSlide(0)"></div>
+    <div class="banner-dot" onclick="goSlide(1)"></div>
+    <div class="banner-dot" onclick="goSlide(2)"></div>
+    <div class="banner-dot" onclick="goSlide(3)"></div>
+  </div>
+</div>
+
 <div class="sub-filters" id="subFilters"></div>
 <div class="results-count" id="resultsCount"></div>
 <div class="catalog" id="catalog"></div>
