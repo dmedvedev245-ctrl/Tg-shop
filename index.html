@@ -343,6 +343,18 @@ function getProductImage(p) {
   if (n.includes('iphone 13')&&!n.includes('pro')&&!n.includes('mini')) { const c=n.includes('white')?'starlight':n.includes('blue')?'blue':n.includes('green')?'green':n.includes('red')?'red':n.includes('pink')?'pink':'midnight'; return cdn+'iphone-13-'+c+'-select-2021'+q; }
   if (n.includes('iphone 12')&&!n.includes('pro')&&!n.includes('mini')) { const c=n.includes('purple')?'purple':n.includes('blue')?'blue':n.includes('green')?'green':n.includes('red')?'red':n.includes('white')?'white':'black'; return cdn+'iphone-12-'+c+'-select-2020'+q; }
   if (n.includes('iphone se')) { const c=n.includes('red')?'red':n.includes('white')?'starlight':'midnight'; return cdn+'iphone-se-'+c+'-select-202203'+q; }
+  if(n.includes('samsung')) {
+    if(n.includes('fold 7')) return imgs.samsung_fold7;
+    if(n.includes('flip7 fe')) return imgs.samsung_flip7;
+    if(n.includes('flip7')) return imgs.samsung_flip7;
+    if(n.includes('s25 ultra')) return imgs.samsung_s25u;
+    if(n.includes('s25 plus')||n.includes('s25+')) return imgs.samsung_s25p;
+    if(n.includes('a56')) return imgs.samsung_a56;
+    if(n.includes('a36')) return imgs.samsung_a36;
+    if(n.includes('a26')) return imgs.samsung_a26;
+    if(n.includes('a17')) return imgs.samsung_a17;
+    return imgs.samsung;
+}
   return p.img;
 }
 
@@ -415,7 +427,16 @@ function genIphones() {
 }
 const imgs = {
   iphone:'https://dmedvedev245-ctrl.github.io/Tg-shop/iphone-17-pro-17-pro-max-hero.png',
-  samsung:'https://images.samsung.com/is/image/samsung/p6pim/levant/2501/gallery/levant-galaxy-s25-s931-sm-s931bzadeub-thumb-544547466?$650_519_PNG$',
+samsung:'https://images.samsung.com/is/image/samsung/p6pim/levant/2501/gallery/levant-galaxy-s25-s931-sm-s931bzadeub-thumb-544547466?$650_519_PNG$',
+samsung_s25u:'https://images.samsung.com/is/image/samsung/p6pim/levant/2501/gallery/levant-galaxy-s25-ultra-s928-sm-s928bzaaeub-thumb-544547466?$650_519_PNG$',
+samsung_s25p:'https://images.samsung.com/is/image/samsung/p6pim/levant/2501/gallery/levant-galaxy-s25-plus-s936-sm-s936bzaaeub-thumb-544547466?$650_519_PNG$',
+samsung_a56:'https://images.samsung.com/is/image/samsung/p6pim/levant/2504/gallery/levant-galaxy-a56-5g-sm-a566ezaaeub-thumb-544547466?$650_519_PNG$',
+samsung_a36:'https://images.samsung.com/is/image/samsung/p6pim/levant/2503/gallery/levant-galaxy-a36-5g-sm-a366ezaaeub-thumb-544547466?$650_519_PNG$',
+samsung_a26:'https://images.samsung.com/is/image/samsung/p6pim/levant/2503/gallery/levant-galaxy-a26-5g-sm-a266ezaaeub-thumb-544547466?$650_519_PNG$',
+samsung_a17:'https://images.samsung.com/is/image/samsung/p6pim/levant/2503/gallery/levant-galaxy-a17-sm-a175fzkaeub-thumb-544547466?$650_519_PNG$',
+samsung_flip7:'https://images.samsung.com/is/image/samsung/p6pim/levant/2507/gallery/levant-galaxy-z-flip7-f741-sm-f741bzaaeub-thumb-544547466?$650_519_PNG$',
+samsung_fold7:'https://images.samsung.com/is/image/samsung/p6pim/levant/2507/gallery/levant-galaxy-z-fold7-f958-sm-f958bzaaeub-thumb-544547466?$650_519_PNG$',
+
   xiaomi:'https://fdn2.gsmarena.com/vv/pics/xiaomi/xiaomi-15-1.jpg',
   google:'https://fdn2.gsmarena.com/vv/pics/google/google-pixel-9-pro-1.jpg',
   honor:'https://fdn2.gsmarena.com/vv/pics/honor/honor-400-1.jpg',
