@@ -377,7 +377,42 @@ function getStorageMB(name) {
   const sl=n.match(/\/(\d+)\s/); if(sl) return parseInt(sl[1]);
   return 0;
 }
-
+function genIphones() {
+  const models = [
+    {base:'iPhone 17 Pro Max', mem:['256Gb','512Gb','1Tb','2Tb'], colors:['Silver','Orange','Blue'], sim:true},
+    {base:'iPhone 17 Pro', mem:['256Gb','512Gb','1Tb'], colors:['Silver','Orange','Blue'], sim:true},
+    {base:'iPhone 17 Air', mem:['256Gb','512Gb','1Tb'], colors:['White','Black','Blue','Gold'], sim:true},
+    {base:'iPhone 17', mem:['256Gb','512Gb','1Tb'], colors:['White','Black','Blue','Sage','Lavender'], sim:true},
+    {base:'iPhone 16 Pro Max', mem:['256Gb','512Gb','1Tb'], colors:['Black Titanium','White Titanium','Natural Titanium','Desert Titanium'], sim:true},
+    {base:'iPhone 16 Pro', mem:['128Gb','256Gb','512Gb','1Tb'], colors:['Black Titanium','White Titanium','Natural Titanium','Desert Titanium'], sim:true},
+    {base:'iPhone 16 Plus', mem:['128Gb','256Gb','512Gb'], colors:['Black','White','Pink','Teal','Ultramarine'], sim:true},
+    {base:'iPhone 16', mem:['128Gb','256Gb','512Gb'], colors:['Black','White','Pink','Teal','Ultramarine'], sim:true},
+    {base:'iPhone 16e', mem:['128Gb','256Gb','512Gb'], colors:['Black','White'], sim:false},
+    {base:'iPhone 15 Pro Max', mem:['256Gb','512Gb','1Tb'], colors:['Black Titanium','White Titanium','Natural Titanium','Blue Titanium'], sim:false},
+    {base:'iPhone 15 Pro', mem:['128Gb','256Gb','512Gb','1Tb'], colors:['Black Titanium','White Titanium','Natural Titanium','Blue Titanium'], sim:false},
+    {base:'iPhone 15 Plus', mem:['128Gb','256Gb','512Gb'], colors:['Black','Blue','Green','Yellow','Pink'], sim:false},
+    {base:'iPhone 15', mem:['128Gb','256Gb','512Gb'], colors:['Black','Blue','Green','Yellow','Pink'], sim:false},
+    {base:'iPhone 14 Plus', mem:['128Gb','256Gb','512Gb'], colors:['Midnight','Starlight','Blue','Purple','Red','Yellow'], sim:false},
+    {base:'iPhone 14', mem:['128Gb','256Gb','512Gb'], colors:['Midnight','Starlight','Blue','Purple','Red','Yellow'], sim:false},
+    {base:'iPhone 13', mem:['128Gb','256Gb','512Gb'], colors:['Midnight','Starlight','Blue','Pink','Green','Red'], sim:false},
+    {base:'iPhone 12', mem:['64Gb','128Gb','256Gb'], colors:['Black','White','Blue','Green','Purple','Red'], sim:false},
+    {base:'iPhone SE 3', mem:['64Gb','128Gb'], colors:['Red','Starlight','Midnight'], sim:false},
+  ];
+  let products = []; let id = 10000;
+  models.forEach(m => {
+    m.mem.forEach(mem => {
+      m.colors.forEach(color => {
+        if (m.sim) {
+          products.push({id:id++,name:m.base+' '+mem+' '+color+' (eSIM)',tab:'phones',sub:'Apple',img:imgs.iphone,inStock:true});
+          products.push({id:id++,name:m.base+' '+mem+' '+color+' (eSIM+SIM)',tab:'phones',sub:'Apple',img:imgs.iphone,inStock:true});
+        } else {
+          products.push({id:id++,name:m.base+' '+mem+' '+color,tab:'phones',sub:'Apple',img:imgs.iphone,inStock:true});
+        }
+      });
+    });
+  });
+  return products;
+}
 const imgs = {
   iphone:'https://dmedvedev245-ctrl.github.io/Tg-shop/iphone-17-pro-17-pro-max-hero.png',
   samsung:'https://images.samsung.com/is/image/samsung/p6pim/levant/2501/gallery/levant-galaxy-s25-s931-sm-s931bzadeub-thumb-544547466?$650_519_PNG$',
@@ -407,88 +442,7 @@ const imgs = {
 };
 
 const allProducts = [
-  {id:1,name:"iPhone SE 3 128Gb Red EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:2,name:"iPhone SE 3 128Gb White EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:3,name:"iPhone 12 64Gb Black EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:4,name:"iPhone 12 128Gb Black EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:5,name:"iPhone 12 128Gb Purple EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:6,name:"iPhone 13 128Gb Black EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:7,name:"iPhone 13 128Gb White EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:8,name:"iPhone 14 128Gb Black EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:9,name:"iPhone 14 128Gb Blue EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:10,name:"iPhone 14 128Gb White EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:11,name:"iPhone 14 256Gb Black EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:12,name:"iPhone 14 256Gb Yellow EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:13,name:"iPhone 14 512Gb Red EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:14,name:"iPhone 14 Plus 128Gb Yellow JP",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:15,name:"iPhone 14 Plus 256Gb Red EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:16,name:"iPhone 15 128Gb Black EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:17,name:"iPhone 15 128Gb Blue EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:18,name:"iPhone 15 128Gb Pink EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:false},
-  {id:19,name:"iPhone 15 256Gb Black EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:20,name:"iPhone 15 256Gb Blue EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:21,name:"iPhone 15 Plus 128Gb Blue EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:22,name:"iPhone 15 Plus 128Gb Green EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:23,name:"iPhone 15 Plus 256Gb Green EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:24,name:"iPhone 15 Plus 512Gb Green EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:25,name:"iPhone 15 Pro 128Gb Blue EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:false},
-  {id:26,name:"iPhone 15 Pro Max 256Gb Blue LLA",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:27,name:"iPhone 15 Pro Max 512Gb Black EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:28,name:"iPhone 15 Pro Max 512Gb Blue EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:29,name:"iPhone 15 Pro Max 512Gb Natural EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:30,name:"iPhone 16 128Gb Black EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:31,name:"iPhone 16 128Gb Pink EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:32,name:"iPhone 16 128Gb Teal EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:33,name:"iPhone 16 128Gb Ultramarine EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:34,name:"iPhone 16 256Gb Black EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:35,name:"iPhone 16 256Gb Pink EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:36,name:"iPhone 16 256Gb Teal EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:37,name:"iPhone 16 256Gb Ultramarine EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:38,name:"iPhone 16 256Gb White EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:39,name:"iPhone 16 512Gb Black LLA",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:40,name:"iPhone 16E 128Gb Black EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:41,name:"iPhone 16E 128Gb White EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:42,name:"iPhone 16E 256Gb Black EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:43,name:"iPhone 16E 256Gb White EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:44,name:"iPhone 16 Plus 128Gb Pink EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:45,name:"iPhone 16 Plus 256Gb Black EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:46,name:"iPhone 16 Plus 256Gb White EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:47,name:"iPhone 16 Plus 512Gb Black EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:48,name:"iPhone 16 Pro 128Gb Desert EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:49,name:"iPhone 16 Pro 128Gb White EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:50,name:"iPhone 16 Pro Max 256Gb Desert EU",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:51,name:"iPhone 17 256Gb Blue (eSIM)",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:52,name:"iPhone 17 256Gb Sage (eSIM)",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:53,name:"iPhone 17 256Gb White (eSIM)",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:54,name:"iPhone 17 256Gb Blue (eSIM+SIM)",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:55,name:"iPhone 17 256Gb White (eSIM+SIM)",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:56,name:"iPhone 17 512Gb Blue (eSIM+SIM)",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:57,name:"iPhone 17 512Gb Lavender (eSIM+SIM)",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:58,name:"iPhone 17 512Gb Sage (eSIM+SIM)",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:59,name:"iPhone 17 Air 256Gb Black (eSIM)",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:60,name:"iPhone 17 Air 256Gb Blue (eSIM)",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:61,name:"iPhone 17 Air 256Gb Gold (eSIM)",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:62,name:"iPhone 17 Air 256Gb White (eSIM)",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:63,name:"iPhone 17 Air 512Gb Blue (eSIM)",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:64,name:"iPhone 17 Air 1Tb Blue (eSIM)",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:65,name:"iPhone 17 Air 1Tb Gold (eSIM)",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:66,name:"iPhone 17 Pro 256Gb Orange (eSIM)",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:67,name:"iPhone 17 Pro 256Gb Blue (eSIM+SIM)",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:68,name:"iPhone 17 Pro 512Gb Orange (eSIM+SIM)",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:69,name:"iPhone 17 Pro 512Gb Silver (eSIM+SIM)",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:70,name:"iPhone 17 Pro 1Tb Orange (eSIM+SIM)",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:71,name:"iPhone 17 Pro 1Tb Silver (eSIM+SIM)",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:72,name:"iPhone 17 Pro Max 256Gb Blue (eSIM)",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:73,name:"iPhone 17 Pro Max 256Gb Orange (eSIM+SIM)",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:74,name:"iPhone 17 Pro Max 256Gb Silver (eSIM+SIM)",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:75,name:"iPhone 17 Pro Max 512Gb Orange (eSIM)",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:76,name:"iPhone 17 Pro Max 512Gb Blue (eSIM+SIM)",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:77,name:"iPhone 17 Pro Max 512Gb Orange (eSIM+SIM)",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:78,name:"iPhone 17 Pro Max 1Tb Blue (eSIM)",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:79,name:"iPhone 17 Pro Max 1Tb Orange (eSIM)",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:80,name:"iPhone 17 Pro Max 1Tb Silver (eSIM)",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:81,name:"iPhone 17 Pro Max 2Tb Blue (eSIM+SIM)",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
-  {id:82,name:"iPhone 17 Pro Max 2Tb Orange (eSIM+SIM)",tab:"phones",sub:"Apple",img:imgs.iphone,inStock:true},
+ ...genIphones(),
   {id:200,name:"Samsung A17 4/128 Black EU",tab:"phones",sub:"Samsung",img:imgs.samsung,inStock:true},
   {id:201,name:"Samsung A17 8/256 Grey EU",tab:"phones",sub:"Samsung",img:imgs.samsung,inStock:true},
   {id:202,name:"Samsung A26 6/128 Black 5G EU",tab:"phones",sub:"Samsung",img:imgs.samsung,inStock:true},
@@ -720,19 +674,19 @@ function updateCardStatus(baseModel) {
   document.querySelectorAll('#memOptions .var-chip').forEach(b=>{
     const m=b.dataset.mem;
     const exists=remaining.filter(x=>x.name.includes(m)&&(!window._selSim||x.name.includes(window._selSim))&&(!window._selVar||x.name.includes(window._selVar))).length>0;
-    b.style.display=exists?'':'none';
+    b.style.opacity=exists?'1':'0.35'; b.style.pointerEvents=exists?'':'none';
   });
   // Обновляем доступные чипы SIM
   document.querySelectorAll('#simOptions .var-chip').forEach(b=>{
     const s=b.dataset.sim;
     const exists=remaining.filter(x=>x.name.includes(s)&&(!window._selMem||x.name.includes(window._selMem))&&(!window._selVar||x.name.includes(window._selVar))).length>0;
-    b.style.display=exists?'':'none';
+    b.style.opacity=exists?'1':'0.35'; b.style.pointerEvents=exists?'':'none';
   });
   // Обновляем доступные чипы цвета
   document.querySelectorAll('#varOptions .var-chip').forEach(b=>{
     const v=b.dataset.var;
     const exists=remaining.filter(x=>x.name.includes(v)&&(!window._selMem||x.name.includes(window._selMem))&&(!window._selSim||x.name.includes(window._selSim))).length>0;
-    b.style.display=exists?'':'none';
+    b.style.opacity=exists?'1':'0.35'; b.style.pointerEvents=exists?'':'none';
   });
   const inStock=stockOverrides.hasOwnProperty(p.id)?stockOverrides[p.id]:p.inStock;
   const s=document.getElementById('pcStatus'); const b=document.getElementById('pcOrderBtn');
