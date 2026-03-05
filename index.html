@@ -723,8 +723,7 @@ function filterProducts() {
 const subOrder = {'Apple':0,'Samsung':1,'Xiaomi':2,'Google':3,'Honor':4,'OnePlus':5,'Другие':6};
 list = list.slice().sort((a,b)=>{
   if(a.tab!==b.tab) return (tabOrder[a.tab]||9)-(tabOrder[b.tab]||9);
-  if(a.sub!==b.sub) return (subOrder[a.sub]||9)-(subOrder[b.sub]||9);
-  const sa=getModelScore(a.name),sb=getModelScore(b.name);
+if(a.sub!==b.sub) return (subOrder[a.sub]??9)-(subOrder[b.sub]??9);  const sa=getModelScore(a.name),sb=getModelScore(b.name);
   if(sb!==sa)return sb-sa;
   return getStorageMB(a.name)-getStorageMB(b.name);
 });
