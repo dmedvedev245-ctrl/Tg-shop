@@ -1001,7 +1001,13 @@ function sendCart() {
   const userId=user?user.id:'N/A';
   const text=cart.map(p=>'• '+p.name+' x'+p.qty).join('\n');
   fetch('https://api.telegram.org/bot'+BOT_TOKEN+'/sendMessage',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({chat_id:MANAGER_ID,text:'🛒 Новый заказ!\n\n👤 '+username+' (ID: '+userId+')\n\n'+text})})
-    .then(()=>{tg.showAlert('✅ Заказ отправлен!');cart=[];updateCartBar();closeCart();});
+    .then(()=>{
+      if(userId!=='N/A'){
+        fetch('https://api.telegram.org/bot'+BOT_TOKEN+'/sendMessage',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({chat_id:userId,text:'✅ Ваш заказ принят!\n\n'+text+'\n\n📞 Менеджер свяжется с вами в течение 30 минут.\n🏪 STORE 457'})});
+      }
+      tg.showAlert('✅ Заказ отправлен!\n\nМенеджер свяжется с вами в течение 30 минут.');
+      cart=[];updateCartBar();closeCart();
+    });
 }
 function shareProduct(id) {
   const p = allProducts.find(x => x.id === id);
