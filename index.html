@@ -376,13 +376,13 @@ function getProductImage(p) {
   if (n.includes('iphone 12')&&!n.includes('pro')&&!n.includes('mini')) { const c=n.includes('purple')?'purple':n.includes('blue')?'blue':n.includes('green')?'green':n.includes('red')?'red':n.includes('white')?'white':'black'; return cdn+'iphone-12-'+c+'-select-2020'+q; }
   if (n.includes('iphone se')) { const c=n.includes('red')?'red':n.includes('white')?'starlight':'midnight'; return cdn+'iphone-se-'+c+'-select-202203'+q; }
   if(n.includes('samsung')) {
+    if(n.includes('fold 7')) return imgs.samsung_fold7;
+    if(n.includes('flip7 fe')) return imgs.samsung_flip7;
+    if(n.includes('flip7')) return imgs.samsung_flip7;
     if(n.includes('s26 ultra')) return imgs.samsung_s25u;
     if(n.includes('s26 plus')) return imgs.samsung_s25p;
     if(n.includes('s26')) return imgs.samsung;
     if(n.includes('trifold')||n.includes('tri fold')) return imgs.samsung_fold7;
-    if(n.includes('fold 7')) return imgs.samsung_fold7;
-    if(n.includes('flip7 fe')) return imgs.samsung_flip7;
-    if(n.includes('flip7')) return imgs.samsung_flip7;
     if(n.includes('s25 ultra')) return imgs.samsung_s25u;
     if(n.includes('s25 plus')||n.includes('s25+')) return imgs.samsung_s25p;
     if(n.includes('a56')) return imgs.samsung_a56;
@@ -390,7 +390,24 @@ function getProductImage(p) {
     if(n.includes('a26')) return imgs.samsung_a26;
     if(n.includes('a17')) return imgs.samsung_a17;
     return imgs.samsung;
-}
+  }
+  if(n.includes('poco f8')) return imgs.xiaomi_pocof8;
+  if(n.includes('poco f7')) return imgs.xiaomi_pocof7;
+  if(n.includes('poco x7')) return imgs.xiaomi_pocox7;
+  if(n.includes('poco m7')) return imgs.xiaomi_pocom7;
+  if(n.includes('redmi note 15 pro')||n.includes('redmi note 14 pro')) return imgs.xiaomi_redminote15p;
+  if(n.includes('redmi note 14')) return imgs.xiaomi_redminote14;
+  if(n.includes('mi 15t')) return imgs.xiaomi_mi15t;
+  if(n.includes('mi 15')||n.includes('mi 14')) return imgs.xiaomi_mi15;
+  if(n.includes('xiaomi')||n.includes('poco')||n.includes('redmi')) return imgs.xiaomi;
+  if(n.includes('pixel 10')||n.includes('pixel 9 pro')) return imgs.google_pixel10;
+  if(n.includes('pixel 9a')) return imgs.google_pixel9a;
+  if(n.includes('pixel 9')) return imgs.google_pixel9;
+  if(n.includes('pixel')) return imgs.google_pixel9pro;
+  if(n.includes('magic v')) return imgs.honor_magic;
+  if(n.includes('honor')) return imgs.honor_400;
+  if(n.includes('oneplus 15')||n.includes('oneplus 13')) return imgs.oneplus_15;
+  if(n.includes('oneplus')) return imgs.oneplus_13;
   return p.img;
 }
 
@@ -478,6 +495,22 @@ samsung_flip7:'https://fdn2.gsmarena.com/vv/pics/samsung/samsung-galaxy-z-flip7-
 samsung_fold7:'https://fdn2.gsmarena.com/vv/pics/samsung/samsung-galaxy-z-fold7-1.jpg',
 
   xiaomi:'https://fdn2.gsmarena.com/vv/pics/xiaomi/xiaomi-15-1.jpg',
+  xiaomi_redminote15p:'https://fdn2.gsmarena.com/vv/pics/xiaomi/xiaomi-redmi-note-15-pro-1.jpg',
+  xiaomi_redminote14:'https://fdn2.gsmarena.com/vv/pics/xiaomi/xiaomi-redmi-note-14-1.jpg',
+  xiaomi_pocof7:'https://fdn2.gsmarena.com/vv/pics/xiaomi/xiaomi-poco-f7-1.jpg',
+  xiaomi_pocof8:'https://fdn2.gsmarena.com/vv/pics/xiaomi/xiaomi-poco-f8-ultra-1.jpg',
+  xiaomi_pocox7:'https://fdn2.gsmarena.com/vv/pics/xiaomi/xiaomi-poco-x7-pro-1.jpg',
+  xiaomi_pocom7:'https://fdn2.gsmarena.com/vv/pics/xiaomi/xiaomi-poco-m7-pro-1.jpg',
+  xiaomi_mi15:'https://fdn2.gsmarena.com/vv/pics/xiaomi/xiaomi-15-1.jpg',
+  xiaomi_mi15t:'https://fdn2.gsmarena.com/vv/pics/xiaomi/xiaomi-15t-1.jpg',
+  google_pixel9:'https://fdn2.gsmarena.com/vv/pics/google/google-pixel-9-1.jpg',
+  google_pixel9pro:'https://fdn2.gsmarena.com/vv/pics/google/google-pixel-9-pro-1.jpg',
+  google_pixel9a:'https://fdn2.gsmarena.com/vv/pics/google/google-pixel-9a-1.jpg',
+  google_pixel10:'https://fdn2.gsmarena.com/vv/pics/google/google-pixel-10-pro-1.jpg',
+  honor_400:'https://fdn2.gsmarena.com/vv/pics/honor/honor-400-1.jpg',
+  honor_magic:'https://fdn2.gsmarena.com/vv/pics/honor/honor-magic-v3-1.jpg',
+  oneplus_15:'https://fdn2.gsmarena.com/vv/pics/oneplus/oneplus-15-1.jpg',
+  oneplus_13:'https://fdn2.gsmarena.com/vv/pics/oneplus/oneplus-13-1.jpg',
   google:'https://fdn2.gsmarena.com/vv/pics/google/google-pixel-9-pro-1.jpg',
   honor:'https://fdn2.gsmarena.com/vv/pics/honor/honor-400-1.jpg',
   oneplus:'https://fdn2.gsmarena.com/vv/pics/oneplus/oneplus-15-1.jpg',
@@ -778,27 +811,57 @@ function openProductCard(baseModel) {
     '<div style="width:40px;height:4px;background:#e0e0e0;border-radius:2px;margin:0 auto 16px"></div>' +
     '<div id="pcImgWrap" style="width:100%;height:240px;overflow:hidden;border-radius:16px;background:#f5f5f7;display:flex;align-items:center;justify-content:center;margin-bottom:16px;position:relative">' +
     '<div id="pcImgTrack" style="display:flex;height:100%;transition:transform 0.3s ease"></div>' +
-'<div id="pcGalleryDots" style="position:absolute;bottom:8px;left:0;right:0;display:flex;justify-content:center;gap:5px"></div>' +
-'<button id="pcGalleryPrev" onclick="event.stopPropagation();goGallery(Math.max((window._galleryIdx||0)-1,0))" style="display:none;position:absolute;left:8px;top:0;bottom:0;margin:auto;width:32px;height:32px;border-radius:50%;background:rgba(0,0,0,0.45);border:none;color:#fff;font-size:18px;cursor:pointer;align-items:center;justify-content:center">‹</button>' +
-'<button id="pcGalleryNext" onclick="event.stopPropagation();goGallery(Math.min((window._galleryIdx||0)+1,(window._galleryPhotos||[]).length-1))" style="display:none;position:absolute;right:8px;top:0;bottom:0;margin:auto;width:32px;height:32px;border-radius:50%;background:rgba(0,0,0,0.45);border:none;color:#fff;font-size:18px;cursor:pointer;align-items:center;justify-content:center">›</button>' +
-(isAdmin?'<button id="pcEditPhotoBtn" data-pid="'+first.id+'" onclick="event.stopPropagation();openUpload(parseInt(this.getAttribute(\'data-pid\')))" style="position:absolute;top:8px;right:8px;background:rgba(0,0,0,0.6);color:#fff;border:none;border-radius:8px;padding:5px 10px;font-size:12px;cursor:pointer">✏️ Фото</button>':'') +
-'</div>' +
+    '<div id="pcGalleryDots" style="position:absolute;bottom:8px;left:0;right:0;display:flex;justify-content:center;gap:5px"></div>' +
+    '<button id="pcGalleryPrev" onclick="event.stopPropagation();goGallery(Math.max((window._galleryIdx||0)-1,0))" style="display:none;position:absolute;left:8px;top:0;bottom:0;margin:auto;width:32px;height:32px;border-radius:50%;background:rgba(0,0,0,0.45);border:none;color:#fff;font-size:18px;cursor:pointer;align-items:center;justify-content:center">‹</button>' +
+    '<button id="pcGalleryNext" onclick="event.stopPropagation();goGallery(Math.min((window._galleryIdx||0)+1,(window._galleryPhotos||[]).length-1))" style="display:none;position:absolute;right:8px;top:0;bottom:0;margin:auto;width:32px;height:32px;border-radius:50%;background:rgba(0,0,0,0.45);border:none;color:#fff;font-size:18px;cursor:pointer;align-items:center;justify-content:center">›</button>' +
+    (isAdmin?'<button id="pcEditPhotoBtn" data-pid="'+first.id+'" onclick="event.stopPropagation();openUpload(parseInt(this.getAttribute(\'data-pid\')))" style="position:absolute;top:8px;right:8px;background:rgba(0,0,0,0.6);color:#fff;border:none;border-radius:8px;padding:5px 10px;font-size:12px;cursor:pointer">✏️ Фото</button>':'') +
+    '</div>' +
     '<div style="font-size:18px;font-weight:700;margin-bottom:16px;text-align:center">'+baseModel+'</div>' +
     (mems.length>1?'<div style="margin-bottom:12px"><div style="font-size:13px;font-weight:600;color:#86868b;margin-bottom:8px">Память</div><div style="display:flex;flex-wrap:wrap;gap:8px" id="memOptions">'+mems.map((m,i)=>'<button onclick="selectMem(\''+baseModel+'\',\''+m+'\')" class="var-chip'+(i===0?' active':'')+'" data-mem="'+m+'">'+m+'</button>').join('')+'</div></div>':'') +
     (sims.length>1?'<div style="margin-bottom:12px"><div style="font-size:13px;font-weight:600;color:#86868b;margin-bottom:8px">SIM</div><div style="display:flex;flex-wrap:wrap;gap:8px" id="simOptions">'+sims.map((s,i)=>'<button onclick="selectSim(\''+baseModel+'\',\''+s+'\')" class="var-chip'+(i===0?' active':'')+'" data-sim="'+s+'">'+s+'</button>').join('')+'</div></div>':'') +
-(varOpts.length>1?'<div style="margin-bottom:16px"><div style="font-size:13px;font-weight:600;color:#86868b;margin-bottom:8px">Вариант</div><div style="display:flex;flex-wrap:wrap;gap:8px" id="varOptions">'+varOpts.map((v,i)=>'<button onclick="selectVar(\''+baseModel+'\',\''+v+'\')" class="var-chip'+(i===0?' active':'')+'" data-var="'+v+'">'+v+'</button>').join('')+'</div></div>':'') +
+    (varOpts.length>1?'<div style="margin-bottom:16px"><div style="font-size:13px;font-weight:600;color:#86868b;margin-bottom:8px">Вариант</div><div style="display:flex;flex-wrap:wrap;gap:8px" id="varOptions">'+varOpts.map((v,i)=>'<button onclick="selectVar(\''+baseModel+'\',\''+v+'\')" class="var-chip'+(i===0?' active':'')+'" data-var="'+v+'">'+v+'</button>').join('')+'</div></div>':'') +
     '<div id="pcStatus" style="margin-bottom:8px"></div>' +
     '<div style="font-size:11px;color:#86868b;margin-bottom:12px;text-align:center">💬 Цена по запросу у менеджера</div>' +
     '<button id="pcOrderBtn" class="cart-send" onclick="addToCartFromCard(\''+baseModel+'\')">Заказать</button>' +
     '<button class="cart-close" onclick="closeProductCard()">Закрыть</button>' +
+    '<div id="pcSimilar"></div>' +
     '</div>';
   document.body.appendChild(el);
   window._selMem = mems[0]||null;
   window._selSim = sims[0]||null;
   window._selVar = varOpts[0]||null;
   updateCardStatus(baseModel);
+  setTimeout(()=>renderSimilar(baseModel), 50);
 }
 function closeProductCard() { const el=document.getElementById('productCardOverlay'); if(el)el.remove(); window._selMem=null; window._selVar=null; }
+function renderSimilar(baseModel) {
+  const el = document.getElementById('pcSimilar'); if(!el) return;
+  const current = allProducts.find(p=>getBaseModel(p.name)===baseModel);
+  if(!current) return;
+  const similar = [];
+  const seen = new Set();
+  seen.add(baseModel);
+  allProducts.forEach(p=>{
+    const base = getBaseModel(p.name);
+    if(seen.has(base)) return;
+    if(p.tab===current.tab && p.sub===current.sub) { similar.push(p); seen.add(base); }
+  });
+  const list = similar.slice(0,6);
+  if(!list.length) return;
+  el.innerHTML = '<div style="font-size:13px;font-weight:600;color:#86868b;margin:16px 0 10px">Похожие товары</div>' +
+    '<div style="display:flex;gap:10px;overflow-x:auto;padding-bottom:8px;scrollbar-width:none">' +
+    list.map(p=>{
+      const base = getBaseModel(p.name);
+      const safe = base.replace(/'/g,"\\'");
+      const inStock = stockOverrides.hasOwnProperty(p.id)?stockOverrides[p.id]:p.inStock;
+      return '<div onclick="closeProductCard();setTimeout(()=>openProductCard(\''+safe+'\'),100)" style="min-width:110px;background:#f5f5f7;border-radius:14px;padding:10px;cursor:pointer;text-align:center;flex-shrink:0">' +
+        '<img src="'+getProductImage(p)+'" style="width:70px;height:70px;object-fit:contain;margin-bottom:6px">' +
+        '<div style="font-size:11px;font-weight:600;color:#1d1d1f;line-height:1.3;margin-bottom:4px">'+base+'</div>' +
+        '<div style="font-size:10px;font-weight:700;padding:2px 6px;border-radius:8px;display:inline-block;background:'+(inStock?'#e8f5e9':'#fce4e4')+';color:'+(inStock?'#2e7d32':'#c62828')+'">'+(inStock?'Есть':'Нет')+'</div>' +
+        '</div>';
+    }).join('') +
+    '</div>';
+}
 function updateGallery(p) {
   const track = document.getElementById('pcImgTrack');
   const dots = document.getElementById('pcGalleryDots');
@@ -901,23 +964,56 @@ function addToCartFromCard(baseModel) {
   tg.showAlert('✅ '+p.name+'\nДобавлен в корзину!');
 }
 function getSubsForTab(tab) { return [...new Set(allProducts.filter(p=>p.tab===tab).map(p=>p.sub))]; }
+const colorNames = ['Black','White','Blue','Green','Red','Yellow','Purple','Pink','Gold','Silver','Gray','Grey','Navy','Mint','Lavender','Orange','Brown','Violet','Graphite','Titanium'];
+function getColorsForTab(tab, sub) {
+  const products = allProducts.filter(p => p.tab===tab && (sub==='all'||p.sub===sub));
+  const found = new Set();
+  products.forEach(p => {
+    colorNames.forEach(c => { if(p.name.toLowerCase().includes(c.toLowerCase())) found.add(c); });
+  });
+  return [...found];
+}
 function renderSubFilters() {
   const subs = getSubsForTab(currentTab);
   document.getElementById('subFilters').innerHTML =
     '<button class="sub-btn active" onclick="setSub(\'all\',this)">Все</button>' +
     subs.map(s=>'<button class="sub-btn" onclick="setSub(\''+s+'\',this)">'+s+'</button>').join('');
+  renderColorFilters();
+}
+function renderColorFilters() {
+  let el = document.getElementById('colorFilters');
+  if(!el) {
+    el = document.createElement('div');
+    el.id = 'colorFilters';
+    el.className = 'sub-filters';
+    document.getElementById('subFilters').after(el);
+  }
+  const colors = getColorsForTab(currentTab, currentSub);
+  if(colors.length === 0) { el.innerHTML=''; return; }
+  el.innerHTML = '<button class="sub-btn active" onclick="setColor(\'all\',this)">🎨 Все цвета</button>' +
+    colors.map(c=>'<button class="sub-btn" onclick="setColor(\''+c+'\',this)">'+c+'</button>').join('');
 }
 function setSub(sub,btn) {
   currentSub=sub;
+  currentColor='all';
   document.querySelectorAll('.sub-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderColorFilters();
+  filterProducts();
+}
+function setColor(color,btn) {
+  currentColor=color;
+  document.querySelectorAll('#colorFilters .sub-btn').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
   filterProducts();
 }
+let currentColor = 'all';
 function filterProducts() {
   const q = document.getElementById('search').value.toLowerCase();
   const clearBtn = document.getElementById('clearBtn');
   if(clearBtn) clearBtn.style.display = q ? 'block' : 'none';
   let list = q ? allProducts.filter(p=>p.name.toLowerCase().includes(q)) : allProducts.filter(p=>p.tab===currentTab&&(currentSub==='all'||p.sub===currentSub));
+  if(currentColor !== 'all') list = list.filter(p => p.name.toLowerCase().includes(currentColor.toLowerCase()));
   const tabOrder = {phones:0,tablets:1,laptops:2,watches:3,headphones:4,speakers:5,accessories:6,vacuum:7,gaming:8,cameras:9,rugged:10};
 const subOrder = {'Apple':0,'Samsung':1,'Xiaomi':2,'Google':3,'Honor':4,'OnePlus':5,'Другие':6};
 list = list.slice().sort((a,b)=>{
