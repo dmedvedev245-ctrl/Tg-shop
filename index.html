@@ -344,6 +344,10 @@ function getProductImage(p) {
   if (n.includes('iphone 12')&&!n.includes('pro')&&!n.includes('mini')) { const c=n.includes('purple')?'purple':n.includes('blue')?'blue':n.includes('green')?'green':n.includes('red')?'red':n.includes('white')?'white':'black'; return cdn+'iphone-12-'+c+'-select-2020'+q; }
   if (n.includes('iphone se')) { const c=n.includes('red')?'red':n.includes('white')?'starlight':'midnight'; return cdn+'iphone-se-'+c+'-select-202203'+q; }
   if(n.includes('samsung')) {
+    if(n.includes('s26 ultra')) return imgs.samsung_s25u;
+    if(n.includes('s26 plus')) return imgs.samsung_s25p;
+    if(n.includes('s26')) return imgs.samsung;
+    if(n.includes('trifold')||n.includes('tri fold')) return imgs.samsung_fold7;
     if(n.includes('fold 7')) return imgs.samsung_fold7;
     if(n.includes('flip7 fe')) return imgs.samsung_flip7;
     if(n.includes('flip7')) return imgs.samsung_flip7;
@@ -361,7 +365,11 @@ function getProductImage(p) {
 function getModelScore(name) {
   const n = name.toLowerCase();
   if (n.includes('iphone')) { const m=n.match(/iphone (\d+)/); if(!m) return 0; let base=parseInt(m[1])*1000; if(n.includes('pro max'))base+=400; else if(n.includes('pro'))base+=300; else if(n.includes('air'))base+=200; else if(n.includes('plus'))base+=100; else if(n.includes(' se'))base-=500; return base; }
-  if(n.includes('fold 7'))return 115000; if(n.includes('flip7 fe'))return 111000; if(n.includes('flip7'))return 112000;
+    if(n.includes('s26 ultra'))return 120000;
+    if(n.includes('s26 plus'))return 119000;
+    if(n.includes('s26'))return 118000;
+    if(n.includes('trifold')||n.includes('tri fold'))return 116000;
+    if(n.includes('fold 7'))return 115000; if(n.includes('flip7 fe'))return 111000; if(n.includes('flip7'))return 112000;
   if(n.includes('s25 ultra'))return 109000; if(n.includes('s25 edge'))return 108000; if(n.includes('s25 fe'))return 106000; if(n.includes('s25'))return 107000;
   if(n.includes('s24 plus'))return 105000; if(n.includes('s24'))return 104000;
   if(n.includes('a56'))return 5600; if(n.includes('a55'))return 5500; if(n.includes('a36'))return 3600; if(n.includes('a26'))return 2600; if(n.includes('a17'))return 1700;
@@ -463,6 +471,10 @@ samsung_fold7:'https://fdn2.gsmarena.com/vv/pics/samsung/samsung-galaxy-z-fold7-
 };
 function genSamsungs() {
   const models = [
+    {base:'Samsung S26 Ultra', mem:['256Gb','512Gb','1Tb'], colors:['Black','Titaniumsilver','Navy','White'], img:'samsung_s25u'},
+    {base:'Samsung S26 Plus', mem:['256Gb','512Gb'], colors:['Black','Icyblue','Silver Shadow'], img:'samsung_s25p'},
+    {base:'Samsung S26', mem:['128Gb','256Gb','512Gb'], colors:['Black','Navy','Icyblue','Mint'], img:'samsung'},
+    {base:'Samsung Z TriFold', mem:['256Gb','512Gb'], colors:['Black','Silver','Navy'], img:'samsung_fold7'},
     {base:'Samsung Fold 7', mem:['256Gb','512Gb'], colors:['Jetblack','Silver Shadow','Navy'], img:'samsung_fold7'},
     {base:'Samsung Flip7', mem:['256Gb','512Gb'], colors:['Jetblack','White','Mint','Blue'], img:'samsung_flip7'},
     {base:'Samsung S25 Ultra', mem:['256Gb','512Gb','1Tb'], colors:['Black','Titaniumsilver','Titaniumgray','Whitesilver'], img:'samsung_s25u'},
