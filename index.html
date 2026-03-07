@@ -499,45 +499,126 @@ function genSamsungs() {
   });
   return products;
 }
+function genXiaomi() {
+  const models = [
+    {base:'X.Poco C85', mem:['4/64Gb','6/128Gb'], colors:['Black','Blue'], img:'xiaomi'},
+    {base:'X.Redmi A5', mem:['3/64Gb','4/128Gb'], colors:['Black','Blue','Gold'], img:'xiaomi'},
+    {base:'X.Poco M7', mem:['6/128Gb','8/256Gb'], colors:['Black','Blue','Silver'], img:'xiaomi'},
+    {base:'X.Poco M7 Pro', mem:['8/256Gb','12/512Gb'], colors:['Black','Blue'], img:'xiaomi'},
+    {base:'X.Poco M8 Pro 5G', mem:['8/256Gb','12/512Gb'], colors:['Black','Blue','Silver'], img:'xiaomi'},
+    {base:'X.Redmi Note 14', mem:['8/256Gb','12/512Gb'], colors:['Black','Blue','Green'], img:'xiaomi'},
+    {base:'X.Redmi Note 15', mem:['8/256Gb','12/512Gb'], colors:['Black','Blue','Purple'], img:'xiaomi'},
+    {base:'Redmi Note 15 Pro', mem:['8/256Gb','12/512Gb'], colors:['Black','Blue','Green'], img:'xiaomi'},
+    {base:'Redmi Note 15 Pro Plus', mem:['12/512Gb','16/512Gb'], colors:['Black','Blue'], img:'xiaomi'},
+    {base:'X.Poco X7', mem:['8/256Gb','12/512Gb'], colors:['Black','Blue','Green'], img:'xiaomi'},
+    {base:'X.Poco X7 Pro', mem:['8/256Gb','12/512Gb'], colors:['Black','Green','White'], img:'xiaomi'},
+    {base:'X.Poco F7', mem:['12/256Gb','12/512Gb'], colors:['Black','Blue','Silver'], img:'xiaomi'},
+    {base:'X.Poco F7 Ultra', mem:['12/256Gb','16/512Gb'], colors:['Black','White'], img:'xiaomi'},
+    {base:'X.Poco F8 Ultra', mem:['16/512Gb','16/1Tb'], colors:['Black','White'], img:'xiaomi'},
+    {base:'X.Mi 14', mem:['12/256Gb','12/512Gb'], colors:['Black','White','Green'], img:'xiaomi'},
+    {base:'X.Mi 15', mem:['12/256Gb','12/512Gb','16/512Gb'], colors:['Black','White','Blue'], img:'xiaomi'},
+    {base:'X.Mi 15T', mem:['12/256Gb','12/512Gb'], colors:['Black','Blue','Gray'], img:'xiaomi'},
+  ];
+  let products = []; let id = 3000;
+  models.forEach(m => {
+    m.mem.forEach(mem => {
+      m.colors.forEach(color => {
+        products.push({id:id++, name:m.base+' '+mem+' '+color+' EU', tab:'phones', sub:'Xiaomi', img:imgs[m.img], inStock:true});
+      });
+    });
+  });
+  return products;
+}
+
+function genGoogle() {
+  const models = [
+    {base:'G. Pixel 7', mem:['128Gb','256Gb'], colors:['Black','White','Lemongrass']},
+    {base:'G. Pixel 7 Pro', mem:['128Gb','256Gb','512Gb'], colors:['Black','White','Hazel']},
+    {base:'G. Pixel 8', mem:['128Gb','256Gb'], colors:['Black','Rose','Mint']},
+    {base:'G. Pixel 9a', mem:['128Gb','256Gb'], colors:['Obsidian','Porcelain','Iris','Peony']},
+    {base:'G. Pixel 9', mem:['128Gb','256Gb'], colors:['Obsidian','Porcelain','Rose','Wintergreen']},
+    {base:'G. Pixel 9 Pro', mem:['128Gb','256Gb','512Gb'], colors:['Obsidian','Porcelain','Hazel']},
+    {base:'G. Pixel 9 Pro XL', mem:['128Gb','256Gb','512Gb'], colors:['Obsidian','Porcelain','Hazel']},
+    {base:'G. Pixel 10 Pro', mem:['256Gb','512Gb'], colors:['Obsidian','Porcelain','Jade']},
+    {base:'G. Pixel 10 Pro XL', mem:['256Gb','512Gb','1Tb'], colors:['Obsidian','Porcelain','Jade']},
+  ];
+  let products = []; let id = 4000;
+  models.forEach(m => {
+    m.mem.forEach(mem => {
+      m.colors.forEach(color => {
+        products.push({id:id++, name:m.base+' '+mem+' '+color, tab:'phones', sub:'Google', img:imgs.google, inStock:true});
+      });
+    });
+  });
+  return products;
+}
+
+function genHonor() {
+  const models = [
+    {base:'Honor X9d', mem:['8/256Gb','12/512Gb'], colors:['Black','Silver','Green']},
+    {base:'Honor 400 Lite', mem:['8/256Gb'], colors:['Black','Blue','Pink']},
+    {base:'Honor 400', mem:['8/256Gb','12/512Gb'], colors:['Black','White','Purple']},
+    {base:'Honor Magic 8 Lite', mem:['8/256Gb','12/512Gb'], colors:['Black','White','Blue']},
+    {base:'Honor Magic V3', mem:['12/256Gb','12/512Gb'], colors:['Black','Brown','White']},
+  ];
+  let products = []; let id = 5000;
+  models.forEach(m => {
+    m.mem.forEach(mem => {
+      m.colors.forEach(color => {
+        products.push({id:id++, name:m.base+' '+mem+' '+color+' EU', tab:'phones', sub:'Honor', img:imgs.honor, inStock:true});
+      });
+    });
+  });
+  return products;
+}
+
+function genOnePlus() {
+  const models = [
+    {base:'OnePlus ACE 6', mem:['12/256Gb','16/512Gb'], colors:['Black','Blue','Green']},
+    {base:'OnePlus ACE 6T', mem:['12/256Gb','12/512Gb'], colors:['Black','White']},
+    {base:'OnePlus 13S', mem:['12/256Gb','12/512Gb'], colors:['Black Velvet','Monet Purple']},
+    {base:'OnePlus 13', mem:['12/256Gb','16/512Gb'], colors:['Midnight Ocean','Arctic Dawn','Black']},
+    {base:'OnePlus 15R', mem:['12/256Gb','16/512Gb'], colors:['Black','Blue','Green']},
+    {base:'OnePlus 15', mem:['12/256Gb','16/512Gb','16/1Tb'], colors:['Infinite Black','Glacier White','Midnight Ocean']},
+  ];
+  let products = []; let id = 6000;
+  models.forEach(m => {
+    m.mem.forEach(mem => {
+      m.colors.forEach(color => {
+        products.push({id:id++, name:m.base+' '+mem+' '+color, tab:'phones', sub:'OnePlus', img:imgs.oneplus, inStock:true});
+      });
+    });
+  });
+  return products;
+}
+
+function genДругие() {
+  const models = [
+    {base:'Realme GT 7T', mem:['8/256Gb','12/512Gb'], colors:['Black','Blue'], img:'realme'},
+    {base:'Realme P3', mem:['8/256Gb','12/512Gb'], colors:['Black','White'], img:'realme'},
+    {base:'TECNO CAMON 40', mem:['8/256Gb','12/512Gb'], colors:['Black','White','Titanium'], img:'tecno'},
+    {base:'TECNO CAMON 40 Pro', mem:['8/256Gb','12/512Gb'], colors:['Black','Silver'], img:'tecno'},
+    {base:'ZTE Nubia Z80 Ultra', mem:['12/256Gb','16/1Tb'], colors:['Black','White'], img:'zte'},
+  ];
+  let products = []; let id = 7000;
+  models.forEach(m => {
+    m.mem.forEach(mem => {
+      m.colors.forEach(color => {
+        products.push({id:id++, name:m.base+' '+mem+' '+color+' EU', tab:'phones', sub:'Другие', img:imgs[m.img], inStock:true});
+      });
+    });
+  });
+  return products;
+}
 
 const allProducts = [
  ...genIphones(),
   ...genSamsungs(),
-  {id:300,name:"X.Redmi A5 3/64 Black RU",tab:"phones",sub:"Xiaomi",img:imgs.xiaomi,inStock:true},
-  {id:301,name:"X.Poco C85 6/128 Black EU",tab:"phones",sub:"Xiaomi",img:imgs.xiaomi,inStock:true},
-  {id:302,name:"X.Poco M7 6/128 Black EU",tab:"phones",sub:"Xiaomi",img:imgs.xiaomi,inStock:true},
-  {id:303,name:"X.Poco M7 Pro 8/256 Black EU",tab:"phones",sub:"Xiaomi",img:imgs.xiaomi,inStock:true},
-  {id:304,name:"X.Redmi Note 14 8/256 Black EU",tab:"phones",sub:"Xiaomi",img:imgs.xiaomi,inStock:true},
-  {id:305,name:"X.Redmi Note 15 8/256 Blue EU",tab:"phones",sub:"Xiaomi",img:imgs.xiaomi,inStock:true},
-  {id:306,name:"Redmi Note 15 Pro 8/256 Blue EU",tab:"phones",sub:"Xiaomi",img:imgs.xiaomi,inStock:true},
-  {id:307,name:"Redmi Note 15 Pro 12/512 Black EU",tab:"phones",sub:"Xiaomi",img:imgs.xiaomi,inStock:true},
-  {id:308,name:"Redmi Note 15 Pro Plus 12/512 Black EU",tab:"phones",sub:"Xiaomi",img:imgs.xiaomi,inStock:true},
-  {id:309,name:"X.Poco X7 8/256 Black EU",tab:"phones",sub:"Xiaomi",img:imgs.xiaomi,inStock:true},
-  {id:310,name:"X.Poco X7 Pro 12/256 Green RU",tab:"phones",sub:"Xiaomi",img:imgs.xiaomi,inStock:true},
-  {id:311,name:"X.Poco X7 Pro 12/512 Green EU",tab:"phones",sub:"Xiaomi",img:imgs.xiaomi,inStock:true},
-  {id:312,name:"X.Poco M8 Pro 5G 12/512 Black RU",tab:"phones",sub:"Xiaomi",img:imgs.xiaomi,inStock:true},
-  {id:313,name:"X.Mi 15T 12/256 Gray RU",tab:"phones",sub:"Xiaomi",img:imgs.xiaomi,inStock:true},
-  {id:314,name:"X.Poco F7 12/512 Black EU",tab:"phones",sub:"Xiaomi",img:imgs.xiaomi,inStock:true},
-  {id:315,name:"X.Poco F7 Ultra 12/256 Black EU",tab:"phones",sub:"Xiaomi",img:imgs.xiaomi,inStock:true},
-  {id:316,name:"X.Mi 14 12/512 White EU",tab:"phones",sub:"Xiaomi",img:imgs.xiaomi,inStock:true},
-  {id:317,name:"X.Mi 15 12/512 Green EU",tab:"phones",sub:"Xiaomi",img:imgs.xiaomi,inStock:true},
-  {id:318,name:"X.Poco F8 Ultra 16/512 Black EU",tab:"phones",sub:"Xiaomi",img:imgs.xiaomi,inStock:true},
-  {id:400,name:"G. Pixel 7 128Gb Black",tab:"phones",sub:"Google",img:imgs.google,inStock:true},
-  {id:401,name:"G. Pixel 9a 256 Obsidian",tab:"phones",sub:"Google",img:imgs.google,inStock:true},
-  {id:402,name:"G. Pixel 10 Pro 256 Porcelain",tab:"phones",sub:"Google",img:imgs.google,inStock:true},
-  {id:403,name:"G. Pixel 10 Pro XL 512 Obsidian",tab:"phones",sub:"Google",img:imgs.google,inStock:true},
-  {id:410,name:"Honor 400 8/256 Black EU",tab:"phones",sub:"Honor",img:imgs.honor,inStock:true},
-  {id:411,name:"Honor 400 12/512 Black RU",tab:"phones",sub:"Honor",img:imgs.honor,inStock:true},
-  {id:412,name:"Honor Magic 8 Lite 8/512 Black 5G EU",tab:"phones",sub:"Honor",img:imgs.honor,inStock:true},
-  {id:413,name:"HONOR Magic V3 12/512 Brown",tab:"phones",sub:"Honor",img:imgs.honor,inStock:true},
-  {id:420,name:"OnePlus ACE 6T 12/512 Black",tab:"phones",sub:"OnePlus",img:imgs.oneplus,inStock:true},
-  {id:421,name:"OnePlus 13S 12/512 Black Velvet",tab:"phones",sub:"OnePlus",img:imgs.oneplus,inStock:true},
-  {id:422,name:"OnePlus 13 16/512 Midnight Ocean",tab:"phones",sub:"OnePlus",img:imgs.oneplus,inStock:true},
-  {id:423,name:"OnePlus 15 16/512 Infinite Black",tab:"phones",sub:"OnePlus",img:imgs.oneplus,inStock:true},
-  {id:430,name:"Realme GT 7T 12/512 Blue RU",tab:"phones",sub:"Другие",img:imgs.realme,inStock:true},
-  {id:431,name:"Realme P3 12/256 Black NFC RU",tab:"phones",sub:"Другие",img:imgs.realme,inStock:true},
-  {id:432,name:"TECNO CAMON 40 8/256 Titanium",tab:"phones",sub:"Другие",img:imgs.tecno,inStock:true},
-  {id:433,name:"ZTE Nubia Z80 Ultra 16/1Tb Black EU",tab:"phones",sub:"Другие",img:imgs.zte,inStock:true},
+   ...genXiaomi(),
+    ...genGoogle(),
+      ...genHonor(),
+        ...genOnePlus(),
+          ...genДругие(),
   {id:500,name:"Apple iPad (A16) 128Gb WiFi Blue",tab:"tablets",sub:"Apple",img:imgs.ipad,inStock:true},
   {id:501,name:"Apple iPad (A16) 256Gb WiFi Blue",tab:"tablets",sub:"Apple",img:imgs.ipad,inStock:true},
   {id:502,name:"Apple iPad (A16) 256Gb LTE Blue",tab:"tablets",sub:"Apple",img:imgs.ipad,inStock:true},
