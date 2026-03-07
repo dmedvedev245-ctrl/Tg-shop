@@ -461,33 +461,36 @@ samsung_fold7:'https://fdn2.gsmarena.com/vv/pics/samsung/samsung-galaxy-z-fold7-
   samsungwatch:'https://images.samsung.com/is/image/samsung/p6pim/levant/2025/gallery/levant-galaxy-watch-ultra-sm-l705fzaaxfe-544547466?$650_519_PNG$',
   yandex:'https://avatars.mds.yandex.net/get-ynews-logo/2456978/2vN0r4g9SxXjmJpDT5k5tQ/orig'
 };
+function genSamsungs() {
+  const models = [
+    {base:'Samsung Fold 7', mem:['256Gb','512Gb'], colors:['Jetblack','Silver Shadow','Navy'], img:'samsung_fold7'},
+    {base:'Samsung Flip7', mem:['256Gb','512Gb'], colors:['Jetblack','White','Mint','Blue'], img:'samsung_flip7'},
+    {base:'Samsung S25 Ultra', mem:['256Gb','512Gb','1Tb'], colors:['Black','Titaniumsilver','Titaniumgray','Whitesilver'], img:'samsung_s25u'},
+    {base:'Samsung S25 Edge', mem:['256Gb','512Gb'], colors:['Jetblack','Icyblue'], img:'samsung_s25p'},
+    {base:'Samsung S25 Plus', mem:['256Gb','512Gb'], colors:['Navy','Icyblue','Silver Shadow'], img:'samsung_s25p'},
+    {base:'Samsung S25 FE', mem:['128Gb','256Gb','512Gb'], colors:['Black','Icyblue','White','Mint'], img:'samsung'},
+    {base:'Samsung S25', mem:['128Gb','256Gb','512Gb'], colors:['Navy','Icyblue','Silver Shadow','Mint'], img:'samsung'},
+    {base:'Samsung S24', mem:['128Gb','256Gb'], colors:['Black','Violet','Grey','Yellow'], img:'samsung'},
+    {base:'Samsung A56', mem:['8/256Gb','12/512Gb'], colors:['Black','White','Pink','Graphite'], img:'samsung_a56'},
+    {base:'Samsung A55', mem:['8/256Gb'], colors:['Navy','Black','Blue','Lilac'], img:'samsung'},
+    {base:'Samsung A36', mem:['6/128Gb','8/256Gb'], colors:['Black','White','Lime','Lavender'], img:'samsung_a36'},
+    {base:'Samsung A26', mem:['6/128Gb','8/256Gb'], colors:['Black','White','Peach Pink','Mint'], img:'samsung_a26'},
+    {base:'Samsung A17', mem:['4/128Gb','8/256Gb'], colors:['Black','Grey','Gold'], img:'samsung_a17'},
+  ];
+  let products = []; let id = 2000;
+  models.forEach(m => {
+    m.mem.forEach(mem => {
+      m.colors.forEach(color => {
+        products.push({id:id++, name:m.base+' '+mem+' '+color+' EU', tab:'phones', sub:'Samsung', img:imgs[m.img], inStock:true});
+      });
+    });
+  });
+  return products;
+}
 
 const allProducts = [
  ...genIphones(),
-  {id:200,name:"Samsung A17 4/128 Black EU",tab:"phones",sub:"Samsung",img:imgs.samsung,inStock:true},
-  {id:201,name:"Samsung A17 8/256 Grey EU",tab:"phones",sub:"Samsung",img:imgs.samsung,inStock:true},
-  {id:202,name:"Samsung A26 6/128 Black 5G EU",tab:"phones",sub:"Samsung",img:imgs.samsung,inStock:true},
-  {id:203,name:"Samsung A26 6/128 Peach Pink 5G EU",tab:"phones",sub:"Samsung",img:imgs.samsung,inStock:true},
-  {id:204,name:"Samsung A36 8/256 Lime EU",tab:"phones",sub:"Samsung",img:imgs.samsung,inStock:true},
-  {id:205,name:"Samsung A36 8/256 White EU",tab:"phones",sub:"Samsung",img:imgs.samsung,inStock:true},
-  {id:206,name:"Samsung A55 8/256 Navy EU",tab:"phones",sub:"Samsung",img:imgs.samsung,inStock:true},
-  {id:207,name:"Samsung A56 8/256 Graphite EU",tab:"phones",sub:"Samsung",img:imgs.samsung,inStock:true},
-  {id:208,name:"Samsung A56 8/256 Pink EU",tab:"phones",sub:"Samsung",img:imgs.samsung,inStock:true},
-  {id:209,name:"Samsung S24 8/256 Black EU",tab:"phones",sub:"Samsung",img:imgs.samsung,inStock:true},
-  {id:210,name:"Samsung S24 8/256 Violet EU",tab:"phones",sub:"Samsung",img:imgs.samsung,inStock:true},
-  {id:211,name:"Samsung S25 12/128 Icyblue EU",tab:"phones",sub:"Samsung",img:imgs.samsung,inStock:true},
-  {id:212,name:"Samsung S25 12/256 Navy EU",tab:"phones",sub:"Samsung",img:imgs.samsung,inStock:true},
-  {id:213,name:"Samsung S25 12/512 IceBlue EU",tab:"phones",sub:"Samsung",img:imgs.samsung,inStock:true},
-  {id:214,name:"Samsung S25 Edge 12/256 Jetblack EU",tab:"phones",sub:"Samsung",img:imgs.samsung,inStock:true},
-  {id:215,name:"Samsung S25 FE 8/256 Black EU",tab:"phones",sub:"Samsung",img:imgs.samsung,inStock:true},
-  {id:216,name:"Samsung S25 FE 8/512 Icyblue EU",tab:"phones",sub:"Samsung",img:imgs.samsung,inStock:true},
-  {id:217,name:"Samsung S25 Ultra 12/256 Black EU",tab:"phones",sub:"Samsung",img:imgs.samsung,inStock:true},
-  {id:218,name:"Samsung S25 Ultra 12/512 Black EU",tab:"phones",sub:"Samsung",img:imgs.samsung,inStock:true},
-  {id:219,name:"Samsung S25 Ultra 12/1Tb Black EU",tab:"phones",sub:"Samsung",img:imgs.samsung,inStock:true},
-  {id:220,name:"Samsung Flip7 12/512 Jetblack EU",tab:"phones",sub:"Samsung",img:imgs.samsung,inStock:true},
-  {id:221,name:"Samsung Fold 7 12/256 Jetblack EU",tab:"phones",sub:"Samsung",img:imgs.samsung,inStock:true},
-  {id:222,name:"Samsung Fold 7 12/512 Jetblack EU",tab:"phones",sub:"Samsung",img:imgs.samsung,inStock:true},
-  {id:223,name:"Samsung Fold 7 12/512 Silver Shadow EU",tab:"phones",sub:"Samsung",img:imgs.samsung,inStock:true},
+  ...genSamsungs(),
   {id:300,name:"X.Redmi A5 3/64 Black RU",tab:"phones",sub:"Xiaomi",img:imgs.xiaomi,inStock:true},
   {id:301,name:"X.Poco C85 6/128 Black EU",tab:"phones",sub:"Xiaomi",img:imgs.xiaomi,inStock:true},
   {id:302,name:"X.Poco M7 6/128 Black EU",tab:"phones",sub:"Xiaomi",img:imgs.xiaomi,inStock:true},
