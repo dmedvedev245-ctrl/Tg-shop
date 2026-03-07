@@ -136,7 +136,8 @@ header{background:rgba(255,255,255,0.85);backdrop-filter:blur(20px);-webkit-back
 </header>
 <div class="admin-bar" id="adminBar">
   ⚡ Режим администратора — нажмите ✏️ для изменения фото
-  <button onclick="exitAdmin()" style="margin-left:12px;background:rgba(0,0,0,0.2);border:none;color:#fff;padding:3px 10px;border-radius:8px;cursor:pointer">Выйти</button>
+  <button onclick="showStats()" style="margin-left:12px;background:rgba(0,0,0,0.2);border:none;color:#fff;padding:3px 10px;border-radius:8px;cursor:pointer">📊 Статистика</button>
+  <button onclick="exitAdmin()" style="margin-left:8px;background:rgba(0,0,0,0.2);border:none;color:#fff;padding:3px 10px;border-radius:8px;cursor:pointer">Выйти</button>
 </div>
 <div class="search-bar" style="display:flex;gap:8px;align-items:center"><input type="text" id="search" placeholder="🔍 Поиск по всем категориям..." oninput="filterProducts()" style="flex:1;padding:9px 14px;border-radius:10px;border:none;background:#f2f2f7;font-size:15px;outline:none"><button id="clearBtn" onclick="clearSearch()" style="display:none;background:none;border:none;font-size:20px;cursor:pointer;color:#86868b">✕</button></div>
 <div class="cat-bar">
@@ -1063,6 +1064,28 @@ function addToCart(id) {
   const ex=cart.find(x=>x.id===id);
   if(ex)ex.qty++; else cart.push({...p,qty:1});
   updateCartBar();
+  showCartAnimation(p);
+}
+function showCartAnimation(p) {
+  const el = document.createElement('div');
+  el.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(0);background:#1d1d1f;color:#fff;padding:12px 20px;border-radius:16px;font-size:13px;font-weight:600;z-index:9999;display:flex;align-items:center;gap:8px;box-shadow:0 8px 24px rgba(0,0,0,0.3);transition:all 0.4s cubic-bezier(0.34,1.56,0.64,1);opacity:0;pointer-events:none';
+  el.innerHTML = '🛒 ' + p.name.split(' ').slice(0,3).join(' ') + ' → корзина';
+  document.body.appendChild(el);
+  requestAnimationFrame(()=>{
+    el.style.opacity='1';
+    el.style.transform='translateX(-50%) translateY(-10px)';
+  });
+  setTimeout(()=>{
+    el.style.opacity='0';
+    el.style.transform='translateX(-50%) translateY(10px)';
+    setTimeout(()=>el.remove(), 400);
+  }, 1800);
+  const badge = document.getElementById('cartCount');
+  if(badge){
+    badge.style.transform='scale(1.5)';
+    badge.style.transition='transform 0.2s cubic-bezier(0.34,1.56,0.64,1)';
+    setTimeout(()=>badge.style.transform='scale(1)', 300);
+  }
 }
 function updateCartBar() {
   const count=cart.reduce((s,p)=>s+p.qty,0);
@@ -1101,6 +1124,7 @@ function sendCart() {
       if(userId!=='N/A'){
         fetch('https://api.telegram.org/bot'+BOT_TOKEN+'/sendMessage',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({chat_id:userId,text:'✅ Ваш заказ принят!\n\n'+text+'\n\n📞 Менеджер свяжется с вами в течение 30 минут.\n🏪 STORE 457'})});
       }
+      saveOrderStats(cart, username, userId);
       tg.showAlert('✅ Заказ отправлен!\n\nМенеджер свяжется с вами в течение 30 минут.');
       cart=[];updateCartBar();closeCart();
     });
@@ -1114,6 +1138,73 @@ function shareProduct(id) {
     const url = 'https://t.me/share/url?url=https://t.me/Store_457_bot&text=' + encodeURIComponent(text);
     window.open(url, '_blank');
   }
+}
+function saveOrderStats(cartItems, username, userId) {
+  const orders = JSON.parse(localStorage.getItem('store457_orders') || '[]');
+  const order = {
+    id: Date.now(),
+    date: new Date().toLocaleString('ru-RU'),
+    username: username,
+    userId: userId,
+    items: cartItems.map(p => ({name: p.name, qty: p.qty, tab: p.tab, sub: p.sub})),
+    total: cartItems.reduce((s,p) => s + p.qty, 0)
+  };
+  orders.unshift(order);
+  if(orders.length > 200) orders.splice(200);
+  localStorage.setItem('store457_orders', JSON.stringify(orders));
+}
+function showStats() {
+  const orders = JSON.parse(localStorage.getItem('store457_orders') || '[]');
+  const el = document.createElement('div');
+  el.className = 'admin-login'; el.id = 'statsOverlay';
+  const totalOrders = orders.length;
+  const totalItems = orders.reduce((s,o) => s + o.total, 0);
+  const brandCount = {};
+  const modelCount = {};
+  orders.forEach(o => o.items.forEach(p => {
+    brandCount[p.sub] = (brandCount[p.sub]||0) + p.qty;
+    const base = p.name.replace(/\s+\d+\/\d+.*$/,'').replace(/\s+\d+(Gb|Tb).*$/i,'').trim();
+    modelCount[base] = (modelCount[base]||0) + p.qty;
+  }));
+  const topBrands = Object.entries(brandCount).sort((a,b)=>b[1]-a[1]).slice(0,5);
+  const topModels = Object.entries(modelCount).sort((a,b)=>b[1]-a[1]).slice(0,5);
+  el.innerHTML = '<div style="background:#fff;border-radius:24px;padding:24px;width:340px;max-height:85vh;overflow-y:auto;animation:fadeInUp 0.3s ease">' +
+    '<h3 style="font-size:20px;font-weight:700;margin-bottom:16px;text-align:center">📊 Статистика заказов</h3>' +
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px">' +
+    '<div style="background:#f5f5f7;border-radius:16px;padding:14px;text-align:center"><div style="font-size:28px;font-weight:700;color:#1d1d1f">'+totalOrders+'</div><div style="font-size:12px;color:#86868b">Заказов</div></div>' +
+    '<div style="background:#f5f5f7;border-radius:16px;padding:14px;text-align:center"><div style="font-size:28px;font-weight:700;color:#0071e3">'+totalItems+'</div><div style="font-size:12px;color:#86868b">Товаров</div></div>' +
+    '</div>' +
+    '<div style="font-size:13px;font-weight:700;margin-bottom:8px">🏆 Топ брендов</div>' +
+    '<div style="margin-bottom:16px">' +
+    topBrands.map(([brand,count]) =>
+      '<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:#f5f5f7;border-radius:10px;margin-bottom:6px">' +
+      '<span style="font-size:13px;font-weight:500">'+brand+'</span>' +
+      '<span style="font-size:13px;font-weight:700;color:#0071e3">'+count+' шт</span></div>'
+    ).join('') +
+    '</div>' +
+    '<div style="font-size:13px;font-weight:700;margin-bottom:8px">📱 Топ моделей</div>' +
+    '<div style="margin-bottom:16px">' +
+    topModels.map(([model,count]) =>
+      '<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:#f5f5f7;border-radius:10px;margin-bottom:6px">' +
+      '<span style="font-size:12px;font-weight:500">'+model+'</span>' +
+      '<span style="font-size:13px;font-weight:700;color:#0071e3">'+count+' шт</span></div>'
+    ).join('') +
+    '</div>' +
+    '<div style="font-size:13px;font-weight:700;margin-bottom:8px">🕐 Последние заказы</div>' +
+    '<div style="margin-bottom:16px">' +
+    orders.slice(0,5).map(o =>
+      '<div style="padding:10px 12px;background:#f5f5f7;border-radius:12px;margin-bottom:8px">' +
+      '<div style="display:flex;justify-content:space-between;margin-bottom:4px">' +
+      '<span style="font-size:12px;font-weight:700">'+o.username+'</span>' +
+      '<span style="font-size:11px;color:#86868b">'+o.date+'</span></div>' +
+      o.items.map(p=>'<div style="font-size:11px;color:#86868b">• '+p.name+' x'+p.qty+'</div>').join('') +
+      '</div>'
+    ).join('') +
+    '</div>' +
+    '<button onclick="document.getElementById(\'statsOverlay\').remove()" style="width:100%;padding:13px;border-radius:12px;border:none;background:#1d1d1f;color:#fff;font-size:15px;font-weight:700;cursor:pointer">Закрыть</button>' +
+    '<button onclick="localStorage.removeItem(\'store457_orders\');document.getElementById(\'statsOverlay\').remove();tg.showAlert(\'✅ Статистика очищена!\')" style="width:100%;padding:11px;border-radius:12px;border:none;background:#f5f5f7;color:#c62828;font-size:13px;cursor:pointer;margin-top:8px">🗑 Очистить статистику</button>' +
+    '</div>';
+  document.body.appendChild(el);
 }
 function orderService(id) {
   const s=services.find(x=>x.id===id);
