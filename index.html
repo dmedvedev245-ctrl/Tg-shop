@@ -253,22 +253,36 @@ function toggleStock(productId) {
 function openUpload(productId) {
   editingProductId = productId;
   const p = allProducts.find(x => x.id === productId);
-  const hasCustom = customPhotos[productId] || customPhotos[String(productId)];
+  const photos = getPhotoArray(productId);
   const el = document.createElement('div');
   el.className = 'upload-overlay'; el.id = 'uploadOverlay';
-  el.innerHTML = '<div class="upload-box">' +
-    '<h3>📸 Управление фото</h3>' +
-    '<p>' + p.name + '</p>' +
+  el.innerHTML = '<div class="upload-box" style="width:320px;max-height:85vh;overflow-y:auto">' +
+    '<h3>📸 Фото товара</h3>' +
+    '<p style="font-size:12px;color:#86868b;margin-bottom:12px">' + p.name + '</p>' +
+    '<div id="photoGrid" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px">' +
+    photos.map((url, i) =>
+      '<div style="position:relative;border-radius:12px;overflow:hidden;background:#f5f5f7;aspect-ratio:1">' +
+      '<img src="' + url + '" style="width:100%;height:100%;object-fit:contain;padding:4px">' +
+      '<button onclick="deletePhotoAt(' + productId + ',' + i + ')" style="position:absolute;top:4px;right:4px;background:rgba(198,40,40,0.85);color:#fff;border:none;border-radius:8px;padding:3px 7px;font-size:11px;cursor:pointer">✕</button>' +
+      '<div style="position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,0.5);color:#fff;font-size:9px;padding:3px 6px;text-align:center">' + (i === 0 ? '⭐ Главное' : 'Фото ' + (i+1)) + '</div>' +
+      '</div>'
+    ).join('') +
+    '</div>' +
     '<input type="file" id="photoFile" accept="image/*" style="display:none" onchange="uploadPhoto()">' +
-    '<button class="up-btn" onclick="document.getElementById(\'photoFile\').removeAttribute(\'capture\');document.getElementById(\'photoFile\').click()">🖼 Галерея</button>' +
-    '<button class="up-btn" style="background:#444" onclick="document.getElementById(\'photoFile\').setAttribute(\'capture\',\'environment\');document.getElementById(\'photoFile\').click()">📷 Камера</button>' +
-    (hasCustom ? '<button class="up-btn" style="background:#c62828" onclick="deletePhoto(' + productId + ')">🗑 Удалить фото</button>' : '') +
-    '<button class="up-cancel" style="margin-top:4px" onclick="closeUpload()">Отмена</button>' +
+    '<button class="up-btn" onclick="document.getElementById(\'photoFile\').removeAttribute(\'capture\');document.getElementById(\'photoFile\').click()">➕ Добавить из галереи</button>' +
+    '<button class="up-btn" style="background:#444" onclick="document.getElementById(\'photoFile\').setAttribute(\'capture\',\'environment\');document.getElementById(\'photoFile\').click()">📷 Сфотографировать</button>' +
+    '<button class="up-cancel" style="margin-top:4px" onclick="closeUpload()">Закрыть</button>' +
     '<div class="upload-progress" id="uploadProgress"></div>' +
     '</div>';
   document.body.appendChild(el);
 }
 function closeUpload() { const el = document.getElementById('uploadOverlay'); if (el) el.remove(); editingProductId = null; }
+function getPhotoArray(productId) {
+  const cp = customPhotos[productId] || customPhotos[String(productId)];
+  if (!cp) return [];
+  if (Array.isArray(cp)) return [...cp];
+  return [cp];
+}
 function uploadPhoto() {
   const file = document.getElementById('photoFile').files[0];
   if (!file) return;
@@ -282,11 +296,14 @@ function uploadPhoto() {
     .then(r => r.json())
     .then(data => {
       if (data.secure_url) {
-        customPhotos[editingProductId] = data.secure_url + '?t=' + Date.now();
+        const url = data.secure_url + '?t=' + Date.now();
+        const existing = getPhotoArray(editingProductId);
+        existing.push(url);
+        customPhotos[editingProductId] = existing;
         fetch(NPOINT_URL, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({...customPhotos, _banners: banners}) })
           .then(() => {
             document.getElementById('uploadProgress').textContent = '✅ Готово!';
-            setTimeout(() => { closeUpload(); filterProducts(); }, 700);
+            setTimeout(() => { closeUpload(); openUpload(editingProductId); filterProducts(); }, 500);
           });
       } else { document.getElementById('uploadProgress').textContent = '❌ Ошибка'; }
     }).catch(() => { document.getElementById('uploadProgress').textContent = '❌ Ошибка сети'; });
@@ -296,6 +313,18 @@ function deletePhoto(productId) {
   delete customPhotos[String(productId)];
   fetch(NPOINT_URL, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({...customPhotos, _banners: banners}) })
     .then(() => { closeUpload(); filterProducts(); tg.showAlert('✅ Фото удалено!'); });
+}
+function deletePhotoAt(productId, index) {
+  const photos = getPhotoArray(productId);
+  photos.splice(index, 1);
+  if (photos.length === 0) {
+    delete customPhotos[productId];
+    delete customPhotos[String(productId)];
+  } else {
+    customPhotos[productId] = photos;
+  }
+  fetch(NPOINT_URL, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({...customPhotos, _banners: banners}) })
+    .then(() => { closeUpload(); if(photos.length > 0) openUpload(productId); filterProducts(); tg.showAlert('✅ Фото удалено!'); });
 }
 
 function openCatMenu() {
@@ -322,7 +351,10 @@ function selectCat(tab, label, btn) {
 
 function getProductImage(p) {
   const cp = customPhotos[p.id] || customPhotos[String(p.id)];
-  if (cp) return cp;
+  if (cp) {
+    if (Array.isArray(cp)) return cp[0];
+    return cp;
+  }
   const n = p.name.toLowerCase();
   const cdn = 'https://store.storeimages.cdn-apple.com/4668/as-images.apple.com/is/';
   const q = '?wid=400&hei=400&fmt=jpeg';
@@ -745,7 +777,10 @@ function openProductCard(baseModel) {
   el.innerHTML = '<div class="cart-sheet" style="max-height:90vh">' +
     '<div style="width:40px;height:4px;background:#e0e0e0;border-radius:2px;margin:0 auto 16px"></div>' +
     '<div id="pcImgWrap" style="width:100%;height:240px;overflow:hidden;border-radius:16px;background:#f5f5f7;display:flex;align-items:center;justify-content:center;margin-bottom:16px">' +
-    '<img id="pcImg" src="'+getProductImage(first)+'" style="max-width:100%;max-height:100%;object-fit:contain;touch-action:pinch-zoom"></div>' +
+    '<div id="pcImgTrack" style="display:flex;height:100%;transition:transform 0.3s ease"></div>' +
+'<div id="pcGalleryDots" style="position:absolute;bottom:8px;left:0;right:0;display:flex;justify-content:center;gap:5px"></div>' +
+(isAdmin?'<button onclick="event.stopPropagation();openUpload('+first.id+')" style="position:absolute;top:8px;right:8px;background:rgba(0,0,0,0.6);color:#fff;border:none;border-radius:8px;padding:5px 10px;font-size:12px;cursor:pointer">✏️ Фото</button>':'') +
+'</div>' +
     '<div style="font-size:18px;font-weight:700;margin-bottom:16px;text-align:center">'+baseModel+'</div>' +
     (mems.length>1?'<div style="margin-bottom:12px"><div style="font-size:13px;font-weight:600;color:#86868b;margin-bottom:8px">Память</div><div style="display:flex;flex-wrap:wrap;gap:8px" id="memOptions">'+mems.map((m,i)=>'<button onclick="selectMem(\''+baseModel+'\',\''+m+'\')" class="var-chip'+(i===0?' active':'')+'" data-mem="'+m+'">'+m+'</button>').join('')+'</div></div>':'') +
     (sims.length>1?'<div style="margin-bottom:12px"><div style="font-size:13px;font-weight:600;color:#86868b;margin-bottom:8px">SIM</div><div style="display:flex;flex-wrap:wrap;gap:8px" id="simOptions">'+sims.map((s,i)=>'<button onclick="selectSim(\''+baseModel+'\',\''+s+'\')" class="var-chip'+(i===0?' active':'')+'" data-sim="'+s+'">'+s+'</button>').join('')+'</div></div>':'') +
@@ -762,6 +797,39 @@ function openProductCard(baseModel) {
   updateCardStatus(baseModel);
 }
 function closeProductCard() { const el=document.getElementById('productCardOverlay'); if(el)el.remove(); window._selMem=null; window._selVar=null; }
+function updateGallery(p) {
+  const track = document.getElementById('pcImgTrack');
+  const dots = document.getElementById('pcGalleryDots');
+  if (!track) return;
+  const cp = customPhotos[p.id] || customPhotos[String(p.id)];
+  let photos = cp ? (Array.isArray(cp) ? cp : [cp]) : [getProductImage(p)];
+  track.innerHTML = photos.map(url =>
+    '<div style="min-width:100%;height:100%;display:flex;align-items:center;justify-content:center">' +
+    '<img src="' + url + '" style="max-width:100%;max-height:100%;object-fit:contain;touch-action:pinch-zoom"></div>'
+  ).join('');
+  track.style.transform = 'translateX(0)';
+  window._galleryIdx = 0;
+  dots.innerHTML = photos.length > 1 ? photos.map((_,i) =>
+    '<div style="width:' + (i===0?'16':'6') + 'px;height:6px;border-radius:3px;background:' + (i===0?'#1d1d1f':'#d2d2d7') + ';transition:all 0.3s;cursor:pointer" onclick="goGallery(' + i + ')"></div>'
+  ).join('') : '';
+  if (photos.length > 1) {
+    const wrap = track.parentElement;
+    wrap.ontouchstart = e => window._gStartX = e.touches[0].clientX;
+    wrap.ontouchend = e => {
+      const diff = window._gStartX - e.changedTouches[0].clientX;
+      if (Math.abs(diff) > 40) goGallery(diff > 0 ? Math.min(window._galleryIdx+1, photos.length-1) : Math.max(window._galleryIdx-1, 0));
+    };
+  }
+}
+function goGallery(n) {
+  window._galleryIdx = n;
+  const track = document.getElementById('pcImgTrack');
+  if (track) track.style.transform = 'translateX(-' + (n*100) + '%)';
+  document.querySelectorAll('#pcGalleryDots div').forEach((d,i) => {
+    d.style.width = i===n ? '16px' : '6px';
+    d.style.background = i===n ? '#1d1d1f' : '#d2d2d7';
+  });
+}
 function selectMem(baseModel,mem) {
   window._selMem=mem;
   document.querySelectorAll('#memOptions .var-chip').forEach(b=>b.classList.toggle('active',b.dataset.mem===mem));
@@ -809,7 +877,7 @@ function updateCardStatus(baseModel) {
   const s=document.getElementById('pcStatus'); const b=document.getElementById('pcOrderBtn');
   if(s) s.innerHTML='<span class="stock-badge '+(inStock?'in-stock':'no-stock')+'">'+(inStock?'✓ В наличии':'✗ Нет в наличии')+'</span>';
   if(b){b.disabled=!inStock;b.style.background=inStock?'#1d1d1f':'#c7c7cc';}
-  const img=document.getElementById('pcImg'); if(img) img.src=getProductImage(p);
+  updateGallery(p);
 }
 function addToCartFromCard(baseModel) {
   const p=getSelectedProduct(baseModel); if(!p) return;
