@@ -143,7 +143,10 @@ header{background:rgba(255,255,255,0.85);backdrop-filter:blur(20px);-webkit-back
 <div class="cat-bar">
   <button class="cat-btn" onclick="openCatMenu()">☰ Категории</button>
   <span class="cat-label" id="catLabel">📱 Телефоны</span>
-  <button id="favBarBtn" onclick="openFavorites()" style="background:rgba(0,0,0,0.08);border:none;border-radius:20px;padding:8px 14px;font-size:13px;font-weight:600;cursor:pointer;color:var(--text);display:flex;align-items:center;gap:5px">❤️ <span id="favCount">0</span></button>
+  <div style="display:flex;gap:6px">
+    <button id="sortBtn" onclick="openSortMenu()" style="background:rgba(0,0,0,0.08);border:none;border-radius:20px;padding:8px 14px;font-size:13px;font-weight:600;cursor:pointer;color:var(--text)">⇅ Сортировка</button>
+    <button id="favBarBtn" onclick="openFavorites()" style="background:rgba(0,0,0,0.08);border:none;border-radius:20px;padding:8px 14px;font-size:13px;font-weight:600;cursor:pointer;color:var(--text);display:flex;align-items:center;gap:5px">❤️ <span id="favCount">0</span></button>
+  </div>
 </div>
 <div class="cat-overlay" id="catOverlay" onclick="closeCatMenu()"></div>
 <div class="cat-sheet" id="catSheet">
@@ -255,6 +258,38 @@ function rerenderFavorites() {
 function closeOverlay(id) {
   const el = document.getElementById(id);
   if(el) el.remove();
+}
+function openSortMenu() {
+  const el = document.createElement('div');
+  el.className = 'cart-overlay'; el.id = 'sortOverlay';
+  const options = [
+    {key:'default', label:'⭐ По умолчанию', desc:'Новинки и хиты первыми'},
+    {key:'name_asc', label:'🔤 По названию А-Я', desc:'В алфавитном порядке'},
+    {key:'name_desc', label:'🔤 По названию Я-А', desc:'В обратном порядке'},
+    {key:'stock_first', label:'✅ Сначала в наличии', desc:'Доступные товары вверху'},
+    {key:'new_first', label:'🆕 Сначала новинки', desc:'Новые модели первыми'},
+  ];
+  el.innerHTML = '<div class="cart-sheet">' +
+    '<h2>⇅ Сортировка</h2>' +
+    '<div style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px">' +
+    options.map(o =>
+      '<button onclick="setSort(\''+o.key+'\')" style="display:flex;justify-content:space-between;align-items:center;padding:14px 16px;background:'+(currentSort===o.key?'#1d1d1f':'#f5f5f7')+';color:'+(currentSort===o.key?'#fff':'#1d1d1f')+';border:none;border-radius:14px;cursor:pointer;text-align:left">' +
+      '<div><div style="font-size:14px;font-weight:600">'+o.label+'</div>' +
+      '<div style="font-size:11px;opacity:0.6;margin-top:2px">'+o.desc+'</div></div>' +
+      (currentSort===o.key?'<span style="font-size:18px">✓</span>':'') +
+      '</button>'
+    ).join('') +
+    '</div>' +
+    '<button onclick="closeOverlay(\'sortOverlay\')" class="cart-close">Закрыть</button>' +
+    '</div>';
+  document.body.appendChild(el);
+}
+function setSort(sort) {
+  currentSort = sort;
+  closeOverlay('sortOverlay');
+  filterProducts();
+  const btn = document.getElementById('sortBtn');
+  if(btn) btn.style.background = sort !== 'default' ? 'rgba(0,113,227,0.15)' : 'rgba(0,0,0,0.08)';
 }
 const productLabels = {
   'iPhone 17 Pro Max':'🔥 Хит',
@@ -1152,7 +1187,8 @@ function setColor(color,btn) {
   btn.classList.add('active');
   filterProducts();
 }
-let currentColor = 'all';
+ let currentColor = 'all';
+let currentSort = 'default';
 function filterProducts() {
   const q = document.getElementById('search').value.toLowerCase();
   const clearBtn = document.getElementById('clearBtn');
@@ -1162,9 +1198,24 @@ function filterProducts() {
   const tabOrder = {phones:0,tablets:1,laptops:2,watches:3,headphones:4,speakers:5,accessories:6,vacuum:7,gaming:8,cameras:9,rugged:10};
 const subOrder = {'Apple':0,'Samsung':1,'Xiaomi':2,'Google':3,'Honor':4,'OnePlus':5,'Другие':6};
 list = list.slice().sort((a,b)=>{
+  if(currentSort==='name_asc') return a.name.localeCompare(b.name);
+  if(currentSort==='name_desc') return b.name.localeCompare(a.name);
+  if(currentSort==='stock_first') {
+    const as=stockOverrides.hasOwnProperty(a.id)?stockOverrides[a.id]:a.inStock;
+    const bs=stockOverrides.hasOwnProperty(b.id)?stockOverrides[b.id]:b.inStock;
+    if(as!==bs) return bs-as;
+  }
+  if(currentSort==='new_first') {
+    const al=productLabels[getBaseModel(a.name)]||'';
+    const bl=productLabels[getBaseModel(b.name)]||'';
+    const an=al.includes('🆕')?0:1;
+    const bn=bl.includes('🆕')?0:1;
+    if(an!==bn) return an-bn;
+  }
   if(a.tab!==b.tab) return (tabOrder[a.tab]||9)-(tabOrder[b.tab]||9);
-if(a.sub!==b.sub) return (subOrder[a.sub]??9)-(subOrder[b.sub]??9);  const sa=getModelScore(a.name),sb=getModelScore(b.name);
-  if(sb!==sa)return sb-sa;
+  if(a.sub!==b.sub) return (subOrder[a.sub]??9)-(subOrder[b.sub]??9);
+  const sa=getModelScore(a.name),sb=getModelScore(b.name);
+  if(sb!==sa) return sb-sa;
   return getStorageMB(a.name)-getStorageMB(b.name);
 });
   renderProducts(list);
