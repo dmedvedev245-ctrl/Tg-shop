@@ -143,6 +143,7 @@ header{background:rgba(255,255,255,0.85);backdrop-filter:blur(20px);-webkit-back
 <div class="cat-bar">
   <button class="cat-btn" onclick="openCatMenu()">☰ Категории</button>
   <span class="cat-label" id="catLabel">📱 Телефоны</span>
+  <button id="favBarBtn" onclick="openFavorites()" style="background:rgba(0,0,0,0.08);border:none;border-radius:20px;padding:8px 14px;font-size:13px;font-weight:600;cursor:pointer;color:var(--text);display:flex;align-items:center;gap:5px">❤️ <span id="favCount">0</span></button>
 </div>
 <div class="cat-overlay" id="catOverlay" onclick="closeCatMenu()"></div>
 <div class="cat-sheet" id="catSheet">
@@ -202,6 +203,59 @@ let currentSub = 'all';
 let tapCount = 0, tapTimer;
 let customPhotos = {};
 let stockOverrides = JSON.parse(localStorage.getItem('store457_stock') || '{}');
+let favorites = JSON.parse(localStorage.getItem('store457_favorites') || '[]');
+function toggleFavorite(baseModel, event) {
+  event.stopPropagation();
+  const idx = favorites.indexOf(baseModel);
+  if(idx === -1) favorites.push(baseModel);
+  else favorites.splice(idx, 1);
+  localStorage.setItem('store457_favorites', JSON.stringify(favorites));
+  filterProducts();
+  updateFavBtn();
+}
+function updateFavBtn() {
+  const btn = document.getElementById('favBarBtn');
+  const cnt = document.getElementById('favCount');
+  if(btn) btn.style.background = favorites.length > 0 ? 'rgba(255,59,48,0.15)' : 'rgba(0,0,0,0.08)';
+  if(cnt) cnt.textContent = favorites.length;
+}
+function openFavorites() {
+  if(favorites.length === 0) { tg.showAlert('Вы ещё не добавили товары в избранное!\n\nНажмите ❤️ на карточке товара.'); return; }
+  const el = document.createElement('div');
+  el.className = 'cart-overlay'; el.id = 'favOverlay';
+  const list = allProducts.filter(p => {
+    const base = getBaseModel(p.name);
+    return favorites.includes(base);
+  });
+  const groups = {};
+  list.forEach(p => { const base = getBaseModel(p.name); if(!groups[base]) groups[base] = p; });
+  const items = Object.entries(groups);
+  el.innerHTML = '<div class="cart-sheet">' +
+    '<h2>❤️ Избранное</h2>' +
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;padding-bottom:16px">' +
+    items.map(([base, p]) => {
+      const inStock = stockOverrides.hasOwnProperty(p.id) ? stockOverrides[p.id] : p.inStock;
+      const safe = base.replace(/'/g,"\\'");
+      return '<div onclick="closeOverlay(\'favOverlay\');setTimeout(()=>openProductCard(\''+safe+'\'),100)" style="background:#f5f5f7;border-radius:16px;padding:10px;cursor:pointer;position:relative">' +
+        '<button onclick="event.stopPropagation();toggleFavorite(\''+safe+'\',event);rerenderFavorites()" style="position:absolute;top:6px;right:6px;background:none;border:none;font-size:16px;cursor:pointer">❤️</button>' +
+        '<img src="'+getProductImage(p)+'" style="width:100%;height:80px;object-fit:contain;margin-bottom:6px">' +
+        '<div style="font-size:11px;font-weight:600;color:#1d1d1f;line-height:1.3;margin-bottom:4px">'+base+'</div>' +
+        '<div style="font-size:10px;font-weight:700;padding:2px 6px;border-radius:8px;display:inline-block;background:'+(inStock?'#e8f5e9':'#fce4e4')+';color:'+(inStock?'#2e7d32':'#c62828')+'">'+(inStock?'✓ Есть':'✗ Нет')+'</div>' +
+        '</div>';
+    }).join('') +
+    '</div>' +
+    '<button onclick="closeOverlay(\'favOverlay\')" class="cart-close">Закрыть</button>' +
+    '</div>';
+  document.body.appendChild(el);
+}
+function rerenderFavorites() {
+  closeOverlay('favOverlay');
+  setTimeout(() => openFavorites(), 100);
+}
+function closeOverlay(id) {
+  const el = document.getElementById(id);
+  if(el) el.remove();
+}
 const productLabels = {
   'iPhone 17 Pro Max':'🔥 Хит',
   'iPhone 17 Pro':'🔥 Хит',
@@ -1130,10 +1184,12 @@ function renderProducts(list) {
     let label = productLabels[base] || '';
 if(!label && variants.length === 1 && inStock) label = '📦 Последний';
 const labelHtml = label ? '<div style="position:absolute;top:8px;left:8px;background:'+(label.includes('🔥')?'#ff3b30':label.includes('🆕')?'#34c759':label.includes('📦')?'#ff9500':'#0071e3')+';color:#fff;font-size:10px;font-weight:700;padding:3px 8px;border-radius:10px;z-index:5">'+label+'</div>' : '';
+const isFav = favorites.includes(base);
 return '<div class="card '+(inStock?'':'out-of-stock')+'" onclick="openProductCard(\''+safeBase+'\')" style="cursor:pointer">' +
       labelHtml +
       '<button class="stock-btn" style="background:'+stockColor+'" onclick="event.stopPropagation();toggleStock('+first.id+')">'+(inStock?'✓ Есть':'✗ Нет')+'</button>' +
       '<button class="edit-btn" onclick="event.stopPropagation();openUpload('+first.id+')">✏️ Фото</button>' +
+      '<button onclick="toggleFavorite(\''+safeBase+'\',event)" style="position:absolute;top:8px;right:8px;background:'+(isFav?'#ff3b30':'rgba(0,0,0,0.15)')+';border:none;border-radius:50%;width:30px;height:30px;font-size:15px;cursor:pointer;z-index:6;display:flex;align-items:center;justify-content:center">'+(isFav?'❤️':'🤍')+'</button>' +
       '<img class="card-img" src="'+src+'" alt="'+base+'" onerror="this.style.display=\'none\'">' +
       '<div class="card-body">' +
       '<div class="card-name">'+base+'</div>' +
@@ -1405,6 +1461,7 @@ function deleteBannerSlide(i) {
 }
 renderSubFilters();
 filterProducts();
+updateFavBtn();
 </script>
 </body>
 </html>
