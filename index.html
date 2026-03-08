@@ -156,6 +156,7 @@ header{background:rgba(255,255,255,0.85);backdrop-filter:blur(20px);-webkit-back
     <button class="cat-item" onclick="selectCat('speakers','🔊 Колонки',this)"><span>🔊</span><span>Колонки</span></button>
     <button class="cat-item" onclick="selectCat('accessories','🔌 Аксессуары',this)"><span>🔌</span><span>Аксессуары</span></button>
     <button class="cat-item" onclick="selectCat('vacuum','🧹 Пылесосы',this)"><span>🧹</span><span>Пылесосы</span></button>
+    <button class="cat-item" onclick="selectCat('haircare','💇 Фены',this)"><span>💇</span><span>Фены</span></button>
     <button class="cat-item" onclick="selectCat('gaming','🎮 Игровые',this)"><span>🎮</span><span>Игровые</span></button>
     <button class="cat-item" onclick="selectCat('cameras','📷 Камеры',this)"><span>📷</span><span>Камеры</span></button>
     <button class="cat-item" onclick="selectCat('rugged','🛡 Противоудар',this)"><span>🛡</span><span>Противоудар</span></button>
@@ -809,11 +810,11 @@ const allProducts = [
   {id:1112,name:"Roborock Saros Z70 Silver",tab:"vacuum",sub:"Roborock",img:imgs.roborock,inStock:true},
   {id:1120,name:"Xiaomi Dreame T30 RU",tab:"vacuum",sub:"Dreame",img:imgs.xiaomi,inStock:true},
   {id:1121,name:"Xiaomi Dreame X50 Ultra Complete Black",tab:"vacuum",sub:"Dreame",img:imgs.xiaomi,inStock:true},
-  {id:1130,name:"Dyson HT01 Red Velvet/Gold стайлер",tab:"vacuum",sub:"Dyson Стайлер",img:imgs.dyson,inStock:true},
-  {id:1131,name:"Dyson HT01 Nickel Copper стайлер",tab:"vacuum",sub:"Dyson Стайлер",img:imgs.dyson,inStock:true},
-  {id:1132,name:"Dyson HS08 Blue/Rich Copper стайлер",tab:"vacuum",sub:"Dyson Стайлер",img:imgs.dyson,inStock:true},
-  {id:1133,name:"Dyson HS08 Jasper Plum стайлер",tab:"vacuum",sub:"Dyson Стайлер",img:imgs.dyson,inStock:true},
-  {id:1134,name:"Dyson HS08 Red Velvet/Gold стайлер",tab:"vacuum",sub:"Dyson Стайлер",img:imgs.dyson,inStock:true},
+  {id:1130,name:"Dyson HT01 Red Velvet/Gold",tab:"haircare",sub:"Dyson Фен",img:imgs.dyson,inStock:true},
+  {id:1131,name:"Dyson HT01 Nickel Copper",tab:"haircare",sub:"Dyson Фен",img:imgs.dyson,inStock:true},
+  {id:1132,name:"Dyson HS08 Blue/Rich Copper",tab:"haircare",sub:"Dyson Стайлер",img:imgs.dyson,inStock:true},
+  {id:1133,name:"Dyson HS08 Jasper Plum",tab:"haircare",sub:"Dyson Стайлер",img:imgs.dyson,inStock:true},
+  {id:1134,name:"Dyson HS08 Red Velvet/Gold",tab:"haircare",sub:"Dyson Стайлер",img:imgs.dyson,inStock:true},
   {id:1200,name:"SONY PlayStation 5 Slim EU без диска 1 ревизия",tab:"gaming",sub:"Sony",img:imgs.sony,inStock:true},
   {id:1201,name:"SONY PlayStation 5 Slim EU с диском 1 ревизия",tab:"gaming",sub:"Sony",img:imgs.sony,inStock:true},
   {id:1205,name:"SONY PlayStation 5 Slim EU без диска 2 ревизия",tab:"gaming",sub:"Sony",img:imgs.sony,inStock:true},
@@ -852,7 +853,7 @@ const services = [
   {id:'s5',name:"Диагностика",desc:"Полная проверка устройства перед покупкой",icon:"🔍"},
 {id:'s6',name:"Сборка компьютера",desc:"Подбор комплектующих и сборка ПК под любой бюджет и задачи",icon:"🖥"},
 ];
-const catNames = {phones:'📱',tablets:'📟',laptops:'💻',watches:'⌚',headphones:'🎧',speakers:'🔊',accessories:'🔌',vacuum:'🧹',gaming:'🎮',cameras:'📷',rugged:'🛡'};
+const catNames = {phones:'📱',tablets:'📟',laptops:'💻',watches:'⌚',headphones:'🎧',speakers:'🔊',accessories:'🔌',vacuum:'🧹',gaming:'🎮',cameras:'📷',rugged:'🛡',haircare:'💇'};
 function clearSearch() {
   document.getElementById('search').value='';
   document.getElementById('clearBtn').style.display='none';
