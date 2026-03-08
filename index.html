@@ -202,6 +202,27 @@ let currentSub = 'all';
 let tapCount = 0, tapTimer;
 let customPhotos = {};
 let stockOverrides = JSON.parse(localStorage.getItem('store457_stock') || '{}');
+const productLabels = {
+  'iPhone 17 Pro Max':'🔥 Хит',
+  'iPhone 17 Pro':'🔥 Хит',
+  'iPhone 17 Air':'🆕 Новинка',
+  'iPhone 17':'🆕 Новинка',
+  'Samsung S26 Ultra':'🆕 Новинка',
+  'Samsung S26':'🆕 Новинка',
+  'Samsung Z TriFold':'🆕 Новинка',
+  'Samsung Fold 7':'🔥 Хит',
+  'Samsung Flip7':'🆕 Новинка',
+  'Samsung S25 Ultra':'🔥 Хит',
+  'G. Pixel 10 Pro XL':'🆕 Новинка',
+  'G. Pixel 10 Pro':'🆕 Новинка',
+  'SONY PlayStation 5 Pro EU':'🆕 Новинка',
+  'Apple Watch Ultra 3 49mm Black Ti':'🆕 Новинка',
+  'Apple AirPods PRO 3':'🆕 Новинка',
+  'MacBook Pro 14\" M5':'🆕 Новинка',
+  'Dyson Gen5 Midnight Blue/Copper':'🔥 Хит',
+  'X.Poco F8 Ultra':'🆕 Новинка',
+  'OnePlus 15':'🔥 Хит',
+};
 
 fetch(NPOINT_URL + '?t=' + Date.now())
   .then(r => r.json())
@@ -1106,7 +1127,11 @@ function renderProducts(list) {
     const src=getProductImage(first);
     const stockColor=inStock?'rgba(46,125,50,0.85)':'rgba(198,40,40,0.85)';
     const safeBase=base.replace(/'/g,"\\'");
-    return '<div class="card '+(inStock?'':'out-of-stock')+'" onclick="openProductCard(\''+safeBase+'\')" style="cursor:pointer">' +
+    let label = productLabels[base] || '';
+if(!label && variants.length === 1 && inStock) label = '📦 Последний';
+const labelHtml = label ? '<div style="position:absolute;top:8px;left:8px;background:'+(label.includes('🔥')?'#ff3b30':label.includes('🆕')?'#34c759':label.includes('📦')?'#ff9500':'#0071e3')+';color:#fff;font-size:10px;font-weight:700;padding:3px 8px;border-radius:10px;z-index:5">'+label+'</div>' : '';
+return '<div class="card '+(inStock?'':'out-of-stock')+'" onclick="openProductCard(\''+safeBase+'\')" style="cursor:pointer">' +
+      labelHtml +
       '<button class="stock-btn" style="background:'+stockColor+'" onclick="event.stopPropagation();toggleStock('+first.id+')">'+(inStock?'✓ Есть':'✗ Нет')+'</button>' +
       '<button class="edit-btn" onclick="event.stopPropagation();openUpload('+first.id+')">✏️ Фото</button>' +
       '<img class="card-img" src="'+src+'" alt="'+base+'" onerror="this.style.display=\'none\'">' +
