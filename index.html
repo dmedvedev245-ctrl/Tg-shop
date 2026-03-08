@@ -135,9 +135,9 @@ header{background:rgba(255,255,255,0.85);backdrop-filter:blur(20px);-webkit-back
   </div>
 </header>
 <div class="admin-bar" id="adminBar">
-  ⚡ Режим администратора — нажмите ✏️ для изменения фото
-  <button onclick="showStats()" style="margin-left:12px;background:rgba(0,0,0,0.2);border:none;color:#fff;padding:3px 10px;border-radius:8px;cursor:pointer">📊 Статистика</button>
-  <button onclick="exitAdmin()" style="margin-left:8px;background:rgba(0,0,0,0.2);border:none;color:#fff;padding:3px 10px;border-radius:8px;cursor:pointer">Выйти</button>
+  ⚡ Режим администратора
+  <button onclick="openAdminPanel()" style="margin-left:12px;background:rgba(255,255,255,0.2);border:none;color:#fff;padding:5px 14px;border-radius:10px;cursor:pointer;font-weight:700">⚙️ Панель</button>
+  <button onclick="exitAdmin()" style="margin-left:8px;background:rgba(0,0,0,0.2);border:none;color:#fff;padding:5px 10px;border-radius:10px;cursor:pointer">Выйти</button>
 </div>
 <div class="search-bar" style="display:flex;gap:8px;align-items:center"><input type="text" id="search" placeholder="🔍 Поиск по всем категориям..." oninput="filterProducts()" style="flex:1;padding:9px 14px;border-radius:10px;border:none;background:#f2f2f7;font-size:15px;outline:none"><button id="clearBtn" onclick="clearSearch()" style="display:none;background:none;border:none;font-size:20px;cursor:pointer;color:#86868b">✕</button></div>
 <div class="cat-bar">
@@ -328,6 +328,192 @@ document.getElementById('headerTitle').addEventListener('click', () => {
   if (tapCount >= 3) { tapCount = 0; if (!isAdmin) showAdminLogin(); }
 });
 
+function openAdminPanel() {
+  const el = document.createElement('div');
+  el.className = 'admin-login'; el.id = 'adminPanelOverlay';
+  el.innerHTML = '<div style="background:#fff;border-radius:24px;padding:24px;width:340px;max-height:90vh;overflow-y:auto;animation:fadeInUp 0.3s ease">' +
+    '<h3 style="font-size:20px;font-weight:700;margin-bottom:6px;text-align:center">⚙️ Панель администратора</h3>' +
+    '<p style="font-size:12px;color:#86868b;text-align:center;margin-bottom:20px">STORE 457</p>' +
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">' +
+    '<button onclick="closeOverlay(\'adminPanelOverlay\');showStats()" style="padding:16px 10px;background:#f5f5f7;border:none;border-radius:16px;cursor:pointer;font-size:13px;font-weight:600;color:#1d1d1f">' +
+    '<div style="font-size:28px;margin-bottom:6px">📊</div>Статистика</button>' +
+    '<button onclick="closeOverlay(\'adminPanelOverlay\');openLabelManager()" style="padding:16px 10px;background:#f5f5f7;border:none;border-radius:16px;cursor:pointer;font-size:13px;font-weight:600;color:#1d1d1f">' +
+    '<div style="font-size:28px;margin-bottom:6px">🏷</div>Метки</button>' +
+    '<button onclick="closeOverlay(\'adminPanelOverlay\');openStockManager()" style="padding:16px 10px;background:#f5f5f7;border:none;border-radius:16px;cursor:pointer;font-size:13px;font-weight:600;color:#1d1d1f">' +
+    '<div style="font-size:28px;margin-bottom:6px">📦</div>Наличие</button>' +
+    '<button onclick="closeOverlay(\'adminPanelOverlay\');openBannerManager()" style="padding:16px 10px;background:#f5f5f7;border:none;border-radius:16px;cursor:pointer;font-size:13px;font-weight:600;color:#1d1d1f">' +
+    '<div style="font-size:28px;margin-bottom:6px">🎨</div>Баннеры</button>' +
+    '<button onclick="closeOverlay(\'adminPanelOverlay\');openPhotoManager()" style="padding:16px 10px;background:#f5f5f7;border:none;border-radius:16px;cursor:pointer;font-size:13px;font-weight:600;color:#1d1d1f">' +
+    '<div style="font-size:28px;margin-bottom:6px">📸</div>Все фото</button>' +
+    '<button onclick="closeOverlay(\'adminPanelOverlay\');openSettingsManager()" style="padding:16px 10px;background:#f5f5f7;border:none;border-radius:16px;cursor:pointer;font-size:13px;font-weight:600;color:#1d1d1f">' +
+    '<div style="font-size:28px;margin-bottom:6px">⚙️</div>Настройки</button>' +
+    '</div>' +
+    '<button onclick="closeOverlay(\'adminPanelOverlay\')" style="width:100%;padding:13px;border-radius:12px;border:none;background:#1d1d1f;color:#fff;font-size:15px;font-weight:700;cursor:pointer;margin-bottom:8px">Закрыть</button>' +
+    '<button onclick="closeOverlay(\'adminPanelOverlay\');exitAdmin()" style="width:100%;padding:11px;border-radius:12px;border:none;background:#f5f5f7;color:#c62828;font-size:13px;cursor:pointer">Выйти из админки</button>' +
+    '</div>';
+  document.body.appendChild(el);
+}
+function openLabelManager() {
+  const el = document.createElement('div');
+  el.className = 'admin-login'; el.id = 'labelManagerOverlay';
+  const customLabels = JSON.parse(localStorage.getItem('store457_labels') || '{}');
+  const merged = {...productLabels, ...customLabels};
+  const labelTypes = ['🔥 Хит','🆕 Новинка','🎁 Акция','💎 Премиум','🔴 Распродажа'];
+  el.innerHTML = '<div style="background:#fff;border-radius:24px;padding:24px;width:340px;max-height:90vh;overflow-y:auto;animation:fadeInUp 0.3s ease">' +
+    '<h3 style="font-size:18px;font-weight:700;margin-bottom:16px;text-align:center">🏷 Управление метками</h3>' +
+    '<div style="margin-bottom:16px">' +
+    '<p style="font-size:12px;color:#86868b;margin-bottom:8px">Поиск товара:</p>' +
+    '<input id="labelSearch" type="text" placeholder="Начните вводить название..." oninput="renderLabelSearch()" style="width:100%;padding:10px 14px;border-radius:12px;border:1.5px solid #e0e0e0;font-size:14px;outline:none;margin-bottom:8px">' +
+    '<div id="labelSearchResults" style="max-height:200px;overflow-y:auto"></div>' +
+    '</div>' +
+    '<div style="margin-bottom:16px">' +
+    '<p style="font-size:13px;font-weight:700;margin-bottom:8px">Текущие метки:</p>' +
+    '<div id="currentLabels">' +
+    Object.entries(merged).map(([base, label]) =>
+      '<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:#f5f5f7;border-radius:10px;margin-bottom:6px">' +
+      '<div><div style="font-size:12px;font-weight:600">'+base+'</div>' +
+      '<div style="font-size:11px;margin-top:2px"><span style="background:'+(label.includes('🔥')?'#ff3b30':label.includes('🆕')?'#34c759':label.includes('🎁')?'#ff9500':label.includes('💎')?'#0071e3':'#ff3b30')+';color:#fff;padding:2px 8px;border-radius:8px">'+label+'</span></div></div>' +
+      '<button onclick="removeLabel(\''+base.replace(/'/g,"\\'")+'\',this)" style="background:#fce4e4;color:#c62828;border:none;border-radius:8px;padding:5px 10px;font-size:12px;cursor:pointer">✕ Удалить</button>' +
+      '</div>'
+    ).join('') +
+    '</div></div>' +
+    '<button onclick="closeOverlay(\'labelManagerOverlay\');openAdminPanel()" style="width:100%;padding:13px;border-radius:12px;border:none;background:#1d1d1f;color:#fff;font-size:14px;font-weight:700;cursor:pointer">← Назад</button>' +
+    '</div>';
+  document.body.appendChild(el);
+}
+function renderLabelSearch() {
+  const q = document.getElementById('labelSearch').value.toLowerCase();
+  const res = document.getElementById('labelSearchResults');
+  if(!q || q.length < 2) { res.innerHTML=''; return; }
+  const bases = [...new Set(allProducts.map(p=>getBaseModel(p.name)))].filter(b=>b.toLowerCase().includes(q)).slice(0,8);
+  const labelTypes = ['🔥 Хит','🆕 Новинка','🎁 Акция','💎 Премиум','🔴 Распродажа','— Убрать метку'];
+  res.innerHTML = bases.map(base =>
+    '<div style="padding:10px 12px;background:#f5f5f7;border-radius:12px;margin-bottom:6px">' +
+    '<div style="font-size:12px;font-weight:600;margin-bottom:6px">'+base+'</div>' +
+    '<div style="display:flex;flex-wrap:wrap;gap:5px">' +
+    labelTypes.map(l =>
+      '<button onclick="setCustomLabel(\''+base.replace(/'/g,"\\'")+'\',\''+(l==='— Убрать метку'?'':l)+'\')" style="padding:4px 10px;border:none;border-radius:10px;font-size:11px;font-weight:600;cursor:pointer;background:'+(l.includes('🔥')?'#ff3b30':l.includes('🆕')?'#34c759':l.includes('🎁')?'#ff9500':l.includes('💎')?'#0071e3':l.includes('🔴')?'#c62828':'#e0e0e0')+';color:'+(l==='— Убрать метку'?'#1d1d1f':'#fff')+'">'+l+'</button>'
+    ).join('') +
+    '</div></div>'
+  ).join('');
+}
+function setCustomLabel(base, label) {
+  const customLabels = JSON.parse(localStorage.getItem('store457_labels') || '{}');
+  if(label) customLabels[base] = label;
+  else delete customLabels[base];
+  localStorage.setItem('store457_labels', JSON.stringify(customLabels));
+  Object.assign(productLabels, customLabels);
+  if(!label) delete productLabels[base];
+  filterProducts();
+  closeOverlay('labelManagerOverlay');
+  openLabelManager();
+  tg.showAlert('✅ Метка '+(label?'установлена':'удалена')+'!');
+}
+function removeLabel(base, btn) {
+  setCustomLabel(base, '');
+}
+function openStockManager() {
+  const el = document.createElement('div');
+  el.className = 'admin-login'; el.id = 'stockManagerOverlay';
+  el.innerHTML = '<div style="background:#fff;border-radius:24px;padding:24px;width:340px;max-height:90vh;overflow-y:auto;animation:fadeInUp 0.3s ease">' +
+    '<h3 style="font-size:18px;font-weight:700;margin-bottom:8px;text-align:center">📦 Управление наличием</h3>' +
+    '<input id="stockSearch" type="text" placeholder="🔍 Поиск товара..." oninput="renderStockList()" style="width:100%;padding:10px 14px;border-radius:12px;border:1.5px solid #e0e0e0;font-size:14px;outline:none;margin-bottom:12px">' +
+    '<div id="stockList" style="max-height:60vh;overflow-y:auto"></div>' +
+    '<button onclick="closeOverlay(\'stockManagerOverlay\');openAdminPanel()" style="width:100%;padding:13px;border-radius:12px;border:none;background:#1d1d1f;color:#fff;font-size:14px;font-weight:700;cursor:pointer;margin-top:12px">← Назад</button>' +
+    '</div>';
+  document.body.appendChild(el);
+  renderStockList();
+}
+function renderStockList() {
+  const q = (document.getElementById('stockSearch')?.value||'').toLowerCase();
+  const list = document.getElementById('stockList'); if(!list) return;
+  const groups = {};
+  allProducts.filter(p=>!q||p.name.toLowerCase().includes(q)).forEach(p=>{
+    const base=getBaseModel(p.name);
+    if(!groups[base]) groups[base]={first:p,variants:[],base};
+    groups[base].variants.push(p);
+  });
+  const items = Object.values(groups).slice(0,30);
+  list.innerHTML = items.map(g=>{
+    const inStock=g.variants.some(p=>stockOverrides.hasOwnProperty(p.id)?stockOverrides[p.id]:p.inStock);
+    return '<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:#f5f5f7;border-radius:12px;margin-bottom:6px">' +
+      '<div style="flex:1"><div style="font-size:12px;font-weight:600">'+g.base+'</div>' +
+      '<div style="font-size:11px;color:#86868b">'+g.variants.length+' вариантов</div></div>' +
+      '<button onclick="toggleStockGroup(\''+g.base.replace(/'/g,"\\'")+'\','+(inStock?'false':'true')+')" style="padding:6px 14px;border:none;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;background:'+(inStock?'#e8f5e9':'#fce4e4')+';color:'+(inStock?'#2e7d32':'#c62828')+'">'+(inStock?'✓ Есть':'✗ Нет')+'</button>' +
+      '</div>';
+  }).join('');
+}
+function toggleStockGroup(base, newStock) {
+  allProducts.filter(p=>getBaseModel(p.name)===base).forEach(p=>{
+    stockOverrides[p.id]=newStock;
+  });
+  localStorage.setItem('store457_stock', JSON.stringify(stockOverrides));
+  filterProducts();
+  renderStockList();
+}
+function openBannerManager() {
+  closeOverlay('adminPanelOverlay');
+  renderBanner();
+  tg.showAlert('Нажмите ✏️ на баннере для редактирования или ➕ для добавления!');
+  document.getElementById('addSlideBtn').style.display='block';
+}
+function openPhotoManager() {
+  const el = document.createElement('div');
+  el.className = 'admin-login'; el.id = 'photoManagerOverlay';
+  el.innerHTML = '<div style="background:#fff;border-radius:24px;padding:24px;width:340px;max-height:90vh;overflow-y:auto;animation:fadeInUp 0.3s ease">' +
+    '<h3 style="font-size:18px;font-weight:700;margin-bottom:8px;text-align:center">📸 Управление фото</h3>' +
+    '<input id="photoSearch" type="text" placeholder="🔍 Поиск товара..." oninput="renderPhotoList()" style="width:100%;padding:10px 14px;border-radius:12px;border:1.5px solid #e0e0e0;font-size:14px;outline:none;margin-bottom:12px">' +
+    '<div id="photoList" style="max-height:60vh;overflow-y:auto"></div>' +
+    '<button onclick="closeOverlay(\'photoManagerOverlay\');openAdminPanel()" style="width:100%;padding:13px;border-radius:12px;border:none;background:#1d1d1f;color:#fff;font-size:14px;font-weight:700;cursor:pointer;margin-top:12px">← Назад</button>' +
+    '</div>';
+  document.body.appendChild(el);
+  renderPhotoList();
+}
+function renderPhotoList() {
+  const q = (document.getElementById('photoSearch')?.value||'').toLowerCase();
+  const list = document.getElementById('photoList'); if(!list) return;
+  const groups = {};
+  allProducts.filter(p=>!q||p.name.toLowerCase().includes(q)).forEach(p=>{
+    const base=getBaseModel(p.name);
+    if(!groups[base]) groups[base]=p;
+  });
+  const items = Object.entries(groups).slice(0,20);
+  list.innerHTML = items.map(([base,p])=>{
+    const hasCustom = customPhotos[p.id]||customPhotos[String(p.id)];
+    return '<div style="display:flex;align-items:center;gap:10px;padding:8px 12px;background:#f5f5f7;border-radius:12px;margin-bottom:6px">' +
+      '<img src="'+getProductImage(p)+'" style="width:48px;height:48px;object-fit:contain;border-radius:8px;background:#fff">' +
+      '<div style="flex:1"><div style="font-size:11px;font-weight:600">'+base+'</div>' +
+      '<div style="font-size:10px;color:'+(hasCustom?'#34c759':'#86868b')+'">'+(hasCustom?'✓ Своё фото':'Стандартное')+'</div></div>' +
+      '<button onclick="closeOverlay(\'photoManagerOverlay\');openUpload('+p.id+')" style="padding:6px 12px;border:none;border-radius:10px;font-size:12px;font-weight:600;cursor:pointer;background:#0071e3;color:#fff">✏️</button>' +
+      '</div>';
+  }).join('');
+}
+function openSettingsManager() {
+  const el = document.createElement('div');
+  el.className = 'admin-login'; el.id = 'settingsOverlay';
+  el.innerHTML = '<div style="background:#fff;border-radius:24px;padding:24px;width:340px;max-height:90vh;overflow-y:auto;animation:fadeInUp 0.3s ease">' +
+    '<h3 style="font-size:18px;font-weight:700;margin-bottom:16px;text-align:center">⚙️ Настройки</h3>' +
+    '<div style="display:flex;flex-direction:column;gap:10px;margin-bottom:16px">' +
+    '<div style="padding:14px 16px;background:#f5f5f7;border-radius:14px">' +
+    '<div style="font-size:13px;font-weight:700;margin-bottom:4px">🗑 Очистить статистику</div>' +
+    '<div style="font-size:11px;color:#86868b;margin-bottom:10px">Удалить все данные о заказах</div>' +
+    '<button onclick="localStorage.removeItem(\'store457_orders\');tg.showAlert(\'✅ Статистика очищена!\')" style="padding:8px 16px;border:none;border-radius:10px;background:#c62828;color:#fff;font-size:12px;font-weight:600;cursor:pointer">Очистить</button>' +
+    '</div>' +
+    '<div style="padding:14px 16px;background:#f5f5f7;border-radius:14px">' +
+    '<div style="font-size:13px;font-weight:700;margin-bottom:4px">🏷 Сбросить метки</div>' +
+    '<div style="font-size:11px;color:#86868b;margin-bottom:10px">Удалить все пользовательские метки</div>' +
+    '<button onclick="localStorage.removeItem(\'store457_labels\');filterProducts();tg.showAlert(\'✅ Метки сброшены!\')" style="padding:8px 16px;border:none;border-radius:10px;background:#ff9500;color:#fff;font-size:12px;font-weight:600;cursor:pointer">Сбросить</button>' +
+    '</div>' +
+    '<div style="padding:14px 16px;background:#f5f5f7;border-radius:14px">' +
+    '<div style="font-size:13px;font-weight:700;margin-bottom:4px">📦 Сбросить наличие</div>' +
+    '<div style="font-size:11px;color:#86868b;margin-bottom:10px">Вернуть стандартное наличие всех товаров</div>' +
+    '<button onclick="stockOverrides={};localStorage.removeItem(\'store457_stock\');filterProducts();tg.showAlert(\'✅ Наличие сброшено!\')" style="padding:8px 16px;border:none;border-radius:10px;background:#0071e3;color:#fff;font-size:12px;font-weight:600;cursor:pointer">Сбросить</button>' +
+    '</div>' +
+    '</div>' +
+    '<button onclick="closeOverlay(\'settingsOverlay\');openAdminPanel()" style="width:100%;padding:13px;border-radius:12px;border:none;background:#1d1d1f;color:#fff;font-size:14px;font-weight:700;cursor:pointer">← Назад</button>' +
+    '</div>';
+  document.body.appendChild(el);
+}
 function showAdminLogin() {
   const el = document.createElement('div');
   el.className = 'admin-login'; el.id = 'adminLogin';
