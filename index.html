@@ -140,13 +140,15 @@ header{background:rgba(255,255,255,0.85);backdrop-filter:blur(20px);-webkit-back
   <button onclick="exitAdmin()" style="margin-left:8px;background:rgba(0,0,0,0.2);border:none;color:#fff;padding:5px 10px;border-radius:10px;cursor:pointer">Выйти</button>
 </div>
 <div class="search-bar" style="display:flex;gap:8px;align-items:center"><input type="text" id="search" placeholder="🔍 Поиск по всем категориям..." oninput="filterProducts()" style="flex:1;padding:9px 14px;border-radius:10px;border:none;background:#f2f2f7;font-size:15px;outline:none"><button id="clearBtn" onclick="clearSearch()" style="display:none;background:none;border:none;font-size:20px;cursor:pointer;color:#86868b">✕</button></div>
-<div class="cat-bar">
-  <button class="cat-btn" onclick="openCatMenu()">☰ Категории</button>
-  <span class="cat-label" id="catLabel">📱 Телефоны</span>
-  <div style="display:flex;gap:6px">
-    <button id="sortBtn" onclick="openSortMenu()" style="background:rgba(0,0,0,0.08);border:none;border-radius:20px;padding:8px 14px;font-size:13px;font-weight:600;cursor:pointer;color:var(--text)">⇅ Сортировка</button>
-    <button id="favBarBtn" onclick="openFavorites()" style="background:rgba(0,0,0,0.08);border:none;border-radius:20px;padding:8px 14px;font-size:13px;font-weight:600;cursor:pointer;color:var(--text);display:flex;align-items:center;gap:5px">❤️ <span id="favCount">0</span></button>
+<div class="cat-bar" style="flex-wrap:wrap;gap:8px;padding:10px 16px">
+  <div style="display:flex;align-items:center;gap:8px;flex:1;min-width:0">
+    <button class="cat-btn" onclick="openCatMenu()" style="flex-shrink:0">☰ Категории</button>
+    <span class="cat-label" id="catLabel" style="font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">📱 Телефоны</span>
   </div>
+  <div style="display:flex;gap:6px;flex-shrink:0">
+   <button id="sortBtn" onclick="openSortMenu()" style="background:rgba(0,0,0,0.08);border:none;border-radius:50%;width:36px;height:36px;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0">⇅</button>
+  <button id="favBarBtn" onclick="openFavorites()" style="background:rgba(0,0,0,0.08);border:none;border-radius:20px;padding:6px 12px;font-size:13px;font-weight:600;cursor:pointer;color:var(--text);display:flex;align-items:center;gap:4px;flex-shrink:0">❤️<span id="favCount">0</span></button>
+ </div>
 </div>
 <div class="cat-overlay" id="catOverlay" onclick="closeCatMenu()"></div>
 <div class="cat-sheet" id="catSheet">
@@ -1606,10 +1608,12 @@ function orderService(id) {
 let currentSlide = 0;
 let bannerTimer;
 let banners = [
-  {img:'https://dmedvedev245-ctrl.github.io/Tg-shop/iphone-17-pro-17-pro-max-hero.png',bg:'#1d1d1f',tag:'🔥 SALE',tagColor:'#ff3b30',title:'iPhone 17 Pro Max — лучшая цена'},
-  {img:'https://images.samsung.com/is/image/samsung/p6pim/levant/2501/gallery/levant-galaxy-s25-s931-sm-s931bzadeub-thumb-544547466?$650_519_PNG$',bg:'#0071e3',tag:'⭐ ХИТ ПРОДАЖ',tagColor:'#ff9500',title:'Samsung S25 Ultra — в наличии'},
-  {img:'https://store.storeimages.cdn-apple.com/4668/as-images.apple.com/is/airpods-pro-2-hero-select-202409?wid=400&hei=400&fmt=jpeg',bg:'#f5f5f7',tag:'✨ НОВИНКА',tagColor:'#34c759',title:'AirPods Pro 3 — только что в продаже'},
-  {img:'https://store.storeimages.cdn-apple.com/4668/as-images.apple.com/is/mbp14-spaceblack-select-202310?wid=400&hei=400&fmt=jpeg',bg:'#1d1d1f',tag:'💻 АКТУАЛЬНО',tagColor:'#0071e3',title:'MacBook Pro M5 — свежее поступление'},
+  {img:'https://dmedvedev245-ctrl.github.io/Tg-shop/iphone-17-pro-17-pro-max-hero.png',bg:'linear-gradient(135deg,#1d1d1f,#2d2d2f)',tag:'🔥 ХИТ ПРОДАЖ',tagColor:'#ff3b30',title:'iPhone 17 Pro Max — лучшая цена'},
+  {img:'https://fdn2.gsmarena.com/vv/pics/samsung/samsung-galaxy-s25-ultra-1.jpg',bg:'linear-gradient(135deg,#0071e3,#004aad)',tag:'⭐ В НАЛИЧИИ',tagColor:'#ff9500',title:'Samsung S25 Ultra — топовый флагман'},
+  {img:'https://store.storeimages.cdn-apple.com/4668/as-images.apple.com/is/airpods-pro-2-hero-select-202409?wid=400&hei=400&fmt=jpeg',bg:'linear-gradient(135deg,#1d1d1f,#3a3a3c)',tag:'✨ НОВИНКА',tagColor:'#34c759',title:'AirPods Pro 3 — только что в продаже'},
+  {img:'https://store.storeimages.cdn-apple.com/4668/as-images.apple.com/is/mbp14-spaceblack-select-202310?wid=400&hei=400&fmt=jpeg',bg:'linear-gradient(135deg,#1d1d1f,#2c2c2e)',tag:'💻 АКТУАЛЬНО',tagColor:'#0071e3',title:'MacBook Pro M5 — свежее поступление'},
+  {img:'https://fdn2.gsmarena.com/vv/pics/samsung/samsung-galaxy-z-fold7-1.jpg',bg:'linear-gradient(135deg,#1c1c1e,#2c2c2e)',tag:'🆕 НОВИНКА',tagColor:'#34c759',title:'Samsung Z Fold7 — складной флагман'},
+  {img:'https://fdn2.gsmarena.com/vv/pics/google/google-pixel-10-pro-1.jpg',bg:'linear-gradient(135deg,#34c759,#248a3d)',tag:'📱 НОВИНКА',tagColor:'#fff',title:'Google Pixel 10 Pro — чистый Android'},
 ];
 
 function renderBanner() {
